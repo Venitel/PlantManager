@@ -22,7 +22,6 @@ class Plant : public Record
 
   private: 
     std::string name_;
-    //Details - Label = 10 characters for nice display
     std::string species_;
     std::string notes_;
 };
