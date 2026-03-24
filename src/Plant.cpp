@@ -1,5 +1,15 @@
 #include "Plant.h"
-#include "Console.h"
+#include "Database.h"
+
+std::string Plant::getTabName() const
+{
+    return "plants";
+}
+
+int Plant::getId() const
+{
+    return id_;
+}
 
 std::string Plant::getName() const
 {
@@ -10,35 +20,30 @@ std::vector<Field> Plant::getFields()
 {
         return 
         {
-            { "Name    : ", name_,    40,   true,   [this](std::string v){ setName(v);    } },
-            { "Species : ", species_, 40,   true,   [this](std::string v){ setSpecies(v); } },
-            { "Notes   : ", notes_,   120,  false,  [this](std::string v){ setNotes(v);   } },
+            { "name",       "Name    : ", name_,    40,   true,   [this](std::string v){ setName(v);    } },
+            { "species",    "Species : ", species_, 40,   true,   [this](std::string v){ setSpecies(v); } },
+            { "notes",      "Notes   : ", notes_,   120,  false,  [this](std::string v){ setNotes(v);   } }
         };
 }
 
 void Plant::addRecord()
 {
-
+    Database::getInstance().insertDb(this);
 }
 
 void Plant::deleteRecord()
 {
-
+    Database::getInstance().deleteDb(this);
 }
 
 void Plant::editRecord()
 {
-
+    Database::getInstance().updateDb(this);
 }
 
-std::string Plant::getSpecies()
+void Plant::setId(int id)
 {
-    return species_;
-}
-
-std::string Plant::getNotes()
-{
-    return notes_.empty() ? "-" : notes_;
+    id_ = id;
 }
 
 void Plant::setName(std::string name)

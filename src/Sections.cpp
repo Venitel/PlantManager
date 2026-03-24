@@ -1,4 +1,5 @@
 #include "Sections.h"
+#include "Database.h"
 
 ListSection<Plant> plantList;
 DetailsSection<Plant> plantDetails;
@@ -112,6 +113,12 @@ void ListSection<T>::moveLast()
     {
         position_ = recordCount() - 1;
     }
+}
+
+template <typename T>
+void ListSection<T>::initFromDb()
+{
+    records_ = Database::getInstance().getAll<T>();
 }
 
 //explicit instantiation

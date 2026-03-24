@@ -1,6 +1,7 @@
 #include "Console.h"
 #include "Draw.h"
 #include "UserActionHandler.h"
+#include "Database.h"
 
 enum Key
 {
@@ -12,6 +13,8 @@ enum Key
 
 int main() 
 {
+    Database::getInstance().open("PlantManager.db");
+    plantList.initFromDb();
     initConsole();
     drawAll();
 
@@ -34,7 +37,7 @@ int main()
                 case 'A': userAdd(); break; 
                 case 'D': userDelete(); break;
                 case 'E': userEdit(); break;
-                case 'Q': terminate(); return 0;
+                case 'Q': Database::getInstance().close(); terminate(); return 0;
             }
         }
 

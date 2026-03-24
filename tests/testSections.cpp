@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include "Database.h"
 #include "Sections.h"
 #include "Plant.h"
 
@@ -13,10 +14,12 @@ protected:
     {
         if constexpr (std::is_same_v<T, ListSection<Plant>>) 
         {   // Add 3 dummy plants to the list so we can test movement
+            Database::getInstance().open("testPM.db");
             for(int i=0; i<3; i++)
             {
                 section.addRecord(Plant());
             }
+            Database::getInstance().close();
         }
     }
 };
@@ -63,6 +66,7 @@ TYPED_TEST(SectionsTest, ResetPosition)
 
 TEST(SectionsTest, SectionsActivation)
 {
+    Database::getInstance().open("testPM.db");
     ListSection<Plant> list;
     list.addRecord(Plant());
     list.addRecord(Plant());
@@ -82,4 +86,5 @@ TEST(SectionsTest, SectionsActivation)
     EXPECT_EQ(details.getPosition(), 0);
     EXPECT_TRUE(list.isActive());
     EXPECT_FALSE(details.isActive());
+    Database::getInstance().close();
 }

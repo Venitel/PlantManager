@@ -5,7 +5,9 @@
 
 class Plant : public Record
 {
-  public: 
+  public:
+    std::string getTabName() const override;
+    int getId() const override;
     std::string getName() const override;
     std::vector<Field> getFields() override;
 
@@ -13,14 +15,13 @@ class Plant : public Record
     void deleteRecord() override;
     void editRecord() override;
 
-    std::string getSpecies();
-    std::string getNotes();
-
+    void setId(int id) override;
     void setName(std::string name);
     void setSpecies(std::string species);
     void setNotes(std::string notes);
 
   private: 
+    int id_;
     std::string name_;
     std::string species_;
     std::string notes_;

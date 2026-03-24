@@ -56,6 +56,8 @@ class ListSection : public Section
     void moveDown();
     void moveLast();
 
+    void initFromDb();
+
   private:
     std::vector<T> records_;
 };

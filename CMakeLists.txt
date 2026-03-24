@@ -1,8 +1,14 @@
 cmake_minimum_required(VERSION 3.21)
-project(PlantManager VERSION 0.1 LANGUAGES CXX)
+project(PlantManager VERSION 0.1 LANGUAGES CXX C)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+#SQLite
+add_library(sqlite3 STATIC third_party/sqlite/sqlite3.c)
+target_include_directories(sqlite3 PUBLIC third_party/sqlite)
+target_compile_options(sqlite3 PRIVATE -w) #suppress all warnings for sqlite
+
 #Lib
 add_library(PMLib
     src/Sections.cpp
@@ -10,13 +16,13 @@ add_library(PMLib
     src/Console.cpp
     src/UserActionHandler.cpp
     src/Draw.cpp
+    src/Database.cpp
 )
-
 target_include_directories(PMLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 #Exec
 add_executable(PlantManager main.cpp)
-target_link_libraries(PlantManager PRIVATE PMLib)
+target_link_libraries(PlantManager PRIVATE PMLib sqlite3)
 target_compile_options(PlantManager PRIVATE -finput-charset=UTF-8 -fexec-charset=UTF-8)
 
 #Tests
@@ -41,6 +47,7 @@ target_link_libraries(PMTests
     PRIVATE
     PMLib
     GTest::gtest_main
+    sqlite3
 )
 
 include(GoogleTest)

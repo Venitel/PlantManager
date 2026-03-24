@@ -80,6 +80,8 @@ void userEdit()
     Field editField = record.getFields()[plantDetails.getPosition()];
     editField.setter(inputAt(0, bottomRow + 1, editField.label, editField.size, editField.mandatory));
  
+    plantList.editRecord(plantList.getPosition());
+
     for(int i = bottomRow; i <= bottomRow + 2; i++) //one extra line for error, multi line notes etc.
     { 
         clearRow(i);
