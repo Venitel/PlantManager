@@ -9,6 +9,7 @@
 class Database
 {
   public:
+    ~Database();
     static Database& getInstance();
  
     bool open(const std::string& file);

@@ -4,6 +4,11 @@
 #include <filesystem>
 #include <stdexcept>
 #include <iostream>
+
+Database::~Database() 
+{
+    close();
+}
  
 Database& Database::getInstance()
 {
