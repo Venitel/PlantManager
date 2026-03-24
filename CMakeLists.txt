@@ -17,6 +17,7 @@ add_library(PMLib
     src/UserActionHandler.cpp
     src/Draw.cpp
     src/Database.cpp
+    src/Logger.cpp
 )
 target_include_directories(PMLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 

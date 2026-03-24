@@ -2,6 +2,7 @@
 #include "Draw.h"
 #include "UserActionHandler.h"
 #include "Database.h"
+#include "Logger.h"
 
 enum Key
 {
@@ -13,13 +14,19 @@ enum Key
 
 int main() 
 {
-    Database::getInstance().open("PlantManager.db");
+    if(!Database::getInstance().open("PlantManager.db")
+        || !Logger::getInstance().open("PlantManager.log"))
+    {
+        putError(0, 0, "Failed to open Database/Log files!");
+        getKey();
+        return 1;
+    }
     plantList.initFromDb();
     initConsole();
-    drawAll();
 
     while(true) 
     {
+        drawAll();
         int key = getKey();
 
         if(key == 0 || key == 0xE0) //Arrow keys send two bytes: 0xE0 then a code
@@ -40,7 +47,5 @@ int main()
                 case 'Q': Database::getInstance().close(); terminate(); return 0;
             }
         }
-
-        drawAll();
     }
 }

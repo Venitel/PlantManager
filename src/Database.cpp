@@ -1,5 +1,6 @@
 #include "Database.h"
 #include "Plant.h"
+#include "Logger.h"
 
 #include <filesystem>
 #include <stdexcept>
@@ -21,7 +22,7 @@ bool Database::open(const std::string& file)
     std::filesystem::path path = std::filesystem::current_path() / file;
     if (sqlite3_open(path.string().c_str(), &m_db) != SQLITE_OK) 
     {
-        std::cerr << "Failed to open: " << sqlite3_errmsg(m_db) << "\n";
+        Logger::getInstance().error("Failed to open: " + std::string(sqlite3_errmsg(m_db)));
         return false;
     }
  
@@ -161,16 +162,18 @@ void Database::exec(const std::string& sql)
     {
         std::string msg = err ? err : "Unknown error";
         sqlite3_free(err);
-        std::cerr << "Execute error: " << msg << "\n";
+        Logger::getInstance().error("Execute error: " + msg);
     }
 }
  
 sqlite3_stmt* Database::prepare(const std::string& sql)
 {
+    Logger::getInstance().info(sql);
+
     sqlite3_stmt* stmt = nullptr;
     if (sqlite3_prepare_v2(m_db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) 
     {
-        std::cerr << "Prepare error: " << sqlite3_errmsg(m_db) << "\n";
+        Logger::getInstance().error("Prepare error: " + std::string(sqlite3_errmsg(m_db)));
     }
     return stmt;
 }
