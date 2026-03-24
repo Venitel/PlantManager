@@ -26,6 +26,8 @@ class Record
 
     virtual void setId(int id) = 0;
 
+    virtual std::string toString() = 0;
+
  protected:
     virtual std::string getName() const = 0;
 

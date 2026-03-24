@@ -21,6 +21,7 @@ int main()
         getKey();
         return 1;
     }
+    Logger::getInstance().info("--- RUN ---");
     plantList.initFromDb();
     initConsole();
 

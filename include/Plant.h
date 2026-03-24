@@ -16,6 +16,8 @@ class Plant : public Record
     void editRecord() override;
 
     void setId(int id) override;
+    std::string toString() override;
+
     void setName(std::string name);
     void setSpecies(std::string species);
     void setNotes(std::string notes);

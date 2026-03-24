@@ -84,6 +84,7 @@ std::vector<T> Database::getAll()
             ++colCounter;
         }
         retVec.push_back(record);
+        Logger::getInstance().info(record.toString());
     }
  
     sqlite3_finalize(stmt);

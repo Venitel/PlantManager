@@ -60,3 +60,14 @@ void Plant::setNotes(std::string notes)
 {
     notes_ = notes;
 }
+
+std::string Plant::toString()
+{
+    std::string ret = "PLANT Id: " + std::to_string(id_);
+    for(Field& field : getFields())
+    {
+        ret += ", " + field.colNam + ": " + field.value;
+    }
+
+    return ret;
+}

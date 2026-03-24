@@ -32,9 +32,11 @@ std::string Logger::timestamp()
 void Logger::info(const std::string& msg) 
 {
     file_ << "[" << timestamp() << "] [INFO]  " << msg << "\n";
+    file_.flush(); //write immediately
 }
 
 void Logger::error(const std::string& msg) 
 {
     file_ << "[" << timestamp() << "] [ERROR] " << msg << "\n";
+    file_.flush(); //write immediately
 }
