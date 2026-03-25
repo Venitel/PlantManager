@@ -6,6 +6,11 @@ std::string Plant::getTabName() const
     return "plants";
 }
 
+std::string Plant::getOrderBy() const
+{
+    return "orderNum ASC";
+}
+
 int Plant::getId() const
 {
     return id_;
@@ -18,16 +23,22 @@ std::string Plant::getName() const
 
 std::vector<Field> Plant::getFields() 
 {
-        return 
-        {
-            { "name",       "Name    : ", name_,    40,   true,   [this](std::string v){ setName(v);    } },
-            { "species",    "Species : ", species_, 40,   true,   [this](std::string v){ setSpecies(v); } },
-            { "notes",      "Notes   : ", notes_,   120,  false,  [this](std::string v){ setNotes(v);   } }
-        };
+    const std::string orderNum = std::to_string(orderNum_);
+    return 
+    {//   ColNam        Label         Var       Length  Mandatory  UserEditable Setter
+        { "name",       "Name    : ", name_,     40,     true,     true,         [this](std::string v){ setName(v);    } },
+        { "species",    "Species : ", species_,  40,     true,     true,         [this](std::string v){ setSpecies(v); } },
+        { "notes",      "Notes   : ", notes_,   120,    false,     true,         [this](std::string v){ setNotes(v);   } },
+        { "orderNum",   "Order   : ", orderNum,   9,    false,     false,        [this](std::string v){ setOrderNum(v);} }
+    };
 }
 
 void Plant::addRecord()
 {
+    const std::string orderQuery = "SELECT IFNULL(MAX(orderNum), 0)+1 FROM plants";
+    const std::string queryResult = Database::getInstance().getResult(orderQuery);
+    orderNum_ = !queryResult.empty() ? stoi(queryResult) : 999999999;
+
     Database::getInstance().insertDb(this);
 }
 
@@ -59,6 +70,26 @@ void Plant::setSpecies(std::string species)
 void Plant::setNotes(std::string notes)
 {
     notes_ = notes;
+}
+
+void Plant::setOrderNum(std::string orderNum)
+{
+    orderNum_ = stoi(orderNum);
+}
+
+void Plant::setOrderNum(int orderNum)
+{
+    orderNum_ = orderNum;
+}
+
+void Plant::swapOrder(Plant& plantSwap)
+{
+    int orgOrder = orderNum_;
+    setOrderNum(plantSwap.orderNum_);
+    editRecord();
+
+    plantSwap.setOrderNum(orgOrder);
+    plantSwap.editRecord();
 }
 
 std::string Plant::toString()

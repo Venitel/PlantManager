@@ -89,6 +89,17 @@ void ListSection<T>::editRecord(int index)
 }
 
 template <typename T>
+void ListSection<T>::orderUp(int index)
+{
+    T& currentRecord = records_[index];
+    T& previousRecord = records_[index - 1];
+
+    currentRecord.swapOrder(previousRecord);
+    std::swap(currentRecord, previousRecord);
+}
+
+
+template <typename T>
 int ListSection<T>::recordCount() const
 {
     return (int)records_.size();

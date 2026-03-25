@@ -12,6 +12,7 @@ struct Field
     std::string value;
     int size;
     bool mandatory;
+    bool userEditable;
     std::function<void(std::string)> setter;
 };
 
@@ -22,6 +23,8 @@ class Record
 
     virtual int getId() const = 0;
     virtual std::string getTabName() const = 0;
+    virtual std::string getOrderBy() const = 0;
+
     virtual std::vector<Field> getFields() = 0;
 
     virtual void setId(int id) = 0;

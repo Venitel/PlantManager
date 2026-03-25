@@ -46,6 +46,10 @@ void userAdd()
     int rowNum = 1; //title is first
     for(Field& field : fields)
     {
+        if(!field.userEditable)
+        {
+            continue;
+        }
         if(!field.mandatory)
         {
             setColor(FOREGROUND_INTENSITY);
@@ -109,4 +113,14 @@ void userDelete()
     {
         plantList.moveUp();
     }
+}
+
+void userOrder() 
+{
+    if(!plantList.isActive() || plantList.empty() || plantList.getPosition() == 0)
+    {
+        return;
+    }
+    plantList.orderUp(plantList.getPosition());
+    plantList.moveUp();
 }

@@ -135,6 +135,10 @@ void drawDetails(int row)
     setColor(FOREGROUND_GREEN | FOREGROUND_INTENSITY);
     for(Field& field : fields)
     {
+        if(!field.userEditable)
+        {
+            continue;
+        }
         if(selection == fieldsNum) 
         {
             setColor(BACKGROUND_GREEN);
@@ -165,7 +169,7 @@ void drawFooter(int row)
     clearRow(row + 1);
     if(plantList.isActive())
     {
-        putText(0, row + 1, "↑ ↓ ← →: Select   A: Add   D: Delete   Q: Quit");
+        putText(0, row + 1, "↑ ↓ ← →: Select   A: Add   D: Delete   M: Move Up   Q: Quit");
     }
     else
     {

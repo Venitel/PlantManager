@@ -13,5 +13,6 @@ void activateDetails();
 void userAdd();
 void userEdit();
 void userDelete();
+void userOrder();
 
 #endif

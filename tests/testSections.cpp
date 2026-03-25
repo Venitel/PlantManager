@@ -13,16 +13,23 @@ protected:
     SectionsTest() 
     {
         if constexpr (std::is_same_v<T, ListSection<Plant>>) 
-        {   // Add 3 dummy plants to the list so we can test movement
-            Database::getInstance().open("testPM.db");
-            for(int i=0; i<3; i++)
-            {
-                section.addRecord(Plant());
-            }
-            Database::getInstance().close();
+        {
+            insertDummyRecords(4, section);
         }
     }
 };
+
+template <typename T>
+void insertDummyRecords(int num, T& section)
+{
+    Database::getInstance().open("PMTests.db");
+    Database::getInstance().exec("DELETE FROM plants");
+    for(int i=0; i<num; i++)
+    {
+        section.addRecord(Plant());
+    }
+    Database::getInstance().close();
+}
 
 TYPED_TEST_SUITE(SectionsTest, SectionTypes);
 
@@ -40,9 +47,10 @@ TYPED_TEST(SectionsTest, MoveAboveMax)
 {
     this->section.moveDown();
     this->section.moveDown();
-    EXPECT_EQ(this->section.getPosition(), 2);
     this->section.moveDown();
-    EXPECT_EQ(this->section.getPosition(), 2);
+    EXPECT_EQ(this->section.getPosition(), 3);
+    this->section.moveDown();
+    EXPECT_EQ(this->section.getPosition(), 3);
 }
 
 TYPED_TEST(SectionsTest, MoveBelowMin)
@@ -66,13 +74,11 @@ TYPED_TEST(SectionsTest, ResetPosition)
 
 TEST(SectionsTest, SectionsActivation)
 {
-    Database::getInstance().open("testPM.db");
     ListSection<Plant> list;
-    list.addRecord(Plant());
-    list.addRecord(Plant());
+    insertDummyRecords(2, list);
     DetailsSection<Plant> details;
-    list.moveDown();
 
+    list.moveDown();
     details.activate();
 
     EXPECT_EQ(list.getPosition(), 1);
@@ -86,5 +92,4 @@ TEST(SectionsTest, SectionsActivation)
     EXPECT_EQ(details.getPosition(), 0);
     EXPECT_TRUE(list.isActive());
     EXPECT_FALSE(details.isActive());
-    Database::getInstance().close();
 }

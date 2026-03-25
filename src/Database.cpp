@@ -44,10 +44,11 @@ void Database::createTables()
 {
     exec(R"(
         CREATE TABLE IF NOT EXISTS plants (
-            id      INTEGER PRIMARY KEY AUTOINCREMENT,
-            name    TEXT NOT NULL,
-            species TEXT NOT NULL,
-            notes   TEXT DEFAULT ''
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            name        TEXT NOT NULL,
+            species     TEXT NOT NULL,
+            notes       TEXT DEFAULT '',
+            orderNum    INTEGER NOT NULL
         );
     )");
 }
@@ -69,7 +70,9 @@ std::vector<T> Database::getAll()
         first = false;
     }
 
-    std::string sql = "SELECT id, " + cols + " FROM " + T().getTabName();
+    std::string tabName = T().getTabName();
+    std::string orderBy = T().getOrderBy().empty() ? "" : " ORDER BY " + T().getOrderBy();
+    std::string sql = "SELECT id, " + cols + " FROM " + tabName + orderBy;
     auto* stmt = prepare(sql);
 
     std::vector<T> retVec;
@@ -80,7 +83,14 @@ std::vector<T> Database::getAll()
         int colCounter = 1;
         for(Field& recordField : record.getFields())
         {
-            recordField.setter(reinterpret_cast<const char*>(sqlite3_column_text(stmt, colCounter)));
+            if(sqlite3_column_type(stmt, colCounter) != SQLITE_NULL)
+            {
+                recordField.setter(reinterpret_cast<const char*>(sqlite3_column_text(stmt, colCounter)));
+            }
+            else
+            {
+                recordField.setter("");
+            }
             ++colCounter;
         }
         retVec.push_back(record);
@@ -177,4 +187,19 @@ sqlite3_stmt* Database::prepare(const std::string& sql)
         Logger::getInstance().error("Prepare error: " + std::string(sqlite3_errmsg(m_db)));
     }
     return stmt;
+}
+
+std::string Database::getResult(const std::string& sql)
+{
+    auto* stmt = prepare(sql);
+
+    if(sqlite3_step(stmt) == SQLITE_ROW) 
+    {
+        if(sqlite3_column_type(stmt, 0) != SQLITE_NULL)
+        {
+            return reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+        }
+    }
+
+    return "";
 }

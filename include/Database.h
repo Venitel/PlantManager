@@ -19,17 +19,19 @@ class Database
     void updateDb(Record* record);
     void deleteDb(Record* record);
 
+    std::string getResult(const std::string& sql);
+
     template <typename T>
     std::vector<T> getAll();
- 
+
+    void exec(const std::string& sql);
+
   private:
     sqlite3* m_db = nullptr;
 
     void createTables();
 
     std::string sqlString(const std::string& text);
- 
-    void exec(const std::string& sql);
     sqlite3_stmt* prepare(const std::string& sql);
 };
  

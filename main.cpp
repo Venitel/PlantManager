@@ -45,6 +45,7 @@ int main()
                 case 'A': userAdd(); break; 
                 case 'D': userDelete(); break;
                 case 'E': userEdit(); break;
+                case 'M': userOrder(); break;
                 case 'Q': Database::getInstance().close(); terminate(); return 0;
             }
         }
