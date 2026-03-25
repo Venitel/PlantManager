@@ -1,5 +1,6 @@
 #include "Draw.h"
 #include "Console.h"
+
 #include <iostream>
 
 namespace
@@ -107,13 +108,19 @@ void drawList(int row)
 
     clearSection(0, row, sectionWidth, sectionHeight);
 
-    for(int i = 0; i < plantList.recordCount(); i++) 
+    int startRow = plantList.getPosition() - (plantList.getPosition() % sectionHeight); //rounded down the nearest sectionHeight
+    int maxRow = startRow + sectionHeight;
+    if(maxRow > plantList.recordCount())
+    {
+        maxRow = plantList.recordCount();
+    }
+    for(int i = startRow; i < maxRow; i++) 
     {
         if(plantList.isActive() && i == plantList.getPosition()) 
         {
             setColor(BACKGROUND_GREEN);
         }
-        putText(0, row + i, plantList.getRecord(i).getName());
+        putText(0, row + (i % sectionHeight), plantList.getRecord(i).getName());
         resetColor();
     }
 }
