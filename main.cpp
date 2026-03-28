@@ -3,6 +3,7 @@
 #include "UserActionHandler.h"
 #include "Database.h"
 #include "Logger.h"
+#include "Sections.h"
 
 enum Key
 {
@@ -22,7 +23,13 @@ int main()
         return 1;
     }
     Logger::getInstance().info("--- RUN ---");
-    plantList.initFromDb();
+    for(auto& tab : allTabs)
+    {
+        std::visit([](auto& pair) {
+            pair.first->initFromDb(); // list
+        }, tab);
+    }
+
     initConsole();
 
     while(true) 
@@ -37,7 +44,11 @@ int main()
             else if(key == Key::Down) {moveActiveSectionDown();} 
             else if(key == Key::Left) {activateList();}
             else if(key == Key::Right) {activateDetails();}
-        } 
+        }
+        else if(key == 9) //TAB 
+        {
+            nextTab();
+        }
         else 
         {
             switch(toupper(key)) 

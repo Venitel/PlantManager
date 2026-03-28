@@ -2,7 +2,9 @@
 #define SECTIONS_H
 
 #include "Plant.h"
+#include "Species.h"
 #include <vector>
+#include <variant>
 
 class Section 
 {
@@ -42,6 +44,7 @@ class ListSection : public Section
     ListSection();
     using RecordType = T;
     T getBlankRecord() const { return T{}; }
+    std::string getTabName() const { return T{}.getTabName(); }
 
     void addRecord(T record);
     void deleteRecord(int index);
@@ -80,9 +83,17 @@ class DetailsSection : public Section
 
 extern template class ListSection<Plant>;
 extern template class DetailsSection<Plant>;
+extern template class ListSection<Species>;
+extern template class DetailsSection<Species>;
 
-extern ListSection<Plant> plantList;
-extern DetailsSection<Plant> plantDetails;
+using Tabs = std::variant <
+    std::pair<ListSection<Plant>*,   DetailsSection<Plant>*>,
+    std::pair<ListSection<Species>*, DetailsSection<Species>*>
+>;
+
 extern Section* activeSection;
+extern std::vector<Tabs> allTabs;
+extern Tabs activeTab;
+extern int activeTabIndex;
 
 #endif

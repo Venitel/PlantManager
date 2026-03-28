@@ -18,6 +18,7 @@ add_library(PMLib
     src/Draw.cpp
     src/Database.cpp
     src/Logger.cpp
+    src/Species.cpp
 )
 target_include_directories(PMLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 

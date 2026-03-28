@@ -9,6 +9,7 @@ void moveActiveSectionUp();
 void moveActiveSectionDown();
 void activateList();
 void activateDetails();
+void nextTab();
 
 void userAdd();
 void userEdit();

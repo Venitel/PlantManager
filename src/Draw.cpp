@@ -82,12 +82,51 @@ void drawHeader()
     setColor(FOREGROUND_GREEN | FOREGROUND_INTENSITY);
     putText(0, 0, "PLANT MANAGER");
     resetColor();
-    drawLine(0, 1, 2*sectionWidth, '-');
+    //Tabs
+    clearRow(1);
+    bool firstTab = true;
+    int tabPos = 0;
+    std::string tabSeparator = " | ";
+    for(auto& tab : allTabs)
+    {
+        std::visit([&](auto& pair) {
+            std::string tabName = pair.first->getTabName();
+            tabName[0] = toupper(tabName[0]); //capitalize first letter to look pretty
 
-    setColor(FOREGROUND_GREEN);
-    putText(0, 2, "Plants");
-    putText(sectionWidth, 2, "Details");
-    resetColor();
+            setColor(FOREGROUND_INTENSITY); //this by itself is actually grey
+            if(!firstTab)
+            {
+                putText(tabPos, 1, tabSeparator);
+                tabPos += tabSeparator.length(); 
+            }
+
+            if(tab == activeTab)
+            {
+                resetColor();
+            }
+            putText(tabPos, 1, tabName);
+            resetColor();
+            tabPos += tabName.length();
+
+            firstTab = false;
+        }, tab);
+    }
+
+    drawLine(0, 2, 2*sectionWidth, '-');
+
+    //Section names
+    clearRow(3);
+    std::visit([&](auto& tab) {
+        auto& currentList = tab.first;
+        
+        std::string currentTab = currentList->getTabName();
+        currentTab[0] = toupper(currentTab[0]); //capitalize first letter to look pretty
+
+        setColor(FOREGROUND_GREEN);
+        putText(0, 3, currentTab);
+        putText(sectionWidth, 3, "Details");
+        resetColor();
+    }, activeTab);
 }
 
 void clearSection(int x, int y, int width, int height)
@@ -100,94 +139,107 @@ void clearSection(int x, int y, int width, int height)
 
 void drawList(int row)
 {
-    if(plantList.empty()) 
-    {
-        putError(0, row, "List empty");
-        return;
-    }
+    std::visit([&](auto& tab) {
+        auto& currentList = tab.first;
 
-    clearSection(0, row, sectionWidth, sectionHeight);
+        clearSection(0, row, sectionWidth, sectionHeight);
 
-    int startRow = plantList.getPosition() - (plantList.getPosition() % sectionHeight); //rounded down the nearest sectionHeight
-    int maxRow = startRow + sectionHeight;
-    if(maxRow > plantList.recordCount())
-    {
-        maxRow = plantList.recordCount();
-    }
-    for(int i = startRow; i < maxRow; i++) 
-    {
-        if(plantList.isActive() && i == plantList.getPosition()) 
+        if(currentList->empty()) 
         {
-            setColor(BACKGROUND_GREEN);
+            putError(0, row, "List empty");
+            return;
         }
-        putText(0, row + (i % sectionHeight), plantList.getRecord(i).getName());
-        resetColor();
-    }
+
+        int startRow = currentList->getPosition() - (currentList->getPosition() % sectionHeight); //rounded down the nearest sectionHeight
+        int maxRow = startRow + sectionHeight;
+        if(maxRow > currentList->recordCount())
+        {
+            maxRow = currentList->recordCount();
+        }
+        for(int i = startRow; i < maxRow; i++) 
+        {
+            if(currentList->isActive() && i == currentList->getPosition()) 
+            {
+                setColor(BACKGROUND_GREEN);
+            }
+            putText(0, row + (i % sectionHeight), currentList->getRecord(i).getName());
+            resetColor();
+        }
+    }, activeTab);
 }
 
 void drawDetails(int row) 
 {
-    clearSection(sectionWidth, row, sectionWidth, sectionHeight);
+    std::visit([&](auto& tab) {
+        auto& currentList = tab.first;
+        auto& currentDetails = tab.second;
 
-    if(plantList.empty()) return;
+        clearSection(sectionWidth, row, sectionWidth, sectionHeight);
 
-    auto record = plantList.getSelectedRecord();
+        if(currentList->empty()) return;
 
-    int selection = plantDetails.isActive() ? plantDetails.getPosition() : -1;
+        auto& record = currentList->getSelectedRecord();
 
-    std::vector<Field> fields = record.getFields();
-    int fieldsNum = 0;
-    int printedRows = 0; 
-    //Name has different color if not selected - it is always first so we set it before loop
-    setColor(FOREGROUND_GREEN | FOREGROUND_INTENSITY);
-    for(Field& field : fields)
-    {
-        if(!field.userEditable)
+        int selection = currentDetails->isActive() ? currentDetails->getPosition() : -1;
+
+        std::vector<Field> fields = record.getFields();
+        int fieldsNum = 0;
+        int printedRows = 0; 
+        //Name has different color if not selected - it is always first so we set it before loop
+        setColor(FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+        for(Field& field : fields)
         {
-            continue;
-        }
-        if(selection == fieldsNum) 
-        {
-            setColor(BACKGROUND_GREEN);
-        }
-        ++fieldsNum;
+            if(!field.userEditable)
+            {
+                continue;
+            }
+            if(selection == fieldsNum) 
+            {
+                setColor(BACKGROUND_GREEN);
+            }
+            ++fieldsNum;
 
-        int labelLength = (int)field.label.length();
-        std::vector<std::string> textLines = wrapText(field.value, sectionWidth - labelLength);
-        for(int i = 0; i < (int)textLines.size(); i++)
-        {
-            std::string linePrefix = i == 0 ? field.label : std::string(labelLength, ' ');
-            putText(sectionWidth, row + printedRows, linePrefix + textLines[i]);
-            ++printedRows;
-        }
-        resetColor();
+            int labelLength = (int)field.label.length();
+            std::vector<std::string> textLines = wrapText(field.value, sectionWidth - labelLength);
+            for(int i = 0; i < (int)textLines.size(); i++)
+            {
+                std::string linePrefix = i == 0 ? field.label : std::string(labelLength, ' ');
+                putText(sectionWidth, row + printedRows, linePrefix + textLines[i]);
+                ++printedRows;
+            }
+            resetColor();
 
-        if(fieldsNum == 1) //add a horizontal line after name (first field)
-        {
-            drawLine(sectionWidth, row+1, sectionWidth, '-');
-            ++printedRows;
+            if(fieldsNum == 1) //add a horizontal line after name (first field)
+            {
+                drawLine(sectionWidth, row+1, sectionWidth, '-');
+                ++printedRows;
+            }
         }
-    }
+    }, activeTab);
 }
 
 void drawFooter(int row) 
 {
-    drawLine(0, row, 2*sectionWidth, '-');
-    clearRow(row + 1);
-    if(plantList.isActive())
-    {
-        putText(0, row + 1, "↑ ↓ ← →: Select   A: Add   D: Delete   M: Move Up   Q: Quit");
-    }
-    else
-    {
-        putText(0, row + 1, "↑ ↓ ← →: Select   E: Edit   Q: Quit");
-    }
+    std::visit([&](auto& tab) {
+        auto& currentList = tab.first;
+
+        drawLine(0, row, 2*sectionWidth, '-');
+        clearRow(row + 1);
+        if(currentList->isActive())
+        {
+            putText(0, row + 1, "↑ ↓ ← →: Select   TAB: Next Tab   A: Add   D: Delete   M: Move Up   Q: Quit");
+        }
+        else
+        {
+            putText(0, row + 1, "↑ ↓ ← →: Select   TAB: Next Tab   E: Edit                           Q: Quit");
+        }
+    }, activeTab);
 }
 
 void drawAll() 
 {
     drawHeader();
-    drawList(3); //offset by header
-    drawDetails(3); //offset by header
-    drawFooter(sectionHeight + 3); //offset by header
+    drawList(4); //offset by header
+    drawDetails(4); //offset by header
+    drawFooter(sectionHeight + 4); //offset by header
 }

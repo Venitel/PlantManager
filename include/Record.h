@@ -25,14 +25,12 @@ class Record
     virtual std::string getTabName() const = 0;
     virtual std::string getOrderBy() const = 0;
 
+    virtual std::string getName() const = 0;
     virtual std::vector<Field> getFields() = 0;
 
     virtual void setId(int id) = 0;
 
     virtual std::string toString() = 0;
-
- protected:
-    virtual std::string getName() const = 0;
 
     virtual void addRecord() = 0;
     virtual void deleteRecord() = 0;

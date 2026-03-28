@@ -3,6 +3,15 @@
 
 ListSection<Plant> plantList;
 DetailsSection<Plant> plantDetails;
+ListSection<Species> speciesList;
+DetailsSection<Species> speciesDetails;
+
+std::vector<Tabs> allTabs = {
+    std::make_pair(&plantList,   &plantDetails),
+    std::make_pair(&speciesList, &speciesDetails),
+};
+int activeTabIndex = 0;
+Tabs activeTab = allTabs[activeTabIndex];
 Section* activeSection = &plantList;
 
 // BASE SECTION
@@ -36,9 +45,9 @@ void Section::activate()
     {
         if(activeSection != nullptr) 
         {
-            activeSection->deactivate();
+            activeSection->deactivate(); //deactivate old
         }
-        activeSection = this;
+        activeSection = this; //activate new
     }
 }
 
@@ -134,6 +143,7 @@ void ListSection<T>::initFromDb()
 
 //explicit instantiation
 template class ListSection<Plant>;
+template class ListSection<Species>;
 
 // DETAILS SECTION
 template <typename T>
@@ -167,3 +177,4 @@ void DetailsSection<T>::moveLast()
 
 //explicit instantiation
 template class DetailsSection<Plant>;
+template class DetailsSection<Species>;

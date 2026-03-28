@@ -22,105 +22,141 @@ void moveActiveSectionDown()
 
 void activateList()
 {
-    plantList.activate();
+     std::visit([&](auto& tab) {
+        tab.first->activate();
+    }, activeTab);
 }
 
 void activateDetails()
 {
-    plantDetails.activate();
+    std::visit([&](auto& tab) {
+        if(!tab.first->empty())
+        {
+            tab.second->activate();     
+        }
+    }, activeTab);
+}
+
+void nextTab()
+{
+    activeTabIndex = (activeTabIndex + 1) % allTabs.size();
+    activeTab = allTabs[activeTabIndex];
+
+    std::visit([&](auto& tab) {
+        tab.first->activate(); //activate list section on tab change
+    }, activeTab);
 }
 
 void userAdd() 
 {
-    if(!plantList.isActive())
-    {
-        return;
-    }
+    std::visit([&](auto& tab) {
+        auto& currentList = tab.first;
 
-    const int bottomRow = getBottomRow();
-    setCursor(0, bottomRow);
-    std::cout<< "--- Add plant (grey = optional) ---\n";
-
-    auto newRecord = plantList.getBlankRecord();;
-    std::vector<Field> fields = newRecord.getFields();
-    int rowNum = 1; //title is first
-    for(Field& field : fields)
-    {
-        if(!field.userEditable)
+        if(!currentList->isActive())
         {
-            continue;
+            return;
         }
-        if(!field.mandatory)
-        {
-            setColor(FOREGROUND_INTENSITY);
-        }
-        field.setter(inputAt(0, bottomRow + rowNum, field.label, field.size, field.mandatory));
-        resetColor();
-        ++rowNum;
-    }
-    plantList.addRecord(newRecord);
-    plantList.moveLast();
 
-    // Clear the input area
-    for(int i = bottomRow; i <= bottomRow + 4; i++) //one extra line for error, multi line notes etc.
-    { 
-        clearRow(i);
-    }
+        const int bottomRow = getBottomRow();
+        setCursor(0, bottomRow);
+
+        auto newRecord = currentList->getBlankRecord();
+
+        std::cout<< "--- Add " + newRecord.getTabName() + " (grey = optional) ---\n";
+
+        std::vector<Field> fields = newRecord.getFields();
+        int rowNum = 1; //title is first
+        for(Field& field : fields)
+        {
+            if(!field.userEditable)
+            {
+                continue;
+            }
+            if(!field.mandatory)
+            {
+                setColor(FOREGROUND_INTENSITY); //this by itself is actually grey
+            }
+            field.setter(inputAt(0, bottomRow + rowNum, field.label, field.size, field.mandatory));
+            resetColor();
+            ++rowNum;
+        }
+        currentList->addRecord(newRecord);
+        currentList->moveLast();
+
+        // Clear the input area
+        for(int i = bottomRow; i <= bottomRow + 4; i++) //one extra line for error, multi line notes etc.
+        { 
+            clearRow(i);
+        }
+    }, activeTab);
 }
 
 void userEdit()
 {
-    if(!plantDetails.isActive() || plantList.empty())
-    {
-        return;
-    }
+    std::visit([&](auto& tab) {
+        auto& currentList = tab.first;
+        auto& currentDetails = tab.second;
 
-    auto& record = plantList.getSelectedRecord();
+        if(!currentDetails->isActive() || currentList->empty())
+        {
+            return;
+        }
 
-    int bottomRow = getBottomRow();
-    setCursor(0, bottomRow);
-    std::cout<< "--- Edit plant " + record.getName() + " ---\n";
+        auto& record = currentList->getSelectedRecord();
 
-    Field editField = record.getFields()[plantDetails.getPosition()];
-    editField.setter(inputAt(0, bottomRow + 1, editField.label, editField.size, editField.mandatory));
- 
-    plantList.editRecord(plantList.getPosition());
+        int bottomRow = getBottomRow();
+        setCursor(0, bottomRow);
+        std::cout<< "--- Edit plant " + record.getName() + " ---\n";
 
-    for(int i = bottomRow; i <= bottomRow + 2; i++) //one extra line for error, multi line notes etc.
-    { 
-        clearRow(i);
-    }
+        Field editField = record.getFields()[currentDetails->getPosition()];
+        editField.setter(inputAt(0, bottomRow + 1, editField.label, editField.size, editField.mandatory));
+    
+        currentList->editRecord(currentList->getPosition());
+
+        for(int i = bottomRow; i <= bottomRow + 2; i++) //one extra line for error, multi line notes etc.
+        { 
+            clearRow(i);
+        }
+    }, activeTab);
 }
 
 void userDelete() 
 {
-    if(!plantList.isActive() || plantList.empty())
-    {
-        return;
-    }
-    const int bottomRow = getBottomRow();
-    std::string confirmation = inputAt(0, bottomRow, "Confirm delete " + plantList.getSelectedRecord().getName() + " (Y/N): ", 1, true);
-    clearRow(bottomRow);
+    std::visit([&](auto& tab) {
+        auto& currentList = tab.first;
 
-    if(toupper(confirmation[0]) != 'Y')
-    {
-        return;
-    }
+        if(!currentList->isActive() || currentList->empty())
+        {
+            return;
+        }
+        const int bottomRow = getBottomRow();
+        std::string confirmation = inputAt(0, bottomRow, "Confirm delete " + currentList->getSelectedRecord().getName() + " (Y/N): ", 1, true);
+        clearRow(bottomRow);
 
-    plantList.deleteRecord(plantList.getPosition());
+        if(toupper(confirmation[0]) != 'Y')
+        {
+            return;
+        }
 
-    if(plantList.getPosition() >= plantList.recordCount() && plantList.getPosition() > 0) 
-    {
-        plantList.moveUp();
-    }
+        currentList->deleteRecord(currentList->getPosition());
+
+        if(currentList->getPosition() >= currentList->recordCount() && currentList->getPosition() > 0) 
+        {
+            currentList->moveUp();
+        }
+    }, activeTab);
 }
 
 void userOrder() 
 {
-    if(!plantList.isActive() || plantList.empty() || plantList.getPosition() == 0)
-    {
-        return;
-    }
-    plantList.orderUp(plantList.getPosition());
-    plantList.moveUp();
+    std::visit([&](auto& tab) {
+        auto& currentList = tab.first;
+
+        if(!currentList->isActive() || currentList->empty() || currentList->getPosition() == 0)
+        {
+            return;
+        }
+        currentList->orderUp(currentList->getPosition());
+        currentList->moveUp();
+    }, activeTab);
 }
