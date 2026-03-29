@@ -14,6 +14,7 @@ struct Field
     bool mandatory;
     bool userEditable;
     std::function<void(std::string)> setter;
+    std::string foreignTableName = "";
 };
 
 class Record 
@@ -26,6 +27,8 @@ class Record
     virtual std::string getOrderBy() const = 0;
 
     virtual std::string getName() const = 0;
+    virtual std::string getForeignName(const std::string& tableName) const = 0;
+
     virtual std::vector<Field> getFields() = 0;
 
     virtual void setId(int id) = 0;

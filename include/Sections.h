@@ -6,6 +6,8 @@
 #include <vector>
 #include <variant>
 
+void loadAllListsFromDb();
+
 class Section 
 {
   public:
@@ -43,8 +45,8 @@ class ListSection : public Section
   public:
     ListSection();
     using RecordType = T;
-    T getBlankRecord() const { return T{}; }
-    std::string getTabName() const { return T{}.getTabName(); }
+    T getBlankRecord() const;
+    std::string getTabName() const;
 
     void addRecord(T record);
     void deleteRecord(int index);
@@ -60,7 +62,7 @@ class ListSection : public Section
     void moveDown();
     void moveLast();
 
-    void initFromDb();
+    void loadFromDb();
 
   private:
     std::vector<T> records_;

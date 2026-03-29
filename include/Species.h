@@ -20,6 +20,8 @@ class Species : public Record
     void setId(int id) override;
     std::string toString() override;
 
+    std::string getForeignName(const std::string& tableName) const override;
+
     void setName(std::string name);
     void setOrderNum(int orderNum);
     void setOrderNum(std::string orderNum); //string as an argument because we read every db column as a text

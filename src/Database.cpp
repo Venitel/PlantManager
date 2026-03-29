@@ -47,7 +47,7 @@ void Database::createTables()
         CREATE TABLE IF NOT EXISTS plants (
             id          INTEGER PRIMARY KEY AUTOINCREMENT,
             name        TEXT NOT NULL,
-            species     TEXT NOT NULL,
+            speciesId   INTEGER REFERENCES species(id) ON DELETE SET NULL,
             notes       TEXT DEFAULT '',
             orderNum    INTEGER NOT NULL
         );
@@ -211,4 +211,34 @@ std::string Database::getResult(const std::string& sql)
     }
 
     return "";
+}
+
+std::string Database::getNameById(std::string& table, int id)
+{
+    std::string name;
+    std::string sql = "SELECT name FROM " + table + " WHERE id = " + std::to_string(id);
+    auto* stmt = prepare(sql);
+    while (sqlite3_step(stmt) == SQLITE_ROW) 
+    {
+        name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+        Logger::getInstance().info("Name: " + name);
+    }
+    sqlite3_finalize(stmt);
+    return name;
+}
+
+std::vector<std::pair<int, std::string>> Database::getAllKeys(std::string& table)
+{
+    std::vector<std::pair<int, std::string>> allKeys;
+    std::string sql = "SELECT id, name FROM " + table;
+    auto* stmt = prepare(sql);
+    while (sqlite3_step(stmt) == SQLITE_ROW) 
+    {
+        int id = sqlite3_column_int(stmt, 0);
+        std::string name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+        allKeys.push_back({id, name});
+        Logger::getInstance().info("Id: " + std::to_string(id) + ", Name: " + name);
+    }
+    sqlite3_finalize(stmt);
+    return allKeys;
 }

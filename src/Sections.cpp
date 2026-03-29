@@ -14,6 +14,16 @@ int activeTabIndex = 0;
 Tabs activeTab = allTabs[activeTabIndex];
 Section* activeSection = &plantList;
 
+void loadAllListsFromDb()
+{
+    for(auto& tab : allTabs)
+    {
+        std::visit([](auto& pair) {
+            pair.first->loadFromDb(); // list
+        }, tab);
+    }
+}
+
 // BASE SECTION
 Section::Section(SectionType type) 
     :   type_{type}
@@ -64,7 +74,19 @@ void Section::moveUp()
 template <typename T>
 ListSection<T>::ListSection() : Section(Section::List) 
 {}
-    
+
+template <typename T>
+T ListSection<T>::getBlankRecord() const 
+{
+    return T{}; 
+}
+
+template <typename T>
+std::string ListSection<T>::getTabName() const 
+{ 
+    return getBlankRecord().getTabName(); 
+}
+
 template <typename T>
 void ListSection<T>::addRecord(T record)
 {
@@ -77,6 +99,11 @@ void ListSection<T>::deleteRecord(int index)
 {
     records_[index].deleteRecord();
     records_.erase(records_.begin() + index);
+    /* Deletion can break foreign table references
+       Reload all lists to get their current state
+       Perhaps there's a better way to handle this
+       But this will do for now */ 
+    loadAllListsFromDb();
 }
 
 template <typename T>
@@ -136,7 +163,7 @@ void ListSection<T>::moveLast()
 }
 
 template <typename T>
-void ListSection<T>::initFromDb()
+void ListSection<T>::loadFromDb()
 {
     records_ = Database::getInstance().getAll<T>();
 }

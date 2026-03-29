@@ -40,6 +40,21 @@ void resetColor()
     setColor(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 }
 
+void setColor(Colors color)
+{
+    switch(color)
+    {
+        case Error : setColor(BACKGROUND_RED); break;
+        case Title : setColor(FOREGROUND_GREEN | FOREGROUND_INTENSITY); break;
+        case Selection : setColor(BACKGROUND_GREEN); break;
+        case Name : setColor(FOREGROUND_GREEN); break;
+        case Inactive :
+        case Optional : setColor(FOREGROUND_INTENSITY); break; //this by itself is grey
+        case List : setColor(FOREGROUND_GREEN | FOREGROUND_BLUE); break;
+        default : resetColor(); 
+    }
+}
+
 void showCursor(bool show) 
 {
     CONSOLE_CURSOR_INFO cursorInfo{1, show};

@@ -5,14 +5,6 @@
 #include "Logger.h"
 #include "Sections.h"
 
-enum Key
-{
-    Up = 72,
-    Down = 80,
-    Left = 75,
-    Right = 77
-};
-
 int main() 
 {
     if(!Database::getInstance().open("PlantManager.db")
@@ -23,42 +15,29 @@ int main()
         return 1;
     }
     Logger::getInstance().info("--- RUN ---");
-    for(auto& tab : allTabs)
-    {
-        std::visit([](auto& pair) {
-            pair.first->initFromDb(); // list
-        }, tab);
-    }
+    loadAllListsFromDb();
 
     initConsole();
 
+    bool redraw = true;
     while(true) 
     {
-        drawAll();
-        int key = getKey();
+        if(redraw) {drawAll();}
+        redraw = true;
 
-        if(key == 0 || key == 0xE0) //Arrow keys send two bytes: 0xE0 then a code
+        switch(toupper(getKey())) 
         {
-            key = getKey();
-            if(key == Key::Up) {moveActiveSectionUp();} 
-            else if(key == Key::Down) {moveActiveSectionDown();} 
-            else if(key == Key::Left) {activateList();}
-            else if(key == Key::Right) {activateDetails();}
-        }
-        else if(key == 9) //TAB 
-        {
-            nextTab();
-        }
-        else 
-        {
-            switch(toupper(key)) 
-            {
-                case 'A': userAdd(); break; 
-                case 'D': userDelete(); break;
-                case 'E': userEdit(); break;
-                case 'M': userOrder(); break;
-                case 'Q': Database::getInstance().close(); terminate(); return 0;
-            }
+            case Key::Up : moveActiveSectionUp(); break;
+            case Key::Down : moveActiveSectionDown(); break;
+            case Key::Left : activateList(); break;
+            case Key::Right : activateDetails(); break;
+            case Key::Tab : nextTab(); break;
+            case 'A': userAdd(); break; 
+            case 'D': userDelete(); break;
+            case 'E': userEdit(); break;
+            case 'M': userOrder(); break;
+            case 'Q': Database::getInstance().close(); terminate(); return 0;
+            default: redraw = false; //unsupported key - prevent flicker
         }
     }
 }

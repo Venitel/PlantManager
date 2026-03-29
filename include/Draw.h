@@ -14,8 +14,10 @@ std::vector<std::string> wrapText(const std::string& text, int width);
 void drawHeader();
 void drawFooter(int row, bool listFuncs);
 void drawLine(int x, int y, int width, char symbol);
-void clearRow(int row);
+void clearRow(int row, int offset=0);
 int getBottomRow();
+
+void drawInstructionsRow(int row, const std::string& title);
 
 void drawList(int row);
 void drawDetails(int row);

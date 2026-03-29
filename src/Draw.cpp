@@ -29,14 +29,13 @@ std::vector<std::string> wrapText(const std::string& text, int width)
 
 void drawLine(int x, int y, int width, char symbol) 
 {
-    setCursor(x, y);
     std::string line(width, symbol);
-    std::cout << line;
+    putText(x, y, line);
 }
 
-void clearRow(int row)
+void clearRow(int row, int offset)
 {
-    drawLine(0, row, sectionWidth*2, ' ');
+    drawLine(offset, row, sectionWidth*2 - offset, ' ');
 }
 
 void putText(int x, int y, const std::string& text) 
@@ -47,7 +46,7 @@ void putText(int x, int y, const std::string& text)
 
 void putError(int x, int y, const std::string& text)
 {
-    setColor(BACKGROUND_RED);
+    setColor(Colors::Error);
     putText(x, y, text);
     resetColor();
 }
@@ -79,7 +78,7 @@ std::string inputAt(int x, int y, const std::string& prompt, int maxLength, bool
 
 void drawHeader() 
 {
-    setColor(FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+    setColor(Colors::Title);
     putText(0, 0, "PLANT MANAGER");
     resetColor();
     //Tabs
@@ -93,7 +92,7 @@ void drawHeader()
             std::string tabName = pair.first->getTabName();
             tabName[0] = toupper(tabName[0]); //capitalize first letter to look pretty
 
-            setColor(FOREGROUND_INTENSITY); //this by itself is actually grey
+            setColor(Colors::Inactive);
             if(!firstTab)
             {
                 putText(tabPos, 1, tabSeparator);
@@ -122,7 +121,7 @@ void drawHeader()
         std::string currentTab = currentList->getTabName();
         currentTab[0] = toupper(currentTab[0]); //capitalize first letter to look pretty
 
-        setColor(FOREGROUND_GREEN);
+        setColor(Colors::Title);
         putText(0, 3, currentTab);
         putText(sectionWidth, 3, "Details");
         resetColor();
@@ -135,6 +134,34 @@ void clearSection(int x, int y, int width, int height)
     {
         drawLine(x, y + i, width, ' '); // overwrite with spaces
     }
+}
+
+void drawInstructionsRow(int row, const std::string& title)
+{
+    int pos = 0;
+    std::string titleStart = "--- " + title + " [ ";
+    std::string helpSeparator = " | ";
+    std::string helpOptional = "optional";
+    std::string helpList = "← list →";
+    std::string titleEnd = " ] ---";
+
+    putText(pos, row, titleStart);
+    pos += titleStart.length();
+
+    setColor(Colors::Optional);
+    putText(pos, row, helpOptional);
+    pos += helpOptional.length();
+    resetColor();
+
+    putText(pos, row, helpSeparator);
+    pos += helpSeparator.length();
+
+    setColor(Colors::List);
+    putText(pos, row, helpList);
+    pos += 8; //hardcoded because the arrows are multi-byte and give wrong .length()
+    resetColor();
+
+    putText(pos, row, titleEnd);
 }
 
 void drawList(int row)
@@ -160,7 +187,7 @@ void drawList(int row)
         {
             if(currentList->isActive() && i == currentList->getPosition()) 
             {
-                setColor(BACKGROUND_GREEN);
+                setColor(Colors::Selection);
             }
             putText(0, row + (i % sectionHeight), currentList->getRecord(i).getName());
             resetColor();
@@ -186,7 +213,7 @@ void drawDetails(int row)
         int fieldsNum = 0;
         int printedRows = 0; 
         //Name has different color if not selected - it is always first so we set it before loop
-        setColor(FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+        setColor(Colors::Name);
         for(Field& field : fields)
         {
             if(!field.userEditable)
@@ -195,12 +222,14 @@ void drawDetails(int row)
             }
             if(selection == fieldsNum) 
             {
-                setColor(BACKGROUND_GREEN);
+                setColor(Colors::Selection);
             }
             ++fieldsNum;
 
             int labelLength = (int)field.label.length();
-            std::vector<std::string> textLines = wrapText(field.value, sectionWidth - labelLength);
+            std::string text = field.foreignTableName.empty() ? field.value : record.getForeignName(field.foreignTableName);
+
+            std::vector<std::string> textLines = wrapText(text, sectionWidth - labelLength);
             for(int i = 0; i < (int)textLines.size(); i++)
             {
                 std::string linePrefix = i == 0 ? field.label : std::string(labelLength, ' ');

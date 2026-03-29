@@ -11,6 +11,11 @@ std::string Species::getOrderBy() const
     return "orderNum ASC";
 }
 
+std::string Species::getForeignName(const std::string& tableNam) const
+{
+    return "";
+}
+
 int Species::getId() const
 {
     return id_;

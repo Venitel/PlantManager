@@ -20,8 +20,12 @@ class Plant : public Record
     void setId(int id) override;
     std::string toString() override;
 
+    std::string getForeignName(const std::string& tableName) const override;
+
     void setName(std::string name);
-    void setSpecies(std::string species);
+    bool hasSpecies() const;
+    void setSpeciesId(int speciesId);
+    void setSpeciesId(std::string speciesId); //string as an argument because we read every db column as a text
     void setNotes(std::string notes);
     void setOrderNum(int orderNum);
     void setOrderNum(std::string orderNum); //string as an argument because we read every db column as a text
@@ -30,7 +34,7 @@ class Plant : public Record
   private: 
     int id_;
     std::string name_;
-    std::string species_;
+    int speciesId_ = -1;
     std::string notes_;
     int orderNum_;
 };
