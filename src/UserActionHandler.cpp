@@ -5,16 +5,47 @@
 
 #include <iostream>
 #include <conio.h>
+#include <chrono>
+#include <unordered_map>
+
+namespace
+{
+    std::unordered_map<int, std::chrono::steady_clock::time_point> buttonCooldowns;
+}
 
 int getKey() 
 {
     int key = _getch();
     if(key == 0 || key == 0xE0) //Arrow keys send two bytes: 0xE0 then a code
     {
-        //Multiply these by -1 to differ from normal characters (e.g. M = 77; Right Arrow = 0xE0 + 77)
-        return _getch()*-1; 
+        //Offset these by 256 to differ from normal characters (e.g. M = 77; Right Arrow = 0xE0 + 77)
+        return _getch() + 256; 
     }
     return key;
+}
+
+int getCooldown(int key)
+{
+    if(key >= 256)
+    {
+        //Arrow keys are offset by 256, we want arrows to have shorter cooldown
+        return 50;
+    }
+    return 100;
+}
+
+bool onCooldown(int key)
+{
+    auto now     = std::chrono::steady_clock::now();
+    auto& last   = buttonCooldowns[key];
+    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - last);
+        
+    if(elapsed.count() < getCooldown(key)) 
+    {
+        return true;
+    }
+    last = now;
+    return false;
 }
 
 bool moveActiveSectionUp()

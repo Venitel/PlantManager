@@ -5,15 +5,18 @@
 
 enum Key
 {
-    Up = -72,
-    Down = -80,
-    Left = -75,
-    Right = -77,
+    //For explaination why 256 see getKey
+    Up = 72 + 256,
+    Down = 80 + 256,
+    Left = 75 + 256,
+    Right = 77 + 256,
     Tab = 9,
     Enter = 13
 };
 
 int getKey();
+int getCooldown(int key);
+bool onCooldown(int key);
 
 bool moveActiveSectionUp();
 bool moveActiveSectionDown();

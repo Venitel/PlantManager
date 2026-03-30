@@ -9,7 +9,7 @@ void initConsole()
     clearScreen();
 }
 
-void terminate()
+void terminateConsole()
 {
     clearScreen();
     showCursor(true);

@@ -15,7 +15,7 @@ enum Colors
 };
 
 void initConsole();
-void terminate();
+void terminateConsole();
 void setConsoleSize(int width, int height);
 void clearScreen();
 void clearSection(int x, int y, int width, int height);
