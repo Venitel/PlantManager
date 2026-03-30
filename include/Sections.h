@@ -3,6 +3,7 @@
 
 #include "Plant.h"
 #include "Species.h"
+#include "Schedule.h"
 #include <vector>
 #include <variant>
 
@@ -87,10 +88,13 @@ extern template class ListSection<Plant>;
 extern template class DetailsSection<Plant>;
 extern template class ListSection<Species>;
 extern template class DetailsSection<Species>;
+extern template class ListSection<Schedule>;
+extern template class DetailsSection<Schedule>;
 
 using Tabs = std::variant <
     std::pair<ListSection<Plant>*,   DetailsSection<Plant>*>,
-    std::pair<ListSection<Species>*, DetailsSection<Species>*>
+    std::pair<ListSection<Species>*, DetailsSection<Species>*>,
+    std::pair<ListSection<Schedule>*, DetailsSection<Schedule>*>
 >;
 
 extern Section* activeSection;

@@ -8,6 +8,15 @@ std::string Species::getTabName() const
 
 std::string Species::getForeignName(const std::string& tableNam) const
 {
+    if(tableNam == "schedules")
+    {
+        if(!hasSchedule())
+        {
+            return "";
+        }
+        std::string tabName = tableNam;
+        return Database::getInstance().getNameById(tabName, scheduleId_);
+    }
     return "";
 }
 
@@ -24,10 +33,13 @@ std::string Species::getName() const
 std::vector<Field> Species::getFields() 
 {
     const std::string orderNum = std::to_string(orderNum_);
+    const std::string scheduleId = std::to_string(scheduleId_);
+
     return 
     {//   ColNam        Label         Var           Length  Mandatory   UserEditable    Setter                                  Foreign record
-        { "name",       "Name    : ", name_,        40,     true,       true,           [this](std::string v){ setName(v);    }, "" },
-        { "orderNum",   "Order   : ", orderNum,     9,      false,      false,          [this](std::string v){ setOrderNum(v);}, "" }
+        { "name",       "Name    : ", name_,        40,     true,       true,           [this](std::string v){ setName(v);      }, "" },
+        { "scheduleId", "Schedule: ", scheduleId,   9,      true,       true,           [this](std::string v){ setScheduleId(v);}, "schedules"},
+        { "orderNum",   "Order   : ", orderNum,     9,      false,      false,          [this](std::string v){ setOrderNum(v);  }, "" }
     };
 }
 
@@ -58,6 +70,24 @@ void Species::setId(int id)
 void Species::setName(std::string name)
 {
     name_ = name;
+}
+
+bool Species::hasSchedule() const
+{
+    return scheduleId_ > 0;
+}
+
+void Species::setScheduleId(int scheduleId)
+{
+    scheduleId_ = scheduleId;
+}
+
+void Species::setScheduleId(std::string scheduleId)
+{
+    if(!scheduleId.empty()) //nullable col
+    {
+        scheduleId_ = stoi(scheduleId);
+    }
 }
 
 void Species::setOrderNum(std::string orderNum)

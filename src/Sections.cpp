@@ -7,10 +7,13 @@ ListSection<Plant> plantList;
 DetailsSection<Plant> plantDetails;
 ListSection<Species> speciesList;
 DetailsSection<Species> speciesDetails;
+ListSection<Schedule> scheduleList;
+DetailsSection<Schedule> scheduleDetails;
 
 std::vector<Tabs> allTabs = {
     std::make_pair(&plantList,   &plantDetails),
     std::make_pair(&speciesList, &speciesDetails),
+    std::make_pair(&scheduleList, &scheduleDetails),
 };
 int activeTabIndex = 0;
 Tabs activeTab = allTabs[activeTabIndex];
@@ -185,6 +188,7 @@ void ListSection<T>::loadFromDb()
 //explicit instantiation
 template class ListSection<Plant>;
 template class ListSection<Species>;
+template class ListSection<Schedule>;
 
 // DETAILS SECTION
 template <typename T>
@@ -226,3 +230,4 @@ void DetailsSection<T>::moveLast()
 //explicit instantiation
 template class DetailsSection<Plant>;
 template class DetailsSection<Species>;
+template class DetailsSection<Schedule>;

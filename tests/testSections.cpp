@@ -3,6 +3,7 @@
 #include "Sections.h"
 #include "Plant.h"
 #include "Species.h"
+#include "Schedule.h"
 
 //Common func
 template <typename T>
@@ -18,11 +19,13 @@ void insertDummyRecords(int num, T& section)
 }
 template void insertDummyRecords<ListSection<Plant>>(int num, ListSection<Plant>& section);
 template void insertDummyRecords<ListSection<Species>>(int num, ListSection<Species>& section);
+template void insertDummyRecords<ListSection<Schedule>>(int num, ListSection<Schedule>& section);
 
 //List sections
 using ListSectionTypes = ::testing::Types<
                         ListSection<Plant>, 
-                        ListSection<Species>
+                        ListSection<Species>,
+                        ListSection<Schedule>
                     >;
 
 template <typename T>
@@ -86,7 +89,8 @@ TYPED_TEST(ListSectionTest, ResetPosition)
 //Details sections
 using DetailsSectionTypes = ::testing::Types<
                         DetailsSection<Plant>, 
-                        DetailsSection<Species>
+                        DetailsSection<Species>,
+                        DetailsSection<Schedule>
                     >;
 
 template <typename T>

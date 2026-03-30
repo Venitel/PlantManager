@@ -1,6 +1,7 @@
 #include "Database.h"
 #include "Plant.h"
 #include "Species.h"
+#include "Schedule.h"
 #include "Logger.h"
 
 #include <filesystem>
@@ -55,6 +56,15 @@ void Database::createTables()
 
     exec(R"(
         CREATE TABLE IF NOT EXISTS species (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            scheduleId  INTEGER REFERENCES schedules(id) ON DELETE SET NULL,
+            name        TEXT NOT NULL,
+            orderNum    INTEGER NOT NULL
+        );
+    )");
+
+    exec(R"(
+        CREATE TABLE IF NOT EXISTS schedules (
             id          INTEGER PRIMARY KEY AUTOINCREMENT,
             name        TEXT NOT NULL,
             orderNum    INTEGER NOT NULL
@@ -111,6 +121,7 @@ std::vector<T> Database::getAll() const
 //explicit instantiation
 template std::vector<Plant> Database::getAll<Plant>() const;
 template std::vector<Species> Database::getAll<Species>() const;
+template std::vector<Schedule> Database::getAll<Schedule>() const;
 
 std::string Database::sqlString(const std::string& text) const
 {

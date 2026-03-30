@@ -1,9 +1,9 @@
-#ifndef SPECIES_H
-#define SPECIES_H
+#ifndef SCHEDULE_H
+#define SCHEDULE_H
 
 #include "Record.h"
 
-class Species : public Record
+class Schedule : public Record
 {
   public:
     std::string getTabName() const override;
@@ -22,17 +22,13 @@ class Species : public Record
     std::string getForeignName(const std::string& tableName) const override;
 
     void setName(std::string name);
-    bool hasSchedule() const;
-    void setScheduleId(int scheduleId);
-    void setScheduleId(std::string scheduleId); //string as an argument because we read every db column as a text
     void setOrderNum(int orderNum);
     void setOrderNum(std::string orderNum); //string as an argument because we read every db column as a text
-    void swapOrder(Species& speciesSwap);
+    void swapOrder(Schedule& scheduleSwap);
 
   private: 
     int id_;
     std::string name_;
-    int scheduleId_ = -1;
     int orderNum_;
 };
 
