@@ -7,7 +7,6 @@ class Species : public Record
 {
   public:
     std::string getTabName() const override;
-    std::string getOrderBy() const override;
 
     int getId() const override;
     std::string getName() const override;

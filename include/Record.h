@@ -24,7 +24,6 @@ class Record
 
     virtual int getId() const = 0;
     virtual std::string getTabName() const = 0;
-    virtual std::string getOrderBy() const = 0;
 
     virtual std::string getName() const = 0;
     virtual std::string getForeignName(const std::string& tableName) const = 0;

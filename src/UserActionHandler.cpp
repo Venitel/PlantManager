@@ -17,41 +17,53 @@ int getKey()
     return key;
 }
 
-void moveActiveSectionUp()
+bool moveActiveSectionUp()
 {
-    activeSection->moveUp();
+    return activeSection->moveUp();
 }
 
-void moveActiveSectionDown()
+bool moveActiveSectionDown()
 {
-    activeSection->moveDown();
+    return activeSection->moveDown();
 }
 
-void activateList()
+bool activateList()
 {
-    std::visit([](auto& tab) {
-        tab.first->activate();
+    bool result = false;
+
+    std::visit([&](auto& tab) {
+        result = tab.first->activate();
     }, activeTab);
+
+    return result;
 }
 
-void activateDetails()
+bool activateDetails()
 {
-    std::visit([](auto& tab) {
+    bool result = false;
+
+    std::visit([&](auto& tab) {
         if(!tab.first->empty())
         {
-            tab.second->activate();     
+            result = tab.second->activate();     
         }
     }, activeTab);
+
+    return result;
 }
 
-void nextTab()
+bool nextTab()
 {
+    bool result = false;
+
     activeTabIndex = (activeTabIndex + 1) % allTabs.size();
     activeTab = allTabs[activeTabIndex];
 
-    std::visit([](auto& tab) {
-        tab.first->activate(); //activate list section on tab change
+    std::visit([&](auto& tab) {
+        result = tab.first->activate(); //activate list section on tab change
     }, activeTab);
+
+    return result;
 }
 
 void getFieldFromUser(int x, int y, Field& field)
@@ -61,7 +73,7 @@ void getFieldFromUser(int x, int y, Field& field)
         setColor(Colors::Optional);
     }
 
-    if(field.foreignTableName.empty()) //no reference, any input
+    if(field.foreignTableName == "") //no reference, any input
     {
         field.setter(inputAt(x, y, field.label, field.size, field.mandatory));
     }
@@ -77,7 +89,7 @@ void getFieldFromUser(int x, int y, Field& field)
         if(!allKeys.empty())
         {
             bool redraw = true;
-            while(1)
+            while(true)
             {
                 if(redraw)
                 {
@@ -89,11 +101,11 @@ void getFieldFromUser(int x, int y, Field& field)
                 redraw = true;
                 int key = getKey();
 
-                if(key == Key::Left) 
+                if(key == Key::Right) 
                 {
                     allKeysIndex = (allKeysIndex + 1) % allKeys.size();
                 }
-                else if(key == Key::Right) 
+                else if(key == Key::Left) 
                 {
                     --allKeysIndex;
                     if(allKeysIndex < 0) 
@@ -119,9 +131,11 @@ void getFieldFromUser(int x, int y, Field& field)
     }
 }
 
-void userAdd() 
+bool userAdd() 
 {
-    std::visit([](auto& tab) {
+    bool result = false;
+
+    std::visit([&](auto& tab) {
         auto& currentList = tab.first;
 
         if(!currentList->isActive())
@@ -155,12 +169,17 @@ void userAdd()
         { 
             clearRow(i);
         }
+        result = true;
     }, activeTab);
+
+    return result;
 }
 
-void userEdit()
+bool userEdit()
 {
-    std::visit([](auto& tab) {
+    bool result = false;
+
+    std::visit([&](auto& tab) {
         auto& currentList = tab.first;
         auto& currentDetails = tab.second;
 
@@ -183,12 +202,17 @@ void userEdit()
         { 
             clearRow(i);
         }
+        result = true;
     }, activeTab);
+
+    return result;
 }
 
-void userDelete() 
+bool userDelete() 
 {
-    std::visit([](auto& tab) {
+    bool result = false;
+
+    std::visit([&](auto& tab) {
         auto& currentList = tab.first;
 
         if(!currentList->isActive() || currentList->empty())
@@ -210,12 +234,16 @@ void userDelete()
         {
             currentList->moveUp();
         }
+        result = true;
     }, activeTab);
+
+    return result;
 }
 
-void userOrder() 
+bool userOrder() 
 {
-    std::visit([](auto& tab) {
+    bool result = false;
+    std::visit([&](auto& tab) {
         auto& currentList = tab.first;
 
         if(!currentList->isActive() || currentList->empty() || currentList->getPosition() == 0)
@@ -224,5 +252,8 @@ void userOrder()
         }
         currentList->orderUp(currentList->getPosition());
         currentList->moveUp();
+        result = true;
     }, activeTab);
+
+    return result;
 }

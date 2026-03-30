@@ -101,7 +101,7 @@ TYPED_TEST_SUITE(DetailsSectionTest, DetailsSectionTypes);
 TYPED_TEST(DetailsSectionTest, Move)
 {
     int index = 0;
-    while(index < this->section.fieldsCount() - 1)
+    while(index < this->section.editableFieldsCount() - 1)
     {
         this->section.moveDown();
         ++index;
@@ -118,7 +118,7 @@ TYPED_TEST(DetailsSectionTest, Move)
 TYPED_TEST(DetailsSectionTest, MoveAboveMax)
 {
     int index = 0;
-    while(index < this->section.fieldsCount() - 1)
+    while(index < this->section.editableFieldsCount() - 1)
     {
         this->section.moveDown();
         ++index;
@@ -137,7 +137,7 @@ TYPED_TEST(DetailsSectionTest, MoveBelowMin)
 
 TYPED_TEST(DetailsSectionTest, ResetPosition)
 {
-    if(this->section.fieldsCount() > 1)
+    if(this->section.editableFieldsCount() > 1)
     {
         this->section.moveDown();
         EXPECT_EQ(this->section.getPosition(), 1);

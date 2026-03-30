@@ -23,21 +23,22 @@ int main()
     while(true) 
     {
         if(redraw) {drawAll();}
-        redraw = true;
 
         switch(toupper(getKey())) 
         {
-            case Key::Up : moveActiveSectionUp(); break;
-            case Key::Down : moveActiveSectionDown(); break;
-            case Key::Left : activateList(); break;
-            case Key::Right : activateDetails(); break;
-            case Key::Tab : nextTab(); break;
-            case 'A': userAdd(); break; 
-            case 'D': userDelete(); break;
-            case 'E': userEdit(); break;
-            case 'M': userOrder(); break;
+            //Each key handler returns true/false if successful
+            //Only redraw on true (if something changed) to prevent unnecessary flicker
+            case Key::Up : redraw = moveActiveSectionUp(); break;
+            case Key::Down : redraw = moveActiveSectionDown(); break;
+            case Key::Left : redraw = activateList(); break;
+            case Key::Right : redraw = activateDetails(); break;
+            case Key::Tab : redraw = nextTab(); break;
+            case 'A': redraw = userAdd(); break; 
+            case 'D': redraw = userDelete(); break;
+            case 'E': redraw = userEdit(); break;
+            case 'M': redraw = userOrder(); break;
             case 'Q': Database::getInstance().close(); terminate(); return 0;
-            default: redraw = false; //unsupported key - prevent flicker
+            default: redraw = false;
         }
     }
 }

@@ -24,10 +24,10 @@ class Section
     SectionType getType() const;
 
     bool isActive() const;
-    virtual void activate();
+    bool activate();
 
-    void moveUp();
-    virtual void moveDown() = 0;
+    bool moveUp();
+    virtual bool moveDown() = 0;
     virtual void moveLast() = 0;
 
   protected:
@@ -59,7 +59,7 @@ class ListSection : public Section
     int recordCount() const;
     bool empty() const;
 
-    void moveDown();
+    bool moveDown();
     void moveLast();
 
     void loadFromDb();
@@ -74,9 +74,9 @@ class DetailsSection : public Section
   public:
     DetailsSection();
 
-    int fieldsCount() const;
+    int editableFieldsCount() const;
 
-    void moveDown();
+    bool moveDown();
     void moveLast();
     
   protected:

@@ -6,11 +6,6 @@ std::string Plant::getTabName() const
     return "plants";
 }
 
-std::string Plant::getOrderBy() const
-{
-    return "orderNum ASC";
-}
-
 std::string Plant::getForeignName(const std::string& tableNam) const
 {
     if(tableNam == "species")
@@ -42,10 +37,10 @@ std::vector<Field> Plant::getFields()
 
     return 
     {//   ColNam        Label         Var           Length  Mandatory  UserEditable Setter                                     Foreign record
-        { "name",       "Name    : ", name_,        40,     true,      true,         [this](std::string v){ setName(v);      } },
+        { "name",       "Name    : ", name_,        40,     true,      true,         [this](std::string v){ setName(v);      }, "" },
         { "speciesId",  "Species : ", speciesId,    9,      true,      true,         [this](std::string v){ setSpeciesId(v); }, "species"},
-        { "notes",      "Notes   : ", notes_,       120,    false,     true,         [this](std::string v){ setNotes(v);     } },
-        { "orderNum",   "Order   : ", orderNum,     9,      false,     false,        [this](std::string v){ setOrderNum(v);  } }
+        { "notes",      "Notes   : ", notes_,       120,    false,     true,         [this](std::string v){ setNotes(v);     }, "" },
+        { "orderNum",   "Order   : ", orderNum,     9,      false,     false,        [this](std::string v){ setOrderNum(v);  }, "" }
     };
 }
 

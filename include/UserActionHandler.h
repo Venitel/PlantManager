@@ -15,17 +15,17 @@ enum Key
 
 int getKey();
 
-void moveActiveSectionUp();
-void moveActiveSectionDown();
-void activateList();
-void activateDetails();
-void nextTab();
+bool moveActiveSectionUp();
+bool moveActiveSectionDown();
+bool activateList();
+bool activateDetails();
+bool nextTab();
 
 void getFieldFromUser(int x, int y, Field& field);
 
-void userAdd();
-void userEdit();
-void userDelete();
-void userOrder();
+bool userAdd();
+bool userEdit();
+bool userDelete();
+bool userOrder();
 
 #endif

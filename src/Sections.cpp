@@ -1,6 +1,8 @@
 #include "Sections.h"
 #include "Database.h"
 
+#include <algorithm>
+
 ListSection<Plant> plantList;
 DetailsSection<Plant> plantDetails;
 ListSection<Species> speciesList;
@@ -49,7 +51,7 @@ bool Section::isActive() const
     return activeSection == this;
 }
 
-void Section::activate()
+bool Section::activate()
 {
     if(activeSection != this)
     {
@@ -58,16 +60,23 @@ void Section::activate()
             activeSection->deactivate(); //deactivate old
         }
         activeSection = this; //activate new
+        return true;
     }
+    return false;
 }
 
 void Section::deactivate()
 {
 }
 
-void Section::moveUp() 
+bool Section::moveUp() 
 {
-    if(position_ > 0) position_--;
+    if(position_ > 0) 
+    {
+        position_--;
+        return true;
+    }
+    return false;
 }
 
 // LIST SECTION
@@ -148,9 +157,14 @@ bool ListSection<T>::empty() const
 }
 
 template <typename T>
-void ListSection<T>::moveDown() 
+bool ListSection<T>::moveDown() 
 {
-    if(position_ < recordCount() - 1) position_++;
+    if(position_ < recordCount() - 1) 
+    {
+        position_++;
+        return true;
+    }
+    return false;
 }
 
 template <typename T>
@@ -184,22 +198,29 @@ void DetailsSection<T>::deactivate()
 }
 
 template <typename T>
-int DetailsSection<T>::fieldsCount() const
+int DetailsSection<T>::editableFieldsCount() const
 {
     T dummy;
-    return (int)dummy.getFields().size();
+    std::vector<Field> fields = dummy.getFields();
+    int count = count_if(fields.begin(), fields.end(), [](Field f) {return f.userEditable;});
+    return count;
 }
 
 template <typename T>
-void DetailsSection<T>::moveDown() 
+bool DetailsSection<T>::moveDown() 
 {
-    if(position_ < fieldsCount() - 1) position_++; 
+    if(position_ < editableFieldsCount() - 1)
+    {
+        position_++;
+        return true;
+    }
+    return false;
 }
 
 template <typename T>
 void DetailsSection<T>::moveLast() 
 {
-    position_ = fieldsCount() - 1; 
+    position_ = editableFieldsCount() - 1; 
 }
 
 //explicit instantiation

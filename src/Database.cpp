@@ -63,7 +63,7 @@ void Database::createTables()
 }
 
 template <typename T>
-std::vector<T> Database::getAll()
+std::vector<T> Database::getAll() const
 {
     std::string cols = "";
     bool first = true;
@@ -80,8 +80,7 @@ std::vector<T> Database::getAll()
     }
 
     std::string tabName = T().getTabName();
-    std::string orderBy = T().getOrderBy().empty() ? "" : " ORDER BY " + T().getOrderBy();
-    std::string sql = "SELECT id, " + cols + " FROM " + tabName + orderBy;
+    std::string sql = "SELECT id, " + cols + " FROM " + tabName + " ORDER BY orderNum";
     auto* stmt = prepare(sql);
 
     std::vector<T> retVec;
@@ -110,10 +109,10 @@ std::vector<T> Database::getAll()
     return retVec;
 }
 //explicit instantiation
-template std::vector<Plant> Database::getAll<Plant>();
-template std::vector<Species> Database::getAll<Species>();
+template std::vector<Plant> Database::getAll<Plant>() const;
+template std::vector<Species> Database::getAll<Species>() const;
 
-std::string Database::sqlString(const std::string& text)
+std::string Database::sqlString(const std::string& text) const
 {
     return "'" + text + "'";
 }
@@ -186,7 +185,7 @@ void Database::exec(const std::string& sql)
     }
 }
  
-sqlite3_stmt* Database::prepare(const std::string& sql)
+sqlite3_stmt* Database::prepare(const std::string& sql) const
 {
     Logger::getInstance().info(sql);
 
@@ -198,7 +197,7 @@ sqlite3_stmt* Database::prepare(const std::string& sql)
     return stmt;
 }
 
-std::string Database::getResult(const std::string& sql)
+std::string Database::getResult(const std::string& sql) const
 {
     auto* stmt = prepare(sql);
 
@@ -213,7 +212,7 @@ std::string Database::getResult(const std::string& sql)
     return "";
 }
 
-std::string Database::getNameById(std::string& table, int id)
+std::string Database::getNameById(std::string& table, int id) const
 {
     std::string name;
     std::string sql = "SELECT name FROM " + table + " WHERE id = " + std::to_string(id);
@@ -227,10 +226,10 @@ std::string Database::getNameById(std::string& table, int id)
     return name;
 }
 
-std::vector<std::pair<int, std::string>> Database::getAllKeys(std::string& table)
+std::vector<std::pair<int, std::string>> Database::getAllKeys(std::string& table) const
 {
     std::vector<std::pair<int, std::string>> allKeys;
-    std::string sql = "SELECT id, name FROM " + table;
+    std::string sql = "SELECT id, name FROM " + table + " ORDER BY orderNum ASC";
     auto* stmt = prepare(sql);
     while (sqlite3_step(stmt) == SQLITE_ROW) 
     {

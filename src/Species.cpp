@@ -6,11 +6,6 @@ std::string Species::getTabName() const
     return "species";
 }
 
-std::string Species::getOrderBy() const
-{
-    return "orderNum ASC";
-}
-
 std::string Species::getForeignName(const std::string& tableNam) const
 {
     return "";
@@ -30,15 +25,15 @@ std::vector<Field> Species::getFields()
 {
     const std::string orderNum = std::to_string(orderNum_);
     return 
-    {//   ColNam        Label         Var       Length  Mandatory  UserEditable Setter
-        { "name",       "Name    : ", name_,     40,     true,     true,         [this](std::string v){ setName(v);    } },
-        { "orderNum",   "Order   : ", orderNum,   9,    false,     false,        [this](std::string v){ setOrderNum(v);} }
+    {//   ColNam        Label         Var           Length  Mandatory   UserEditable    Setter                                  Foreign record
+        { "name",       "Name    : ", name_,        40,     true,       true,           [this](std::string v){ setName(v);    }, "" },
+        { "orderNum",   "Order   : ", orderNum,     9,      false,      false,          [this](std::string v){ setOrderNum(v);}, "" }
     };
 }
 
 void Species::addRecord()
 {
-    const std::string orderQuery = "SELECT IFNULL(MAX(orderNum), 0)+1 FROM plants";
+    const std::string orderQuery = "SELECT IFNULL(MAX(orderNum), 0)+1 FROM species";
     const std::string queryResult = Database::getInstance().getResult(orderQuery);
     orderNum_ = !queryResult.empty() ? stoi(queryResult) : 999999999;
 
