@@ -87,7 +87,7 @@ void Plant::setSpeciesId(std::string speciesId)
 {
     if(!speciesId.empty()) //nullable col
     {
-        speciesId_ = stoi(speciesId);
+        setSpeciesId(stoi(speciesId));
     }
 }
 
@@ -98,7 +98,7 @@ void Plant::setNotes(std::string notes)
 
 void Plant::setOrderNum(std::string orderNum)
 {
-    orderNum_ = stoi(orderNum);
+    setOrderNum(stoi(orderNum));
 }
 
 void Plant::setOrderNum(int orderNum)

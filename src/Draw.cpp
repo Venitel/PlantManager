@@ -251,6 +251,7 @@ void drawFooter(int row)
 {
     std::visit([&](auto& tab) {
         auto& currentList = tab.first;
+        auto& currentDetails = tab.second;
 
         drawLine(0, row, 2*sectionWidth, '-');
         clearRow(row + 1);
@@ -260,7 +261,16 @@ void drawFooter(int row)
         }
         else
         {
-            putText(0, row + 1, "↑ ↓ ← →: Select   TAB: Next Tab   E: Edit                           Q: Quit");
+            auto& record = currentList->getSelectedRecord();
+            Field selectedField = record.getFields()[currentDetails->getPosition()];
+            if(selectedField.foreignTableName.empty())
+            {
+                putText(0, row + 1, "↑ ↓ ← →: Select   TAB: Next Tab   E: Edit                           Q: Quit");
+            }
+            else
+            {
+                putText(0, row + 1, "↑ ↓ ← →: Select   TAB: Next Tab   E: Edit  ENTER: Go To             Q: Quit");
+            }
         }
     }, activeTab);
 }

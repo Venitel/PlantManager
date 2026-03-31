@@ -86,13 +86,13 @@ void Species::setScheduleId(std::string scheduleId)
 {
     if(!scheduleId.empty()) //nullable col
     {
-        scheduleId_ = stoi(scheduleId);
+        setScheduleId(stoi(scheduleId));
     }
 }
 
 void Species::setOrderNum(std::string orderNum)
 {
-    orderNum_ = stoi(orderNum);
+    setOrderNum(stoi(orderNum));
 }
 
 void Species::setOrderNum(int orderNum)

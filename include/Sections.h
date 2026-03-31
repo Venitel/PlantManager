@@ -62,6 +62,8 @@ class ListSection : public Section
 
     bool moveDown();
     void moveLast();
+    bool moveToRecord(int id);
+    bool moveToRecord(std::string& id);
 
     void loadFromDb();
 

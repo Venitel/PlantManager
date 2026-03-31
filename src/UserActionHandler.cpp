@@ -7,6 +7,7 @@
 #include <conio.h>
 #include <chrono>
 #include <unordered_map>
+#include <algorithm>
 
 namespace
 {
@@ -92,6 +93,48 @@ bool nextTab()
 
     std::visit([&](auto& tab) {
         result = tab.first->activate(); //activate list section on tab change
+    }, activeTab);
+
+    return result;
+}
+
+bool goToForeignRecord()
+{
+    bool result = false;
+
+    std::visit([&](auto& tab) {
+        auto& currentList = tab.first;
+        auto& currentDetails = tab.second;
+
+        if(!currentDetails->isActive() || currentList->empty())
+        {
+            return;
+        }
+
+        auto& record = currentList->getSelectedRecord();
+        Field selectedField = record.getFields()[currentDetails->getPosition()];
+        std::string targetTab = selectedField.foreignTableName;
+        if(targetTab.empty())
+        {
+            return;
+        }
+
+        auto it = std::find_if(allTabs.begin(), allTabs.end(), [&](const Tabs& tab) {
+            bool match = false;
+            std::visit([&](auto& pair) {
+                match = pair.first->getTabName() == targetTab;
+            }, tab);
+            return match; //find lambda return, not the main visit
+        });
+
+        if(it != allTabs.end())
+        {
+            activeTabIndex = std::distance(allTabs.begin(), it);
+            activeTab = *it;
+            std::visit([&](auto& newTab) {
+                result = newTab.first->activate() && newTab.first->moveToRecord(selectedField.value);
+            }, activeTab);
+        }
     }, activeTab);
 
     return result;

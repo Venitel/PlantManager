@@ -62,7 +62,7 @@ void Schedule::setName(std::string name)
 
 void Schedule::setOrderNum(std::string orderNum)
 {
-    orderNum_ = stoi(orderNum);
+    setOrderNum(stoi(orderNum));
 }
 
 void Schedule::setOrderNum(int orderNum)

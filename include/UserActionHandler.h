@@ -23,6 +23,7 @@ bool moveActiveSectionDown();
 bool activateList();
 bool activateDetails();
 bool nextTab();
+bool goToForeignRecord();
 
 void getFieldFromUser(int x, int y, Field& field);
 

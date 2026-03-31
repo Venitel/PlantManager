@@ -180,6 +180,30 @@ void ListSection<T>::moveLast()
 }
 
 template <typename T>
+bool ListSection<T>::moveToRecord(int id)
+{
+    auto it = std::find_if(records_.begin(), records_.end(), [&](const T& record) {return record.getId() == id;});
+
+    if(it != records_.end())
+    {
+        position_ = std::distance(records_.begin(), it);
+        return true;
+    }
+
+    return false;
+}
+
+template <typename T>
+bool ListSection<T>::moveToRecord(std::string& id)
+{
+    if(!id.empty())
+    {
+        return moveToRecord(stoi(id));
+    }
+    return false;
+}
+
+template <typename T>
 void ListSection<T>::loadFromDb()
 {
     records_ = Database::getInstance().getAll<T>();
@@ -206,7 +230,7 @@ int DetailsSection<T>::editableFieldsCount() const
 {
     T dummy;
     std::vector<Field> fields = dummy.getFields();
-    int count = count_if(fields.begin(), fields.end(), [](Field f) {return f.userEditable;});
+    int count = count_if(fields.begin(), fields.end(), [](const Field& f) {return f.userEditable;});
     return count;
 }
 
