@@ -56,9 +56,8 @@ int main()
                 case Key::Up : redraw = moveActiveSectionUp(); break;
                 case Key::Down : redraw = moveActiveSectionDown(); break;
                 case Key::Left : redraw = activateList(); break;
-                case Key::Right : redraw = activateDetails(); break;
+                case Key::Right : redraw = activateDetails() || goToForeignRecord(); break;
                 case Key::Tab : redraw = nextTab(); break;
-                case Key::Enter : redraw = goToForeignRecord(); break;
                 case 'A': redraw = userAdd(); break; 
                 case 'D': redraw = userDelete(); break;
                 case 'E': redraw = userEdit(); break;

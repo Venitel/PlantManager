@@ -257,7 +257,7 @@ void drawFooter(int row)
         clearRow(row + 1);
         if(currentList->isActive())
         {
-            putText(0, row + 1, "↑ ↓ ← →: Select   TAB: Next Tab   A: Add   D: Delete   M: Move Up   Q: Quit");
+            putText(0, row + 1, "↑ ↓ →: Select   TAB: Next Tab   A: Add   D: Delete   M: Move Up   Q: Quit");
         }
         else
         {
@@ -265,11 +265,11 @@ void drawFooter(int row)
             Field selectedField = record.getFields()[currentDetails->getPosition()];
             if(selectedField.foreignTableName.empty())
             {
-                putText(0, row + 1, "↑ ↓ ← →: Select   TAB: Next Tab   E: Edit                           Q: Quit");
+                putText(0, row + 1, "↑ ↓ ←: Select   TAB: Next Tab   E: Edit                           Q: Quit");
             }
             else
             {
-                putText(0, row + 1, "↑ ↓ ← →: Select   TAB: Next Tab   E: Edit  ENTER: Go To             Q: Quit");
+                putText(0, row + 1, "↑ ↓ ←: Select   TAB: Next Tab   E: Edit  →: Go To                 Q: Quit");
             }
         }
     }, activeTab);
