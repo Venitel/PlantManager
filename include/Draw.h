@@ -8,7 +8,6 @@
 
 void putText(int x, int y, const std::string& text);
 void putError(int x, int y, const std::string& text);
-std::string inputAt(int x, int y, const std::string& prompt, int maxLength, bool checkEmpty = false);
 
 std::vector<std::string> wrapText(const std::string& text, int width);
 void drawHeader();

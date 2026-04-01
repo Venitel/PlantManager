@@ -7,14 +7,28 @@
 
 struct Field
 {
-    std::string colNam;
-    std::string label;
-    std::string value;
-    int size;
-    bool mandatory;
-    bool userEditable;
-    std::function<void(std::string)> setter;
-    std::string foreignTableName = "";
+  enum class InputType
+  {
+    NoInput,
+    Optional,
+    Mandatory
+  };
+
+  enum class DataType
+  {
+    Text,
+    Number,
+    Date
+  };
+
+  std::string colNam;
+  std::string label;
+  std::string value;
+  int size;
+  InputType inputType;
+  DataType dataType;
+  std::function<void(std::string)> setter;
+  std::string foreignTableName = "";
 };
 
 class Record 

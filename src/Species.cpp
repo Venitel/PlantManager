@@ -36,10 +36,10 @@ std::vector<Field> Species::getFields()
     const std::string scheduleId = std::to_string(scheduleId_);
 
     return 
-    {//   ColNam        Label         Var           Length  Mandatory   UserEditable    Setter                                  Foreign record
-        { "name",       "Name    : ", name_,        40,     true,       true,           [this](std::string v){ setName(v);      }, "" },
-        { "scheduleId", "Schedule: ", scheduleId,   9,      true,       true,           [this](std::string v){ setScheduleId(v);}, "schedules"},
-        { "orderNum",   "Order   : ", orderNum,     9,      false,      false,          [this](std::string v){ setOrderNum(v);  }, "" }
+    {//   ColNam        Label         Var           Length  InputType                      DataType                 Setter                                  Foreign record
+        { "name",       "Name    : ", name_,        40,     Field::InputType::Mandatory,   Field::DataType::Text,   [this](std::string v){ setName(v);      }, "" },
+        { "scheduleId", "Schedule: ", scheduleId,   9,      Field::InputType::Mandatory,   Field::DataType::Number, [this](std::string v){ setScheduleId(v);}, "schedules"},
+        { "orderNum",   "Order   : ", orderNum,     9,      Field::InputType::NoInput,     Field::DataType::Number, [this](std::string v){ setOrderNum(v);  }, "" }
     };
 }
 

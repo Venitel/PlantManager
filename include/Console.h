@@ -3,7 +3,7 @@
 
 #include <windows.h>
 
-enum Colors 
+enum class Colors 
 {
     Error,
     Title,
@@ -11,7 +11,8 @@ enum Colors
     Name,
     Inactive,
     Optional, 
-    List
+    List,
+    Date
 };
 
 void initConsole();

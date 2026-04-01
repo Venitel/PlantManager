@@ -25,6 +25,7 @@ class Plant : public Record
     bool hasSpecies() const;
     void setSpeciesId(int speciesId);
     void setSpeciesId(std::string speciesId); //string as an argument because we read every db column as a text
+    void setLastWatered(std::string isoDate);
     void setNotes(std::string notes);
     void setOrderNum(int orderNum);
     void setOrderNum(std::string orderNum); //string as an argument because we read every db column as a text
@@ -34,6 +35,7 @@ class Plant : public Record
     int id_;
     std::string name_;
     int speciesId_ = -1;
+    std::string lastWatered_;
     std::string notes_;
     int orderNum_;
 };

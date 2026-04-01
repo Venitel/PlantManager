@@ -49,7 +49,7 @@ int main()
         if(!onCooldown(key))
         {
             bool redraw;
-            switch(key) 
+            switch((Key)key) 
             {
                 //Each key handler returns true/false if successful
                 //Only redraw on true (if something changed) to prevent unnecessary flicker
@@ -58,11 +58,11 @@ int main()
                 case Key::Left : redraw = activateList(); break;
                 case Key::Right : redraw = activateDetails() || goToForeignRecord(); break;
                 case Key::Tab : redraw = nextTab(); break;
-                case 'A': redraw = userAdd(); break; 
-                case 'D': redraw = userDelete(); break;
-                case 'E': redraw = userEdit(); break;
-                case 'M': redraw = userOrder(); break;
-                case 'Q': quit(); return 0;
+                case (Key)'A': redraw = userAdd(); break; 
+                case (Key)'D': redraw = userDelete(); break;
+                case (Key)'E': redraw = userEdit(); break;
+                case (Key)'M': redraw = userOrder(); break;
+                case (Key)'Q': quit(); return 0;
                 default: redraw = false;
             }
             if(redraw) {drawAll();}

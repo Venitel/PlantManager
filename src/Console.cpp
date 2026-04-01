@@ -44,13 +44,13 @@ void setColor(Colors color)
 {
     switch(color)
     {
-        case Error : setColor(BACKGROUND_RED); break;
-        case Title : setColor(FOREGROUND_GREEN | FOREGROUND_INTENSITY); break;
-        case Selection : setColor(BACKGROUND_GREEN); break;
-        case Name : setColor(FOREGROUND_GREEN); break;
-        case Inactive :
-        case Optional : setColor(FOREGROUND_INTENSITY); break; //this by itself is grey
-        case List : setColor(FOREGROUND_GREEN | FOREGROUND_BLUE); break;
+        case Colors::Error : setColor(BACKGROUND_RED); break;
+        case Colors::Title : setColor(FOREGROUND_GREEN | FOREGROUND_INTENSITY); break;
+        case Colors::Selection : setColor(BACKGROUND_GREEN); break;
+        case Colors::Name : setColor(FOREGROUND_GREEN); break;
+        case Colors::Inactive :
+        case Colors::Optional : setColor(FOREGROUND_INTENSITY); break; //this by itself is grey
+        case Colors::List : setColor(FOREGROUND_GREEN | FOREGROUND_BLUE); break;
         default : resetColor(); 
     }
 }

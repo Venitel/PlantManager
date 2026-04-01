@@ -3,7 +3,7 @@
 
 #include "Sections.h"
 
-enum Key
+enum class Key
 {
     //For explaination why 256 see getKey
     Up = 72 + 256,
@@ -26,6 +26,9 @@ bool nextTab();
 bool goToForeignRecord();
 
 void getFieldFromUser(int x, int y, Field& field);
+std::string inputAt(int x, int y, const std::string& prompt, int maxLength, bool checkEmpty = false, bool checkDate = false);
+
+bool isValidDate(std::string& text);
 
 bool userAdd();
 bool userEdit();

@@ -84,7 +84,7 @@ bool Section::moveUp()
 
 // LIST SECTION
 template <typename T>
-ListSection<T>::ListSection() : Section(Section::List) 
+ListSection<T>::ListSection() : Section(Section::SectionType::List) 
 {}
 
 template <typename T>
@@ -216,7 +216,7 @@ template class ListSection<Schedule>;
 
 // DETAILS SECTION
 template <typename T>
-DetailsSection<T>::DetailsSection() : Section(Section::Details) 
+DetailsSection<T>::DetailsSection() : Section(Section::SectionType::Details) 
 {}
 
 template <typename T>
@@ -230,7 +230,7 @@ int DetailsSection<T>::editableFieldsCount() const
 {
     T dummy;
     std::vector<Field> fields = dummy.getFields();
-    int count = count_if(fields.begin(), fields.end(), [](const Field& f) {return f.userEditable;});
+    int count = count_if(fields.begin(), fields.end(), [](const Field& f) {return f.inputType != Field::InputType::NoInput;});
     return count;
 }
 

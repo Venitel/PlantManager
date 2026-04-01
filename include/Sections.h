@@ -12,7 +12,7 @@ void loadAllListsFromDb();
 class Section 
 {
   public:
-    enum SectionType
+    enum class SectionType
     {
         List,
         Details

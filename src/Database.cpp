@@ -49,6 +49,7 @@ void Database::createTables()
             id          INTEGER PRIMARY KEY AUTOINCREMENT,
             name        TEXT NOT NULL,
             speciesId   INTEGER REFERENCES species(id) ON DELETE SET NULL,
+            lastWatered TEXT DEFAULT '', 
             notes       TEXT DEFAULT '',
             orderNum    INTEGER NOT NULL
         );

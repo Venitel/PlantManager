@@ -36,11 +36,12 @@ std::vector<Field> Plant::getFields()
     const std::string speciesId = std::to_string(speciesId_);
 
     return 
-    {//   ColNam        Label         Var           Length  Mandatory  UserEditable Setter                                     Foreign record
-        { "name",       "Name    : ", name_,        40,     true,      true,         [this](std::string v){ setName(v);      }, "" },
-        { "speciesId",  "Species : ", speciesId,    9,      true,      true,         [this](std::string v){ setSpeciesId(v); }, "species"},
-        { "notes",      "Notes   : ", notes_,       120,    false,     true,         [this](std::string v){ setNotes(v);     }, "" },
-        { "orderNum",   "Order   : ", orderNum,     9,      false,     false,        [this](std::string v){ setOrderNum(v);  }, "" }
+    {//   ColNam        Label         Var           Length  InputType                       DataType                    Setter                                     Foreign record
+        { "name",       "Name    : ", name_,        40,     Field::InputType::Mandatory,    Field::DataType::Text,      [this](std::string v){ setName(v);       }, "" },
+        { "speciesId",  "Species : ", speciesId,    9,      Field::InputType::Mandatory,    Field::DataType::Number,    [this](std::string v){ setSpeciesId(v);  }, "species"},
+        { "lastWatered","Watered : ", lastWatered_, 10,     Field::InputType::Optional,     Field::DataType::Date,      [this](std::string v){ setLastWatered(v);}, "" },
+        { "notes",      "Notes   : ", notes_,       120,    Field::InputType::Optional,     Field::DataType::Text,      [this](std::string v){ setNotes(v);      }, "" },
+        { "orderNum",   "Order   : ", orderNum,     9,      Field::InputType::NoInput,      Field::DataType::Number,    [this](std::string v){ setOrderNum(v);   }, "" }
     };
 }
 
@@ -89,6 +90,11 @@ void Plant::setSpeciesId(std::string speciesId)
     {
         setSpeciesId(stoi(speciesId));
     }
+}
+
+void Plant::setLastWatered(std::string isoDate)
+{
+    lastWatered_ = isoDate;
 }
 
 void Plant::setNotes(std::string notes)

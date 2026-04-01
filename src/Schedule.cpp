@@ -25,9 +25,9 @@ std::vector<Field> Schedule::getFields()
 {
     const std::string orderNum = std::to_string(orderNum_);
     return 
-    {//   ColNam        Label         Var           Length  Mandatory   UserEditable    Setter                                  Foreign record
-        { "name",       "Name    : ", name_,        40,     true,       true,           [this](std::string v){ setName(v);    }, "" },
-        { "orderNum",   "Order   : ", orderNum,     9,      false,      false,          [this](std::string v){ setOrderNum(v);}, "" }
+    {//   ColNam        Label         Var           Length  InputType                       DataType                    Setter                                  Foreign record
+        { "name",       "Name    : ", name_,        40,     Field::InputType::Mandatory,    Field::DataType::Text,      [this](std::string v){ setName(v);    }, "" },
+        { "orderNum",   "Order   : ", orderNum,     9,      Field::InputType::NoInput,      Field::DataType::Number,    [this](std::string v){ setOrderNum(v);}, "" }
     };
 }
 

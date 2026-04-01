@@ -51,31 +51,6 @@ void putError(int x, int y, const std::string& text)
     resetColor();
 }
 
-std::string inputAt(int x, int y, const std::string& prompt, int maxLength, bool checkEmpty) 
-{
-    //input row requires one free row below for error messages
-
-    setCursor(x, y);
-    std::cout << prompt;
-    showCursor(true);
-    resetColor(); //we allow other functions to set prompt color before calling inputAt
-    
-    const int inputStart = x + prompt.length();
-    const std::string errorMessage = "Input invalid!";
-    std::string input;
-    while(!(std::getline(std::cin, input) && input.length() <= maxLength && !(checkEmpty && input.empty())))
-    {
-        drawLine(inputStart, y, sectionWidth*2 - inputStart, ' '); //clear input
-        clearRow(y+1);
-        putError(inputStart, y+1, errorMessage);
-        setCursor(inputStart, y);
-    }
-    showCursor(false);
-    drawLine(inputStart, y+1, errorMessage.length(), ' '); //clear error
-
-    return input;
-}
-
 void drawHeader() 
 {
     setColor(Colors::Title);
@@ -216,7 +191,7 @@ void drawDetails(int row)
         setColor(Colors::Name);
         for(Field& field : fields)
         {
-            if(!field.userEditable)
+            if(field.inputType == Field::InputType::NoInput)
             {
                 continue;
             }
@@ -227,7 +202,15 @@ void drawDetails(int row)
             ++fieldsNum;
 
             int labelLength = (int)field.label.length();
-            std::string text = field.foreignTableName.empty() ? field.value : record.getForeignName(field.foreignTableName);
+            std::string text = field.value;
+            if(!field.foreignTableName.empty()) //Value is ID
+            {
+                text = record.getForeignName(field.foreignTableName);
+            }
+            else if(text.empty() && field.dataType ==  Field::DataType::Date)
+            {
+                text = "Never";
+            }
 
             std::vector<std::string> textLines = wrapText(text, sectionWidth - labelLength);
             for(int i = 0; i < (int)textLines.size(); i++)

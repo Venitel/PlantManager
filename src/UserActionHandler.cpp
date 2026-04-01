@@ -7,14 +7,14 @@
 #include <conio.h>
 #include <chrono>
 #include <unordered_map>
-#include <algorithm>
+#include <regex>
 
 namespace
 {
     std::unordered_map<int, std::chrono::steady_clock::time_point> buttonCooldowns;
 }
 
-int getKey() 
+int getKey()
 {
     int key = _getch();
     if(key == 0 || key == 0xE0) //Arrow keys send two bytes: 0xE0 then a code
@@ -142,14 +142,16 @@ bool goToForeignRecord()
 
 void getFieldFromUser(int x, int y, Field& field)
 {
-    if(!field.mandatory)
+    if(field.inputType == Field::InputType::Optional)
     {
         setColor(Colors::Optional);
     }
 
     if(field.foreignTableName == "") //no reference, any input
     {
-        field.setter(inputAt(x, y, field.label, field.size, field.mandatory));
+        bool checkEmpty = field.inputType==Field::InputType::Mandatory;
+        bool checkDate = field.dataType==Field::DataType::Date;
+        field.setter(inputAt(x, y, field.label, field.size, checkEmpty, checkDate));
     }
     else //foreign reference - select from list of records
     {
@@ -175,11 +177,11 @@ void getFieldFromUser(int x, int y, Field& field)
                 redraw = true;
                 int key = getKey();
 
-                if(key == Key::Right) 
+                if((Key)key == Key::Right) 
                 {
                     allKeysIndex = (allKeysIndex + 1) % allKeys.size();
                 }
-                else if(key == Key::Left) 
+                else if((Key)key == Key::Left) 
                 {
                     --allKeysIndex;
                     if(allKeysIndex < 0) 
@@ -187,7 +189,7 @@ void getFieldFromUser(int x, int y, Field& field)
                         allKeysIndex = allKeys.size() - 1;
                     }
                 }
-                else if(key == Key::Enter)
+                else if((Key)key == Key::Enter)
                 {
                     field.setter(std::to_string(allKeys[allKeysIndex].first));
                     break;
@@ -226,7 +228,7 @@ bool userAdd()
         int rowNum = 1; //title is first
         for(Field& field : fields)
         {
-            if(field.userEditable)
+            if(field.inputType != Field::InputType::NoInput)
             {
                 getFieldFromUser(0, bottomRow + rowNum, field);
             }
@@ -330,4 +332,61 @@ bool userOrder()
     }, activeTab);
 
     return result;
+}
+
+std::string inputAt(int x, int y, const std::string& prompt, int maxLength, bool checkEmpty, bool checkDate) 
+{
+    //input row requires one free row below for error messages
+
+    putText(x, y, prompt);
+    showCursor(true);
+    resetColor(); //we allow other functions to set prompt color before calling inputAt
+    
+    const int inputStart = x + prompt.length();
+    std::string errorMessage = "Input invalid!";
+    if(checkDate) {errorMessage += std::string(" Expected format YYYY-MM-DD");}
+    std::string input;
+    while(!std::getline(std::cin, input) 
+        || input.length() > maxLength
+        || (checkEmpty && input.empty())
+        || (checkDate && !isValidDate(input)))
+    {
+        clearRow(y);
+        clearRow(y+1);
+        putText(x, y, prompt);
+        putError(inputStart, y+1, errorMessage);
+        setCursor(inputStart, y);
+    }
+    showCursor(false);
+    drawLine(inputStart, y+1, errorMessage.length(), ' '); //clear error
+
+    return input;
+}
+
+bool isValidDate(std::string& text)
+{
+    if(text.empty()) {return true;} //Empty date is allowed
+    std::regex pattern(R"(^\d{4}-\d{2}-\d{2}$)");
+    if(!std::regex_match(text, pattern)) {return false;}
+
+    int year = std::stoi(text.substr(0, 4));
+    bool leapYear = (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;
+
+    int month = std::stoi(text.substr(5, 2));
+    if (month < 1 || month > 12) {return false;}
+
+    int daysInMonth[] = { 31, 28, 31, 30, 31, 30,
+                          31, 31, 30, 31, 30, 31 };
+
+    int day = std::stoi(text.substr(8, 2));
+    if (month == 2 && leapYear) 
+    {
+        if (day < 1 || day > 29) {return false;}
+    } 
+    else 
+    {
+        if (day < 1 || day > daysInMonth[month - 1]) {return false;}
+    }
+
+    return true;
 }
