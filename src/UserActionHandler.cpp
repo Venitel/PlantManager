@@ -355,22 +355,23 @@ std::string inputAt(int x, int y, const std::string& prompt, int maxLength, bool
     resetColor(); //we allow other functions to set prompt color before calling inputAt
     
     const int inputStart = x + prompt.length();
-    std::string errorMessage = "Input invalid!";
-    if(checkDate) {errorMessage += std::string(" Expected format YYYY-MM-DD");}
     std::string input;
-    while(!std::getline(std::cin, input) 
-        || input.length() > maxLength
-        || (checkEmpty && input.empty())
-        || (checkDate && !isValidDate(input)))
+    std::string errorMessage;
+    while(true)
     {
-        clearRow(y);
+        if(!std::getline(std::cin, input)) {errorMessage = "Input invalid!";}
+        else if(checkEmpty && input.empty()) {errorMessage = "Input cannot be empty!";}
+        else if(checkDate && !isValidDate(input)) {errorMessage = "Not a valid date! Expected format YYYY-MM-DD.";}
+        else if(input.length() > maxLength) {errorMessage = "Input too long!";}
+        else // Accepted input
+        {
+            showCursor(false);
+            clearRow(y+1); //clear error
+            return input;
+        }
+        clearRow(y, inputStart);
         clearRow(y+1);
-        putText(x, y, prompt);
         putError(inputStart, y+1, errorMessage);
         setCursor(inputStart, y);
     }
-    showCursor(false);
-    drawLine(inputStart, y+1, errorMessage.length(), ' '); //clear error
-
-    return input;
 }
