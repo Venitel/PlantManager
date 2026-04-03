@@ -45,6 +45,15 @@ std::vector<Field> Plant::getFields()
     };
 }
 
+std::string Plant::getDetailsHeader() const
+{
+    if(isDormant())
+    {
+        return "Details (Dormant)";
+    }
+    return "Details";
+}
+
 void Plant::addRecord()
 {
     const std::string orderQuery = "SELECT IFNULL(MAX(orderNum), 0)+1 FROM plants";
@@ -77,6 +86,23 @@ void Plant::setName(std::string name)
 bool Plant::hasSpecies() const
 {
     return speciesId_ > 0;
+}
+
+bool Plant::isDormant() const
+{
+    const std::string orderQuery = 
+    "SELECT CASE "
+        "WHEN schedules.dormancyStart <= schedules.dormancyEnd "
+          "THEN CAST(strftime('%m', 'now') AS INTEGER) BETWEEN schedules.dormancyStart AND schedules.dormancyEnd "
+        "ELSE CAST(strftime('%m', 'now') AS INTEGER) >= schedules.dormancyStart "
+          "OR CAST(strftime('%m', 'now') AS INTEGER) <= schedules.dormancyEnd "
+        "END as isDormant "
+    "FROM plants "
+    "JOIN species ON species.id = plants.speciesId "
+    "JOIN schedules ON schedules.id = species.scheduleId "
+    "WHERE plants.id = " + Database::sqlString(std::to_string(getId()));
+
+    return Database::getInstance().getResult(orderQuery) == "1";
 }
 
 void Plant::setSpeciesId(int speciesId)

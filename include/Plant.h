@@ -11,6 +11,7 @@ class Plant : public Record
     int getId() const override;
     std::string getName() const override;
     std::vector<Field> getFields() override;
+    std::string getDetailsHeader() const override;
 
     void addRecord() override;
     void deleteRecord() override;
@@ -23,6 +24,7 @@ class Plant : public Record
 
     void setName(std::string name);
     bool hasSpecies() const;
+    bool isDormant() const;
     void setSpeciesId(int speciesId);
     void setSpeciesId(std::string speciesId); //string as an argument because we read every db column as a text
     void setLastWatered(std::string isoDate);

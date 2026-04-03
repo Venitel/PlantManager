@@ -48,7 +48,7 @@ std::string Database::getTableName(const Field::DataType dataType)
     {
         case Field::DataType::Plant : return "plants";
         case Field::DataType::Species : return "species";
-        case Field::DataType::Schedule : return "Schedules";
+        case Field::DataType::Schedule : return "schedules";
         default : return "";
     }
 }
@@ -137,7 +137,7 @@ template std::vector<Plant> Database::getAll<Plant>() const;
 template std::vector<Species> Database::getAll<Species>() const;
 template std::vector<Schedule> Database::getAll<Schedule>() const;
 
-std::string Database::sqlString(const std::string& text) const
+std::string Database::sqlString(const std::string& text)
 {
     return "'" + text + "'";
 }
@@ -230,10 +230,13 @@ std::string Database::getResult(const std::string& sql) const
     {
         if(sqlite3_column_type(stmt, 0) != SQLITE_NULL)
         {
-            return reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+            std::string result = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+            Logger::getInstance().info("Result: " + result);
+            return result;
         }
     }
 
+    Logger::getInstance().info("Result: null");
     return "";
 }
 

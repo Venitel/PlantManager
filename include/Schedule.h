@@ -11,6 +11,7 @@ class Schedule : public Record
     int getId() const override;
     std::string getName() const override;
     std::vector<Field> getFields() override;
+    std::string getDetailsHeader() const override;
 
     void addRecord() override;
     void deleteRecord() override;

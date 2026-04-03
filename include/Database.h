@@ -19,6 +19,7 @@ class Database
     void updateDb(Record* record);
     void deleteDb(Record* record);
 
+    static std::string sqlString(const std::string& text);
     std::string getResult(const std::string& sql) const;
 
     template <typename T>
@@ -29,13 +30,10 @@ class Database
     void exec(const std::string& sql);
 
     static std::string getTableName(const Field::DataType dataType);
-
   private:
     sqlite3* m_db = nullptr;
 
     void createTables();
-
-    std::string sqlString(const std::string& text) const;
     sqlite3_stmt* prepare(const std::string& sql) const;
 };
  

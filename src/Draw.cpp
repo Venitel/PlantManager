@@ -99,7 +99,7 @@ void drawHeader()
 
         setColor(Colors::Title);
         putText(0, 3, currentTab);
-        putText(sectionWidth, 3, "Details");
+        putText(sectionWidth, 3, currentList->getSelectedRecord().getDetailsHeader());
         resetColor();
     }, activeTab);
 }

@@ -50,7 +50,7 @@ class Record
 
     virtual int getId() const = 0;
     virtual std::string getTabName() const = 0;
-
+    virtual std::string getDetailsHeader() const = 0;
     virtual std::string getName() const = 0;
     virtual std::string getForeignName(const Field::DataType dataType) const = 0;
 

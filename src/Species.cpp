@@ -43,6 +43,11 @@ std::vector<Field> Species::getFields()
     };
 }
 
+std::string Species::getDetailsHeader() const
+{
+    return "Details";
+}
+
 void Species::addRecord()
 {
     const std::string orderQuery = "SELECT IFNULL(MAX(orderNum), 0)+1 FROM species";

@@ -36,6 +36,11 @@ std::vector<Field> Schedule::getFields()
     };
 }
 
+std::string Schedule::getDetailsHeader() const
+{
+    return "Details";
+}
+
 void Schedule::addRecord()
 {
     const std::string orderQuery = "SELECT IFNULL(MAX(orderNum), 0)+1 FROM schedules";
