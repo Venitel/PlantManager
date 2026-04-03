@@ -2,12 +2,14 @@
 #include "Console.h"
 #include "Draw.h"
 #include "Database.h"
+#include "Logger.h"
+#include "DateUtils.h"
 
 #include <iostream>
 #include <conio.h>
 #include <chrono>
 #include <unordered_map>
-#include <regex>
+#include <algorithm>
 
 namespace
 {
@@ -113,8 +115,7 @@ bool goToForeignRecord()
 
         auto& record = currentList->getSelectedRecord();
         Field selectedField = record.getFields()[currentDetails->getPosition()];
-        std::string targetTab = selectedField.foreignTableName;
-        if(targetTab.empty())
+        if(!Field::isForeign(selectedField.dataType))
         {
             return;
         }
@@ -122,7 +123,7 @@ bool goToForeignRecord()
         auto it = std::find_if(allTabs.begin(), allTabs.end(), [&](const Tabs& tab) {
             bool match = false;
             std::visit([&](auto& pair) {
-                match = pair.first->getTabName() == targetTab;
+                match = pair.first->getTabName() == Database::getTableName(selectedField.dataType);
             }, tab);
             return match; //find lambda return, not the main visit
         });
@@ -142,70 +143,81 @@ bool goToForeignRecord()
 
 void getFieldFromUser(int x, int y, Field& field)
 {
-    if(field.inputType == Field::InputType::Optional)
+    if(field.inputType == Field::InputType::List) 
     {
-        setColor(Colors::Optional);
-    }
-
-    if(field.foreignTableName == "") //no reference, any input
-    {
-        bool checkEmpty = field.inputType==Field::InputType::Mandatory;
-        bool checkDate = field.dataType==Field::DataType::Date;
-        field.setter(inputAt(x, y, field.label, field.size, checkEmpty, checkDate));
-    }
-    else //foreign reference - select from list of records
-    {
-        setColor(Colors::List);
-        putText(x, y, field.label);
-        resetColor();
-
-        std::vector<std::pair<int, std::string>> allKeys = Database::getInstance().getAllKeys(field.foreignTableName);
-        int allKeysIndex = 0;
-
-        if(!allKeys.empty())
+        if(field.dataType == Field::DataType::Month)
         {
-            bool redraw = true;
-            while(true)
-            {
-                if(redraw)
-                {
-                    clearRow(y, field.label.length());
-                    std::string& keyName = allKeys[allKeysIndex].second;
-                    putText(field.label.length(), y, keyName);
-                }
-
-                redraw = true;
-                int key = getKey();
-
-                if((Key)key == Key::Right) 
-                {
-                    allKeysIndex = (allKeysIndex + 1) % allKeys.size();
-                }
-                else if((Key)key == Key::Left) 
-                {
-                    --allKeysIndex;
-                    if(allKeysIndex < 0) 
-                    {
-                        allKeysIndex = allKeys.size() - 1;
-                    }
-                }
-                else if((Key)key == Key::Enter)
-                {
-                    field.setter(std::to_string(allKeys[allKeysIndex].first));
-                    break;
-                }
-                else
-                {
-                    redraw = false; //unsupported key - prevent flicker
-                }
-            }
+            field.setter(getValueByList(x, y, field.label, DateUtils::Months));
         }
         else
         {
-            putError(field.label.length(), y, "List empty!");
+            field.setter(getValueByList(x, y, field.label, Database::getInstance().getAllKeys(field.dataType)));
         }
     }
+    else
+    {
+        if(field.inputType == Field::InputType::Optional)
+        {
+            setColor(Colors::Optional);
+        }
+
+        bool checkEmpty = field.inputType==Field::InputType::Mandatory;
+        bool checkDate = field.dataType==Field::DataType::Date;
+        field.setter(inputAt(x, y, field.label, field.size, checkEmpty, checkDate)); 
+    }
 }
+
+std::string getValueByList(int x, int y, const std::string& label, const std::vector<std::pair<int, std::string>>& pairs)
+{
+    setColor(Colors::List);
+    putText(x, y, label);
+    resetColor();
+
+    if(!pairs.empty())
+    {
+        int index = 0;
+        bool redraw = true;
+        while(true)
+        {
+            if(redraw)
+            {
+                clearRow(y, label.length());
+                std::string keyName = pairs[index].second;
+                putText(label.length(), y, keyName);
+            }
+
+            redraw = true;
+            int key = getKey();
+
+            if((Key)key == Key::Right) 
+            {
+                index = (index + 1) % pairs.size();
+            }
+            else if((Key)key == Key::Left) 
+            {
+                --index;
+                if(index < 0) 
+                {
+                    index = pairs.size() - 1;
+                }
+            }
+            else if((Key)key == Key::Enter)
+            {
+                return std::to_string(pairs[index].first);
+            }
+            else
+            {
+                redraw = false; //unsupported key - prevent flicker
+            }
+        }
+    }
+    else
+    {
+        putError(label.length(), y, "List empty!");
+        return "";
+    }
+}
+
 
 bool userAdd() 
 {
@@ -361,32 +373,4 @@ std::string inputAt(int x, int y, const std::string& prompt, int maxLength, bool
     drawLine(inputStart, y+1, errorMessage.length(), ' '); //clear error
 
     return input;
-}
-
-bool isValidDate(std::string& text)
-{
-    if(text.empty()) {return true;} //Empty date is allowed
-    std::regex pattern(R"(^\d{4}-\d{2}-\d{2}$)");
-    if(!std::regex_match(text, pattern)) {return false;}
-
-    int year = std::stoi(text.substr(0, 4));
-    bool leapYear = (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;
-
-    int month = std::stoi(text.substr(5, 2));
-    if (month < 1 || month > 12) {return false;}
-
-    int daysInMonth[] = { 31, 28, 31, 30, 31, 30,
-                          31, 31, 30, 31, 30, 31 };
-
-    int day = std::stoi(text.substr(8, 2));
-    if (month == 2 && leapYear) 
-    {
-        if (day < 1 || day > 29) {return false;}
-    } 
-    else 
-    {
-        if (day < 1 || day > daysInMonth[month - 1]) {return false;}
-    }
-
-    return true;
 }

@@ -11,15 +11,28 @@ struct Field
   {
     NoInput,
     Optional,
-    Mandatory
+    Mandatory,
+    List
   };
 
   enum class DataType
   {
     Text,
     Number,
-    Date
+    Date,
+    Month,
+    //Foreign keys
+    Plant,
+    Species,
+    Schedule
   };
+
+  static bool isForeign(const DataType type) 
+  {
+    return type == DataType::Plant ||
+           type == DataType::Species ||
+           type == DataType::Schedule;
+  }
 
   std::string colNam;
   std::string label;
@@ -28,7 +41,6 @@ struct Field
   InputType inputType;
   DataType dataType;
   std::function<void(std::string)> setter;
-  std::string foreignTableName = "";
 };
 
 class Record 
@@ -40,7 +52,7 @@ class Record
     virtual std::string getTabName() const = 0;
 
     virtual std::string getName() const = 0;
-    virtual std::string getForeignName(const std::string& tableName) const = 0;
+    virtual std::string getForeignName(const Field::DataType dataType) const = 0;
 
     virtual std::vector<Field> getFields() = 0;
 

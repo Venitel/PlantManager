@@ -26,9 +26,8 @@ bool nextTab();
 bool goToForeignRecord();
 
 void getFieldFromUser(int x, int y, Field& field);
+std::string getValueByList(int x, int y, const std::string& label, const std::vector<std::pair<int, std::string>>& pairs);
 std::string inputAt(int x, int y, const std::string& prompt, int maxLength, bool checkEmpty = false, bool checkDate = false);
-
-bool isValidDate(std::string& text);
 
 bool userAdd();
 bool userEdit();

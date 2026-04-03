@@ -3,18 +3,18 @@
 
 std::string Plant::getTabName() const
 {
-    return "plants";
+    return Database::getTableName(Field::DataType::Plant);
 }
 
-std::string Plant::getForeignName(const std::string& tableNam) const
+std::string Plant::getForeignName(const Field::DataType dataType) const
 {
-    if(tableNam == "species")
+    if(dataType == Field::DataType::Species)
     {
         if(!hasSpecies())
         {
             return "";
         }
-        std::string tabName = tableNam;
+        std::string tabName = Database::getTableName(dataType);
         return Database::getInstance().getNameById(tabName, speciesId_);
     }
     return "";
@@ -36,12 +36,12 @@ std::vector<Field> Plant::getFields()
     const std::string speciesId = std::to_string(speciesId_);
 
     return 
-    {//   ColNam        Label         Var           Length  InputType                       DataType                    Setter                                     Foreign record
-        { "name",       "Name    : ", name_,        40,     Field::InputType::Mandatory,    Field::DataType::Text,      [this](std::string v){ setName(v);       }, "" },
-        { "speciesId",  "Species : ", speciesId,    9,      Field::InputType::Mandatory,    Field::DataType::Number,    [this](std::string v){ setSpeciesId(v);  }, "species"},
-        { "lastWatered","Watered : ", lastWatered_, 10,     Field::InputType::Optional,     Field::DataType::Date,      [this](std::string v){ setLastWatered(v);}, "" },
-        { "notes",      "Notes   : ", notes_,       120,    Field::InputType::Optional,     Field::DataType::Text,      [this](std::string v){ setNotes(v);      }, "" },
-        { "orderNum",   "Order   : ", orderNum,     9,      Field::InputType::NoInput,      Field::DataType::Number,    [this](std::string v){ setOrderNum(v);   }, "" }
+    {//   ColNam        Label         Var           Length  InputType                       DataType                    Setter
+        { "name",       "Name    : ", name_,        40,     Field::InputType::Mandatory,    Field::DataType::Text,      [this](std::string v){ setName(v);       }},
+        { "speciesId",  "Species : ", speciesId,    9,      Field::InputType::List,         Field::DataType::Species,   [this](std::string v){ setSpeciesId(v);  }},
+        { "lastWatered","Watered : ", lastWatered_, 10,     Field::InputType::Optional,     Field::DataType::Date,      [this](std::string v){ setLastWatered(v);}},
+        { "notes",      "Notes   : ", notes_,       120,    Field::InputType::Optional,     Field::DataType::Text,      [this](std::string v){ setNotes(v);      }},
+        { "orderNum",   "Order   : ", orderNum,     9,      Field::InputType::NoInput,      Field::DataType::Number,    [this](std::string v){ setOrderNum(v);   }}
     };
 }
 

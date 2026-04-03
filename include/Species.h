@@ -19,7 +19,7 @@ class Species : public Record
     void setId(int id) override;
     std::string toString() override;
 
-    std::string getForeignName(const std::string& tableName) const override;
+    std::string getForeignName(const Field::DataType dataType) const override;
 
     void setName(std::string name);
     bool hasSchedule() const;

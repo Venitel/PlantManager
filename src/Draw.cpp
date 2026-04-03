@@ -1,5 +1,6 @@
 #include "Draw.h"
 #include "Console.h"
+#include "DateUtils.h"
 
 #include <iostream>
 
@@ -203,11 +204,15 @@ void drawDetails(int row)
 
             int labelLength = (int)field.label.length();
             std::string text = field.value;
-            if(!field.foreignTableName.empty()) //Value is ID
+            if(Field::isForeign(field.dataType))
             {
-                text = record.getForeignName(field.foreignTableName);
+                text = record.getForeignName(field.dataType);
             }
-            else if(text.empty() && field.dataType ==  Field::DataType::Date)
+            else if(field.dataType == Field::DataType::Month)
+            {
+                text = DateUtils::Months[stoi(field.value)-1].second;
+            }
+            else if(field.dataType == Field::DataType::Date && text.empty())
             {
                 text = "Never";
             }
@@ -246,13 +251,13 @@ void drawFooter(int row)
         {
             auto& record = currentList->getSelectedRecord();
             Field selectedField = record.getFields()[currentDetails->getPosition()];
-            if(selectedField.foreignTableName.empty())
+            if(Field::isForeign(selectedField.dataType))
             {
-                putText(0, row + 1, "↑ ↓ ←: Select   TAB: Next Tab   E: Edit                           Q: Quit");
+                putText(0, row + 1, "↑ ↓ ←: Select   TAB: Next Tab   E: Edit  →: Go To                 Q: Quit");
             }
             else
             {
-                putText(0, row + 1, "↑ ↓ ←: Select   TAB: Next Tab   E: Edit  →: Go To                 Q: Quit");
+                putText(0, row + 1, "↑ ↓ ←: Select   TAB: Next Tab   E: Edit                           Q: Quit");
             }
         }
     }, activeTab);

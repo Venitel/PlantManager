@@ -41,6 +41,17 @@ void Database::close()
         m_db = nullptr; 
     }
 }
+
+std::string Database::getTableName(const Field::DataType dataType)
+{
+    switch(dataType)
+    {
+        case Field::DataType::Plant : return "plants";
+        case Field::DataType::Species : return "species";
+        case Field::DataType::Schedule : return "Schedules";
+        default : return "";
+    }
+}
  
 void Database::createTables()
 {
@@ -66,9 +77,11 @@ void Database::createTables()
 
     exec(R"(
         CREATE TABLE IF NOT EXISTS schedules (
-            id          INTEGER PRIMARY KEY AUTOINCREMENT,
-            name        TEXT NOT NULL,
-            orderNum    INTEGER NOT NULL
+            id              INTEGER PRIMARY KEY AUTOINCREMENT,
+            dormancyStart   INTEGER NOT NULL,
+            dormancyEnd     INTEGER NOT NULL,
+            name            TEXT NOT NULL,
+            orderNum        INTEGER NOT NULL
         );
     )");
 }
@@ -238,8 +251,9 @@ std::string Database::getNameById(std::string& table, int id) const
     return name;
 }
 
-std::vector<std::pair<int, std::string>> Database::getAllKeys(std::string& table) const
+std::vector<std::pair<int, std::string>> Database::getAllKeys(const Field::DataType dataType) const
 {
+    const std::string table = getTableName(dataType);
     std::vector<std::pair<int, std::string>> allKeys;
     std::string sql = "SELECT id, name FROM " + table + " ORDER BY orderNum ASC";
     auto* stmt = prepare(sql);

@@ -3,18 +3,18 @@
 
 std::string Species::getTabName() const
 {
-    return "species";
+    return Database::getTableName(Field::DataType::Species);
 }
 
-std::string Species::getForeignName(const std::string& tableNam) const
+std::string Species::getForeignName(const Field::DataType dataType) const
 {
-    if(tableNam == "schedules")
+    if(dataType == Field::DataType::Schedule)
     {
         if(!hasSchedule())
         {
             return "";
         }
-        std::string tabName = tableNam;
+        std::string tabName = Database::getTableName(dataType);
         return Database::getInstance().getNameById(tabName, scheduleId_);
     }
     return "";
@@ -36,10 +36,10 @@ std::vector<Field> Species::getFields()
     const std::string scheduleId = std::to_string(scheduleId_);
 
     return 
-    {//   ColNam        Label         Var           Length  InputType                      DataType                 Setter                                  Foreign record
-        { "name",       "Name    : ", name_,        40,     Field::InputType::Mandatory,   Field::DataType::Text,   [this](std::string v){ setName(v);      }, "" },
-        { "scheduleId", "Schedule: ", scheduleId,   9,      Field::InputType::Mandatory,   Field::DataType::Number, [this](std::string v){ setScheduleId(v);}, "schedules"},
-        { "orderNum",   "Order   : ", orderNum,     9,      Field::InputType::NoInput,     Field::DataType::Number, [this](std::string v){ setOrderNum(v);  }, "" }
+    {//   ColNam        Label         Var           Length  InputType                      DataType                  Setter
+        { "name",       "Name    : ", name_,        40,     Field::InputType::Mandatory,   Field::DataType::Text,    [this](std::string v){ setName(v);      }},
+        { "scheduleId", "Schedule: ", scheduleId,   9,      Field::InputType::List,        Field::DataType::Schedule,[this](std::string v){ setScheduleId(v);}},
+        { "orderNum",   "Order   : ", orderNum,     9,      Field::InputType::NoInput,     Field::DataType::Number,  [this](std::string v){ setOrderNum(v);  }}
     };
 }
 

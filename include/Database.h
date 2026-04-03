@@ -24,9 +24,11 @@ class Database
     template <typename T>
     std::vector<T> getAll() const;
     std::string getNameById(std::string& table, int id) const;
-    std::vector<std::pair<int, std::string>> getAllKeys(std::string& table) const;
+    std::vector<std::pair<int, std::string>> getAllKeys(const Field::DataType dataType) const;
 
     void exec(const std::string& sql);
+
+    static std::string getTableName(const Field::DataType dataType);
 
   private:
     sqlite3* m_db = nullptr;

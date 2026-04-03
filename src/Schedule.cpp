@@ -3,10 +3,10 @@
 
 std::string Schedule::getTabName() const
 {
-    return "schedules";
+    return Database::getTableName(Field::DataType::Schedule);
 }
 
-std::string Schedule::getForeignName(const std::string& tableNam) const
+std::string Schedule::getForeignName(const Field::DataType dataType) const
 {
     return "";
 }
@@ -24,10 +24,15 @@ std::string Schedule::getName() const
 std::vector<Field> Schedule::getFields() 
 {
     const std::string orderNum = std::to_string(orderNum_);
+    const std::string dormancyStart = std::to_string(dormancyStart_);
+    const std::string dormancyEnd = std::to_string(dormancyEnd_);
+
     return 
-    {//   ColNam        Label         Var           Length  InputType                       DataType                    Setter                                  Foreign record
-        { "name",       "Name    : ", name_,        40,     Field::InputType::Mandatory,    Field::DataType::Text,      [this](std::string v){ setName(v);    }, "" },
-        { "orderNum",   "Order   : ", orderNum,     9,      Field::InputType::NoInput,      Field::DataType::Number,    [this](std::string v){ setOrderNum(v);}, "" }
+    {//   ColNam                Label                 Var           Length  InputType                       DataType                    Setter
+        { "name",               "Name          : ",   name_,        34,     Field::InputType::Mandatory,    Field::DataType::Text,      [this](std::string v){ setName(v);}},
+        { "dormancyStart",      "Dormancy Start: ",   dormancyStart,9,      Field::InputType::List,         Field::DataType::Month,     [this](std::string v){ setDormancyStart(v);}},
+        { "dormancyEnd",        "Dormancy End  : ",   dormancyEnd,  9,      Field::InputType::List,         Field::DataType::Month,     [this](std::string v){ setDormancyEnd(v);}},
+        { "orderNum",           "Order         : ",   orderNum,     9,      Field::InputType::NoInput,      Field::DataType::Number,    [this](std::string v){ setOrderNum(v);}}
     };
 }
 
@@ -68,6 +73,26 @@ void Schedule::setOrderNum(std::string orderNum)
 void Schedule::setOrderNum(int orderNum)
 {
     orderNum_ = orderNum;
+}
+
+void Schedule::setDormancyStart(int dormancyStart)
+{
+    dormancyStart_ = dormancyStart;
+}
+
+void Schedule::setDormancyStart(std::string dormancyStart)
+{
+    setDormancyStart(stoi(dormancyStart));
+}
+
+void Schedule::setDormancyEnd(int dormancyEnd)
+{
+    dormancyEnd_ = dormancyEnd;
+}
+
+void Schedule::setDormancyEnd(std::string dormancyEnd)
+{
+    setDormancyEnd(stoi(dormancyEnd));
 }
 
 void Schedule::swapOrder(Schedule& scheduleSwap)
