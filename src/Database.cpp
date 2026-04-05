@@ -128,7 +128,7 @@ std::vector<T> Database::getAll() const
             ++colCounter;
         }
         retVec.push_back(record);
-        Logger::getInstance().info(record.toString());
+        Logger::getInstance().result(record.toString());
     }
  
     sqlite3_finalize(stmt);
@@ -214,7 +214,7 @@ void Database::exec(const std::string& sql)
  
 sqlite3_stmt* Database::prepare(const std::string& sql) const
 {
-    Logger::getInstance().info(sql);
+    Logger::getInstance().query(sql);
 
     sqlite3_stmt* stmt = nullptr;
     if (sqlite3_prepare_v2(m_db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) 
@@ -233,12 +233,12 @@ std::string Database::getResult(const std::string& sql) const
         if(sqlite3_column_type(stmt, 0) != SQLITE_NULL)
         {
             std::string result = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
-            Logger::getInstance().info("Result: " + result);
+            Logger::getInstance().result("Result: " + result);
             return result;
         }
     }
 
-    Logger::getInstance().info("Result: null");
+    Logger::getInstance().result("Result: null");
     return "";
 }
 
@@ -250,7 +250,7 @@ std::string Database::getNameById(std::string& table, int id) const
     while (sqlite3_step(stmt) == SQLITE_ROW) 
     {
         name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
-        Logger::getInstance().info("Name: " + name);
+        Logger::getInstance().result("Name: " + name);
     }
     sqlite3_finalize(stmt);
     return name;
@@ -267,7 +267,7 @@ std::vector<std::pair<int, std::string>> Database::getAllKeys(const Field::DataT
         int id = sqlite3_column_int(stmt, 0);
         std::string name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
         allKeys.push_back({id, name});
-        Logger::getInstance().info("Id: " + std::to_string(id) + ", Name: " + name);
+        Logger::getInstance().result("Id: " + std::to_string(id) + ", Name: " + name);
     }
     sqlite3_finalize(stmt);
     return allKeys;

@@ -40,3 +40,15 @@ void Logger::error(const std::string& msg)
     file_ << "[" << timestamp() << "] [ERROR] " << msg << "\n";
     file_.flush(); //write immediately
 }
+
+void Logger::query(const std::string& msg) 
+{
+    file_ << "[" << timestamp() << "] [QUERY]  " << msg << "\n";
+    file_.flush(); //write immediately
+}
+
+void Logger::result(const std::string& msg) 
+{
+    file_ << "[" << timestamp() << "] [RESULT] " << msg << "\n";
+    file_.flush(); //write immediately
+}

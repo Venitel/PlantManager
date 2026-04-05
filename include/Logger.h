@@ -12,6 +12,8 @@ public:
     std::string timestamp(); 
     void info(const std::string& msg);
     void error(const std::string& msg);
+    void query(const std::string& msg);
+    void result(const std::string& msg);
 
 private:
     std::ofstream file_;
