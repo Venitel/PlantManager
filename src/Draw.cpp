@@ -202,15 +202,7 @@ void drawDetails(int row)
         setColor(Colors::Name);
         for(Field& field : fields)
         {
-            auto it = std::find_if(extraDetails.begin(), extraDetails.end(), [&](auto& detail) {return printedRows+1 == detail.row;});
-            if(it != extraDetails.end())
-            {
-                setColor(it->color);
-                putText(sectionWidth, row + printedRows, it->text);
-                ++printedRows;
-                resetColor();
-            }
-
+            drawExtraDetailLine(row, printedRows, extraDetails);
             if(field.inputType == Field::InputType::NoInput)
             {
                 continue;
@@ -247,6 +239,20 @@ void drawDetails(int row)
         }
     }, activeTab);
 }
+
+void drawExtraDetailLine(int row, int& printedRows, const std::vector<DetailLine>& extraDetails)
+{
+    auto it = std::find_if(extraDetails.begin(), extraDetails.end(), [&](auto& detail) {return printedRows+1 == detail.row;});
+    if(it != extraDetails.end())
+    {
+        setColor(it->color);
+        putText(sectionWidth, row + printedRows, it->text);
+        ++printedRows;
+        resetColor();
+        drawExtraDetailLine(row, printedRows, extraDetails);
+    }
+}
+
 
 void drawFooter(int row) 
 {

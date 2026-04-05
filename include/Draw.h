@@ -20,6 +20,7 @@ void drawInstructionsRow(int row, const std::string& title);
 
 void drawList(int row);
 void drawDetails(int row);
+void drawExtraDetailLine(int row, int& printedRows, const std::vector<DetailLine>& extraDetails);
 void drawAll();
 
 #endif
