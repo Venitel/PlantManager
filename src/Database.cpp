@@ -77,11 +77,13 @@ void Database::createTables()
 
     exec(R"(
         CREATE TABLE IF NOT EXISTS schedules (
-            id              INTEGER PRIMARY KEY AUTOINCREMENT,
-            dormancyStart   INTEGER NOT NULL,
-            dormancyEnd     INTEGER NOT NULL,
-            name            TEXT NOT NULL,
-            orderNum        INTEGER NOT NULL
+            id                   INTEGER PRIMARY KEY AUTOINCREMENT,
+            dormancyStart        INTEGER NOT NULL,
+            dormancyEnd          INTEGER NOT NULL,
+            waterInterval        INTEGER NOT NULL,
+            waterIntervalDormant INTEGER NOT NULL,
+            name                 TEXT NOT NULL,
+            orderNum             INTEGER NOT NULL
         );
     )");
 }

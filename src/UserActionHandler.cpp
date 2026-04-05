@@ -361,7 +361,9 @@ std::string inputAt(int x, int y, const std::string& prompt, int maxLength, bool
     {
         if(!std::getline(std::cin, input)) {errorMessage = "Input invalid!";}
         else if(checkEmpty && input.empty()) {errorMessage = "Input cannot be empty!";}
-        else if(checkDate && !isValidDate(input)) {errorMessage = "Not a valid date! Expected format YYYY-MM-DD.";}
+        //In date we check !input.empty() because empty date is allowed if optional. If it's not allowed, checkEmpty will catch it first
+        else if(checkDate && !input.empty() && !DateUtils::isValidDate(input)) {errorMessage = "Not a valid date! Expected format YYYY-MM-DD.";}
+        else if(checkDate && input > DateUtils::today()) {errorMessage = "Date cannot be in the future.";}
         else if(input.length() > maxLength) {errorMessage = "Input too long!";}
         else // Accepted input
         {

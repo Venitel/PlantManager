@@ -48,11 +48,16 @@ std::string Species::getDetailsHeader() const
     return "Details";
 }
 
+std::vector<DetailLine> Species::getExtraDetails() const 
+{
+    return {};
+}
+
 void Species::addRecord()
 {
-    const std::string orderQuery = "SELECT IFNULL(MAX(orderNum), 0)+1 FROM species";
+    const std::string orderQuery = "SELECT MIN(IFNULL(MAX(orderNum), 0)+1, 999999999) FROM species";
     const std::string queryResult = Database::getInstance().getResult(orderQuery);
-    orderNum_ = !queryResult.empty() ? stoi(queryResult) : 999999999;
+    orderNum_ = stoi(queryResult);
 
     Database::getInstance().insertDb(this);
 }
@@ -120,7 +125,7 @@ std::string Species::toString()
     std::string ret = "SPECIES Id: " + std::to_string(id_);
     for(Field& field : getFields())
     {
-        ret += ", " + field.colNam + ": " + field.value;
+        ret += ", " + field.colNam + ": " + (field.value.empty() ? " null" : field.value);;
     }
 
     return ret;

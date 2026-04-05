@@ -26,13 +26,17 @@ std::vector<Field> Schedule::getFields()
     const std::string orderNum = std::to_string(orderNum_);
     const std::string dormancyStart = std::to_string(dormancyStart_);
     const std::string dormancyEnd = std::to_string(dormancyEnd_);
+    const std::string waterInterval = std::to_string(waterInterval_);
+    const std::string waterIntervalDormant = std::to_string(waterIntervalDormant_);
 
     return 
-    {//   ColNam                Label                 Var           Length  InputType                       DataType                    Setter
-        { "name",               "Name          : ",   name_,        34,     Field::InputType::Mandatory,    Field::DataType::Text,      [this](std::string v){ setName(v);}},
-        { "dormancyStart",      "Dormancy Start: ",   dormancyStart,9,      Field::InputType::List,         Field::DataType::Month,     [this](std::string v){ setDormancyStart(v);}},
-        { "dormancyEnd",        "Dormancy End  : ",   dormancyEnd,  9,      Field::InputType::List,         Field::DataType::Month,     [this](std::string v){ setDormancyEnd(v);}},
-        { "orderNum",           "Order         : ",   orderNum,     9,      Field::InputType::NoInput,      Field::DataType::Number,    [this](std::string v){ setOrderNum(v);}}
+    {//   ColNam                 Label                        Var                   Length  InputType                       DataType                    Setter
+        { "name",                "Name                 : ",   name_,                27,     Field::InputType::Mandatory,    Field::DataType::Text,      [this](std::string v){ setName(v); }},
+        { "dormancyStart",       "Dormancy Start       : ",   dormancyStart,        9,      Field::InputType::List,         Field::DataType::Month,     [this](std::string v){ setDormancyStart(v); }},
+        { "dormancyEnd",         "Dormancy End         : ",   dormancyEnd,          9,      Field::InputType::List,         Field::DataType::Month,     [this](std::string v){ setDormancyEnd(v); }},
+        { "waterInterval",       "Water Interval (Days): ",   waterInterval,        2,      Field::InputType::Mandatory,    Field::DataType::Number,    [this](std::string v){ setWaterInterval(v); }},
+        { "waterIntervalDormant","Dormant W.Int. (Days): ",   waterIntervalDormant, 2,      Field::InputType::Mandatory,    Field::DataType::Number,    [this](std::string v){ setWaterIntervalDormant(v); }},
+        { "orderNum",            "Order                : ",   orderNum,             9,      Field::InputType::NoInput,      Field::DataType::Number,    [this](std::string v){ setOrderNum(v); }}
     };
 }
 
@@ -41,11 +45,16 @@ std::string Schedule::getDetailsHeader() const
     return "Details";
 }
 
+std::vector<DetailLine> Schedule::getExtraDetails() const 
+{
+    return {};
+}
+
 void Schedule::addRecord()
 {
-    const std::string orderQuery = "SELECT IFNULL(MAX(orderNum), 0)+1 FROM schedules";
+    const std::string orderQuery = "SELECT MIN(IFNULL(MAX(orderNum), 0)+1, 999999999) FROM schedules";
     const std::string queryResult = Database::getInstance().getResult(orderQuery);
-    orderNum_ = !queryResult.empty() ? stoi(queryResult) : 999999999;
+    orderNum_ = stoi(queryResult);
 
     Database::getInstance().insertDb(this);
 }
@@ -100,6 +109,26 @@ void Schedule::setDormancyEnd(std::string dormancyEnd)
     setDormancyEnd(stoi(dormancyEnd));
 }
 
+void Schedule::setWaterInterval(int waterInterval)
+{
+    waterInterval_ = waterInterval;
+}
+
+void Schedule::setWaterInterval(std::string waterInterval)
+{
+    setWaterInterval(stoi(waterInterval));
+}
+
+void Schedule::setWaterIntervalDormant(int waterIntervalDormant)
+{
+    waterIntervalDormant_ = waterIntervalDormant;
+}
+
+void Schedule::setWaterIntervalDormant(std::string waterIntervalDormant)
+{
+    setWaterIntervalDormant(stoi(waterIntervalDormant));
+}
+
 void Schedule::swapOrder(Schedule& scheduleSwap)
 {
     int orgOrder = orderNum_;
@@ -115,7 +144,7 @@ std::string Schedule::toString()
     std::string ret = "SCHEDULE Id: " + std::to_string(id_);
     for(Field& field : getFields())
     {
-        ret += ", " + field.colNam + ": " + field.value;
+        ret += ", " + field.colNam + ": " + (field.value.empty() ? " null" : field.value);;
     }
 
     return ret;

@@ -12,6 +12,7 @@ class Species : public Record
     std::string getName() const override;
     std::vector<Field> getFields() override;
     std::string getDetailsHeader() const override;
+    std::vector<DetailLine> getExtraDetails() const override;
 
     void addRecord() override;
     void deleteRecord() override;

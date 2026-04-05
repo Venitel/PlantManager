@@ -7,8 +7,8 @@
 namespace DateUtils
 {
     extern const std::vector<std::pair<int, std::string>> Months;
+    std::string today();
+    bool isValidDate(std::string& text);
 }
-
-bool isValidDate(std::string& text);
 
 #endif

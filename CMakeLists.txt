@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 add_library(sqlite3 STATIC third_party/sqlite/sqlite3.c)
 target_include_directories(sqlite3 PUBLIC third_party/sqlite)
 target_compile_options(sqlite3 PRIVATE -w) #suppress all warnings for sqlite
-
+target_compile_definitions(sqlite3 PRIVATE SQLITE_ENABLE_MATH_FUNCTIONS)
 #Lib
 add_library(PMLib
     src/Sections.cpp

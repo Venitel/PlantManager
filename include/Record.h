@@ -1,6 +1,7 @@
 #ifndef RECORD_H
 #define RECORD_H
 
+#include "Colors.h"
 #include <string>
 #include <vector>
 #include <functional>
@@ -43,6 +44,13 @@ struct Field
   std::function<void(std::string)> setter;
 };
 
+struct DetailLine
+{
+  int row;
+  std::string text;
+  Colors color = Colors::Default;
+};
+
 class Record 
 {
   public:
@@ -51,6 +59,7 @@ class Record
     virtual int getId() const = 0;
     virtual std::string getTabName() const = 0;
     virtual std::string getDetailsHeader() const = 0;
+    virtual std::vector<DetailLine> getExtraDetails() const = 0;
     virtual std::string getName() const = 0;
     virtual std::string getForeignName(const Field::DataType dataType) const = 0;
 

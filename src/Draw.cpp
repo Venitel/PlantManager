@@ -3,6 +3,7 @@
 #include "DateUtils.h"
 
 #include <iostream>
+#include <algorithm>
 
 namespace
 {
@@ -99,7 +100,14 @@ void drawHeader()
 
         setColor(Colors::Title);
         putText(0, 3, currentTab);
-        putText(sectionWidth, 3, currentList->getSelectedRecord().getDetailsHeader());
+        if(currentList->empty())
+        {
+            putText(sectionWidth, 3, currentList->getBlankRecord().getDetailsHeader());
+        }
+        else
+        {
+            putText(sectionWidth, 3, currentList->getSelectedRecord().getDetailsHeader());
+        }
         resetColor();
     }, activeTab);
 }
@@ -186,12 +194,23 @@ void drawDetails(int row)
         int selection = currentDetails->isActive() ? currentDetails->getPosition() : -1;
 
         std::vector<Field> fields = record.getFields();
+        std::vector<DetailLine> extraDetails = record.getExtraDetails();
+
         int fieldsNum = 0;
         int printedRows = 0; 
         //Name has different color if not selected - it is always first so we set it before loop
         setColor(Colors::Name);
         for(Field& field : fields)
         {
+            auto it = std::find_if(extraDetails.begin(), extraDetails.end(), [&](auto& detail) {return printedRows+1 == detail.row;});
+            if(it != extraDetails.end())
+            {
+                setColor(it->color);
+                putText(sectionWidth, row + printedRows, it->text);
+                ++printedRows;
+                resetColor();
+            }
+
             if(field.inputType == Field::InputType::NoInput)
             {
                 continue;
@@ -225,12 +244,6 @@ void drawDetails(int row)
                 ++printedRows;
             }
             resetColor();
-
-            if(fieldsNum == 1) //add a horizontal line after name (first field)
-            {
-                drawLine(sectionWidth, row+1, sectionWidth, '-');
-                ++printedRows;
-            }
         }
     }, activeTab);
 }

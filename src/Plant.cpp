@@ -54,11 +54,42 @@ std::string Plant::getDetailsHeader() const
     return "Details";
 }
 
+std::vector<DetailLine> Plant::getExtraDetails() const 
+{
+    std::vector<DetailLine> extraDetails;
+
+    std::optional<int> days = daysUntilWatering();
+    if(days.has_value())
+    {
+        std::string dayOrDays = abs(days.value()) == 1 ? " day" : " days";
+        std::string wateringDetailText = "Watering: ";
+        Colors color;
+        if(days.value() == 0)
+        {
+            wateringDetailText += "Today";
+            color = Colors::DueToday;
+        }
+        else if(days.value() > 0)
+        {
+            wateringDetailText += "In " + std::to_string(days.value()) + dayOrDays;
+            color = Colors::DueFuture;
+        }
+        else //days < 0
+        {
+            wateringDetailText += std::to_string(abs(days.value())) + dayOrDays + " ago";
+            color = Colors::DuePast;
+        }
+        extraDetails.push_back({4, wateringDetailText, color}); //after lastWatered field
+    }
+
+    return extraDetails;
+}
+
 void Plant::addRecord()
 {
-    const std::string orderQuery = "SELECT IFNULL(MAX(orderNum), 0)+1 FROM plants";
+    const std::string orderQuery = "SELECT MIN(IFNULL(MAX(orderNum), 0)+1, 999999999) FROM plants";
     const std::string queryResult = Database::getInstance().getResult(orderQuery);
-    orderNum_ = !queryResult.empty() ? stoi(queryResult) : 999999999;
+    orderNum_ = stoi(queryResult);
 
     Database::getInstance().insertDb(this);
 }
@@ -103,6 +134,26 @@ bool Plant::isDormant() const
     "WHERE plants.id = " + Database::sqlString(std::to_string(getId()));
 
     return Database::getInstance().getResult(orderQuery) == "1";
+}
+
+std::optional<int> Plant::daysUntilWatering() const
+{
+    //Positive = days until, negative = days late
+    std::string intervalColNam = isDormant() ? "waterIntervalDormant" : "waterInterval";
+    const std::string orderQuery = 
+    "SELECT CAST(CEIL((julianday(plants.lastWatered, '+' || schedules." + intervalColNam + " || ' day') - julianday('now'))) AS INTEGER) "
+    "FROM plants "
+    "JOIN species ON species.id = plants.speciesId "
+    "JOIN schedules ON schedules.id = species.scheduleId "
+    "WHERE plants.id = " + Database::sqlString(std::to_string(getId()));
+
+    std::string result = Database::getInstance().getResult(orderQuery);
+    if(result.empty())
+    {
+        return std::nullopt;
+    } 
+
+    return stoi(Database::getInstance().getResult(orderQuery));
 }
 
 void Plant::setSpeciesId(int speciesId)
@@ -153,7 +204,7 @@ std::string Plant::toString()
     std::string ret = "PLANT Id: " + std::to_string(id_);
     for(Field& field : getFields())
     {
-        ret += ", " + field.colNam + ": " + field.value;
+        ret += ", " + field.colNam + ": " + (field.value.empty() ? " null" : field.value);
     }
 
     return ret;

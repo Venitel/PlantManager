@@ -37,7 +37,7 @@ void setColor(WORD attribute)
 
 void resetColor() 
 {
-    setColor(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+    setColor(Colors::Default);
 }
 
 void setColor(Colors color)
@@ -51,6 +51,10 @@ void setColor(Colors color)
         case Colors::Inactive :
         case Colors::Optional : setColor(FOREGROUND_INTENSITY); break; //this by itself is grey
         case Colors::List : setColor(FOREGROUND_GREEN | FOREGROUND_BLUE); break;
+        case Colors::DueToday : setColor(FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY); break;
+        case Colors::DuePast : setColor(FOREGROUND_RED | FOREGROUND_INTENSITY); break;
+        case Colors::DueFuture :
+        case Colors::Default : setColor(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE); break; //White
         default : resetColor(); 
     }
 }

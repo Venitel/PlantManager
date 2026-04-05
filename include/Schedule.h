@@ -12,6 +12,7 @@ class Schedule : public Record
     std::string getName() const override;
     std::vector<Field> getFields() override;
     std::string getDetailsHeader() const override;
+    std::vector<DetailLine> getExtraDetails() const override;
 
     void addRecord() override;
     void deleteRecord() override;
@@ -29,6 +30,10 @@ class Schedule : public Record
     void setDormancyStart(std::string dormancyStart); //string as an argument because we read every db column as a text
     void setDormancyEnd(int dormancyEnd);
     void setDormancyEnd(std::string dormancyEnd); //string as an argument because we read every db column as a text
+    void setWaterInterval(int waterInterval);
+    void setWaterInterval(std::string waterInterval); //string as an argument because we read every db column as a text
+    void setWaterIntervalDormant(int waterIntervalDormant);
+    void setWaterIntervalDormant(std::string waterIntervalDormant); //string as an argument because we read every db column as a text
     void swapOrder(Schedule& scheduleSwap);
 
   private: 
@@ -36,6 +41,8 @@ class Schedule : public Record
     std::string name_;
     int dormancyStart_;
     int dormancyEnd_;
+    int waterInterval_;
+    int waterIntervalDormant_;
     int orderNum_;
 };
 

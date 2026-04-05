@@ -1,19 +1,8 @@
 #ifndef CONSOLE_H
 #define CONSOLE_H
 
+#include "Colors.h"
 #include <windows.h>
-
-enum class Colors 
-{
-    Error,
-    Title,
-    Selection,
-    Name,
-    Inactive,
-    Optional, 
-    List,
-    Date
-};
 
 void initConsole();
 void terminateConsole();

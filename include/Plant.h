@@ -2,6 +2,7 @@
 #define PLANT_H
 
 #include "Record.h"
+#include <optional>
 
 class Plant : public Record
 {
@@ -12,6 +13,7 @@ class Plant : public Record
     std::string getName() const override;
     std::vector<Field> getFields() override;
     std::string getDetailsHeader() const override;
+    std::vector<DetailLine> getExtraDetails() const override;
 
     void addRecord() override;
     void deleteRecord() override;
@@ -25,6 +27,7 @@ class Plant : public Record
     void setName(std::string name);
     bool hasSpecies() const;
     bool isDormant() const;
+    std::optional<int> daysUntilWatering() const;
     void setSpeciesId(int speciesId);
     void setSpeciesId(std::string speciesId); //string as an argument because we read every db column as a text
     void setLastWatered(std::string isoDate);
