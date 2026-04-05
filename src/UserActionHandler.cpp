@@ -147,11 +147,11 @@ void getFieldFromUser(int x, int y, Field& field)
     {
         if(field.dataType == Field::DataType::Month)
         {
-            field.setter(getValueByList(x, y, field.label, DateUtils::Months));
+            field.setter(getValueByList(x, y, field, DateUtils::Months));
         }
         else
         {
-            field.setter(getValueByList(x, y, field.label, Database::getInstance().getAllKeys(field.dataType)));
+            field.setter(getValueByList(x, y, field, Database::getInstance().getAllKeys(field.dataType)));
         }
     }
     else
@@ -167,23 +167,33 @@ void getFieldFromUser(int x, int y, Field& field)
     }
 }
 
-std::string getValueByList(int x, int y, const std::string& label, const std::vector<std::pair<int, std::string>>& pairs)
+std::string getValueByList(int x, int y, Field& field, const std::vector<std::pair<int, std::string>>& pairs)
 {
     setColor(Colors::List);
-    putText(x, y, label);
+    putText(x, y, field.label);
     resetColor();
 
     if(!pairs.empty())
     {
         int index = 0;
+        try //in case stoi fails
+        {
+            auto it = std::find_if(pairs.begin(), pairs.end(), [&](auto& pair) {return stoi(field.value) == pair.first;});
+            if(it != pairs.end())
+            {
+                index = std::distance(pairs.begin(), it);
+            }
+        }
+        catch(...) {} //do nothing, index is 0 already
+
         bool redraw = true;
         while(true)
         {
             if(redraw)
             {
-                clearRow(y, label.length());
+                clearRow(y, field.label.length());
                 std::string keyName = pairs[index].second;
-                putText(label.length(), y, keyName);
+                putText(field.label.length(), y, keyName);
             }
 
             redraw = true;
@@ -213,7 +223,7 @@ std::string getValueByList(int x, int y, const std::string& label, const std::ve
     }
     else
     {
-        putError(label.length(), y, "List empty!");
+        putError(field.label.length(), y, "List empty!");
         return "";
     }
 }
