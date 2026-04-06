@@ -67,7 +67,6 @@ class Record
     virtual void setName(std::string name);
 
     virtual std::string getForeignName(const Field::DataType dataType) const;
-    virtual std::string getDetailsHeader() const;
     virtual std::vector<DetailLine> getExtraDetails() const;
 
     void setOrderNum(int orderNum);

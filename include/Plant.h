@@ -10,7 +10,6 @@ class Plant : public Record
     std::string getTabName() const override;
 
     std::vector<Field> getFields() override;
-    std::string getDetailsHeader() const override;
     std::vector<DetailLine> getExtraDetails() const override;
 
     std::string getForeignName(const Field::DataType dataType) const override;

@@ -100,14 +100,7 @@ void drawHeader()
 
         setColor(Colors::Title);
         putText(0, 3, currentTab);
-        if(currentList->empty())
-        {
-            putText(sectionWidth, 3, currentList->getBlankRecord().getDetailsHeader());
-        }
-        else
-        {
-            putText(sectionWidth, 3, currentList->getSelectedRecord().getDetailsHeader());
-        }
+        putText(sectionWidth, 3, "Details");
         resetColor();
     }, activeTab);
 }

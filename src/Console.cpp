@@ -50,6 +50,7 @@ void setColor(Colors color)
         case Colors::Name : setColor(FOREGROUND_GREEN); break;
         case Colors::Inactive :
         case Colors::Optional : setColor(FOREGROUND_INTENSITY); break; //this by itself is grey
+        case Colors::Dormant:
         case Colors::List : setColor(FOREGROUND_GREEN | FOREGROUND_BLUE); break;
         case Colors::DueToday : setColor(FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY); break;
         case Colors::DuePast : setColor(FOREGROUND_RED | FOREGROUND_INTENSITY); break;

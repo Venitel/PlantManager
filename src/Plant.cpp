@@ -36,19 +36,16 @@ std::vector<Field> Plant::getFields()
     };
 }
 
-std::string Plant::getDetailsHeader() const
-{
-    if(isDormant())
-    {
-        return "Details (Dormant)";
-    }
-    return "Details";
-}
-
 std::vector<DetailLine> Plant::getExtraDetails() const 
 {
     std::vector<DetailLine> extraDetails;
+    //Dormancy
+    if(isDormant())
+    {
+        extraDetails.push_back({1, "Dormant", Colors::Dormant}); //after lastWatered field
+    }
 
+    //Days until watering
     std::optional<int> days = daysUntilWatering();
     if(days.has_value())
     {
@@ -86,9 +83,9 @@ bool Plant::isDormant() const
     const std::string orderQuery = 
     "SELECT CASE "
         "WHEN schedules.dormancyStart <= schedules.dormancyEnd "
-          "THEN CAST(strftime('%m', 'now') AS INTEGER) BETWEEN schedules.dormancyStart AND schedules.dormancyEnd "
-        "ELSE CAST(strftime('%m', 'now') AS INTEGER) >= schedules.dormancyStart "
-          "OR CAST(strftime('%m', 'now') AS INTEGER) <= schedules.dormancyEnd "
+          "THEN CAST(strftime('%m', 'now', 'localtime') AS INTEGER) BETWEEN schedules.dormancyStart AND schedules.dormancyEnd "
+        "ELSE CAST(strftime('%m', 'now', 'localtime') AS INTEGER) >= schedules.dormancyStart "
+          "OR CAST(strftime('%m', 'now', 'localtime') AS INTEGER) <= schedules.dormancyEnd "
         "END as isDormant "
     "FROM plants "
     "JOIN species ON species.id = plants.speciesId "
@@ -103,7 +100,7 @@ std::optional<int> Plant::daysUntilWatering() const
     //Positive = days until, negative = days late
     std::string intervalColNam = isDormant() ? "waterIntervalDormant" : "waterInterval";
     const std::string orderQuery = 
-    "SELECT CAST(CEIL((julianday(plants.lastWatered, '+' || schedules." + intervalColNam + " || ' day') - julianday('now'))) AS INTEGER) "
+    "SELECT CAST((julianday(plants.lastWatered, '+' || schedules." + intervalColNam + " || ' day') - julianday('now', 'localtime', 'start of day')) AS INTEGER) "
     "FROM plants "
     "JOIN species ON species.id = plants.speciesId "
     "JOIN schedules ON schedules.id = species.scheduleId "
@@ -113,7 +110,7 @@ std::optional<int> Plant::daysUntilWatering() const
     if(result.empty())
     {
         return std::nullopt;
-    } 
+    }
 
     return stoi(Database::getInstance().getResult(orderQuery));
 }

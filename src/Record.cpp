@@ -36,11 +36,6 @@ std::string Record::getForeignName(const Field::DataType dataType) const
     return "";
 }
 
-std::string Record::getDetailsHeader() const
-{
-    return "Details";
-}
-
 std::vector<DetailLine> Record::getExtraDetails() const 
 {
     return {};
