@@ -22,6 +22,7 @@ class Plant : public Record
     void setSpeciesId(std::string speciesId); //string as an argument because we read every db column as a text
     void setLastWatered(std::string isoDate);
     void setNotes(std::string notes);
+
   private:
     int speciesId_ = -1;
     std::string lastWatered_;
