@@ -3,7 +3,7 @@
 #include "Draw.h"
 #include "Database.h"
 #include "Logger.h"
-#include "DateUtils.h"
+#include "Utils.h"
 
 #include <iostream>
 #include <conio.h>
@@ -163,7 +163,8 @@ void getFieldFromUser(int x, int y, Field& field)
 
         bool checkEmpty = field.inputType==Field::InputType::Mandatory;
         bool checkDate = field.dataType==Field::DataType::Date;
-        field.setter(inputAt(x, y, field.label, field.size, checkEmpty, checkDate)); 
+        bool checkPositive = field.dataType==Field::DataType::Number;
+        field.setter(inputAt(x, y, field.label, field.size, checkEmpty, checkDate, checkPositive)); 
     }
 }
 
@@ -358,7 +359,7 @@ bool userOrder()
     return result;
 }
 
-std::string inputAt(int x, int y, const std::string& prompt, int maxLength, bool checkEmpty, bool checkDate) 
+std::string inputAt(int x, int y, const std::string& prompt, int maxLength, bool checkEmpty, bool checkDate, bool checkPositiveNumber) 
 {
     //input row requires one free row below for error messages
 
@@ -373,9 +374,11 @@ std::string inputAt(int x, int y, const std::string& prompt, int maxLength, bool
     {
         if(!std::getline(std::cin, input)) {errorMessage = "Input invalid!";}
         else if(checkEmpty && input.empty()) {errorMessage = "Input cannot be empty!";}
+        else if(checkPositiveNumber && !Utils::isNumber(input)) {errorMessage = "Not a number!";}
+        else if(checkPositiveNumber && stoi(input) < 0) {errorMessage = "Number must be positive!";}
         //In date we check !input.empty() because empty date is allowed if optional. If it's not allowed, checkEmpty will catch it first
         else if(checkDate && !input.empty() && !DateUtils::isValidDate(input)) {errorMessage = "Not a valid date! Expected format YYYY-MM-DD.";}
-        else if(checkDate && input > DateUtils::today()) {errorMessage = "Date cannot be in the future.";}
+        else if(checkDate && input > DateUtils::today()) {errorMessage = "Date cannot be in the future!";}
         else if(input.length() > maxLength) {errorMessage = "Input too long!";}
         else // Accepted input
         {

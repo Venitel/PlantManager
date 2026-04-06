@@ -1,5 +1,6 @@
 #include "Schedule.h"
 #include "Database.h"
+#include "Utils.cpp"
 
 std::string Schedule::getTabName() const
 {
@@ -29,7 +30,7 @@ std::vector<DetailLine> Schedule::getExtraDetails() const
 {
     std::vector<DetailLine> extraDetails;
    
-    extraDetails.push_back({4, "> Intervals (Days)", Colors::Inactive}); //Before intervals
+    extraDetails.push_back({4, "> Intervals (Days) [0 = disabled]", Colors::Inactive}); //Before intervals
 
     return extraDetails;
 }
@@ -61,7 +62,10 @@ void Schedule::setWaterInterval(int waterInterval)
 
 void Schedule::setWaterInterval(std::string waterInterval)
 {
-    setWaterInterval(stoi(waterInterval));
+    if(Utils::isNumberLog(waterInterval))
+    {
+        setWaterInterval(stoi(waterInterval));
+    }
 }
 
 void Schedule::setWaterIntervalDormant(int waterIntervalDormant)
@@ -71,5 +75,8 @@ void Schedule::setWaterIntervalDormant(int waterIntervalDormant)
 
 void Schedule::setWaterIntervalDormant(std::string waterIntervalDormant)
 {
-    setWaterIntervalDormant(stoi(waterIntervalDormant));
+    if(Utils::isNumberLog(waterIntervalDormant))
+    {
+        setWaterIntervalDormant(stoi(waterIntervalDormant));
+    }
 }

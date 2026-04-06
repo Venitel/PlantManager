@@ -1,6 +1,6 @@
 #include "Plant.h"
 #include "Database.h"
-#include "DateUtils.h"
+#include "Utils.h"
 
 std::string Plant::getTabName() const
 {
@@ -100,7 +100,10 @@ std::optional<int> Plant::daysUntilWatering() const
     //Positive = days until, negative = days late
     std::string intervalColNam = isDormant() ? "waterIntervalDormant" : "waterInterval";
     const std::string orderQuery = 
-    "SELECT CAST((julianday(plants.lastWatered, '+' || schedules." + intervalColNam + " || ' day') - julianday('now', 'localtime', 'start of day')) AS INTEGER) "
+    "SELECT CASE "
+        "WHEN schedules." + intervalColNam + " = 0 THEN NULL " //0 = null = disabled
+        "ELSE CAST((julianday(plants.lastWatered, '+' || schedules." + intervalColNam + " || ' day') - julianday('now', 'localtime', 'start of day')) AS INTEGER) "
+        "END "
     "FROM plants "
     "JOIN species ON species.id = plants.speciesId "
     "JOIN schedules ON schedules.id = species.scheduleId "
@@ -130,7 +133,10 @@ void Plant::setSpeciesId(std::string speciesId)
 
 void Plant::setLastWatered(std::string isoDate)
 {
-    lastWatered_ = isoDate;
+    if(DateUtils::isValidDateLog(isoDate))
+    {
+        lastWatered_ = isoDate;
+    }
 }
 
 void Plant::waterNow()

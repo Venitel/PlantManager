@@ -1,4 +1,5 @@
-#include "DateUtils.h"
+#include "Utils.h"
+#include "Logger.h"
 
 #include <regex>
 
@@ -28,6 +29,16 @@ namespace DateUtils
         return buf; 
     }
 
+    bool isValidDateLog(std::string& text)
+    {
+        bool ret = isValidDate(text);
+        if(!ret)
+        {
+            Logger::getInstance().error(text + " is not a valid date!");
+        }
+        return ret;
+    }
+
     bool isValidDate(std::string& text)
     {
         std::regex pattern(R"(^\d{4}-\d{2}-\d{2}$)");
@@ -53,5 +64,23 @@ namespace DateUtils
         }
 
         return true;
+    }
+}
+
+namespace Utils
+{
+    bool isNumberLog(std::string& number)
+    {
+        bool ret = isNumber(number);
+        if(!ret)
+        {
+            Logger::getInstance().error(number + " is not a number!");
+        }
+        return ret;
+    }
+    bool isNumber(std::string& number)
+    {
+        std::regex pattern(R"(-?[0-9]+)");
+        return std::regex_match(number, pattern);
     }
 }
