@@ -131,9 +131,9 @@ T& ListSection<T>::getSelectedRecord()
 }
 
 template <typename T>
-void ListSection<T>::editRecord(int index)
+void ListSection<T>::updateRecord(int index)
 {
-    records_[index].editRecord();
+    records_[index].updateRecord();
 }
 
 template <typename T>

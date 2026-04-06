@@ -123,11 +123,11 @@ void clearSection(int x, int y, int width, int height)
 void drawInstructionsRow(int row, const std::string& title)
 {
     int pos = 0;
-    std::string titleStart = "--- " + title + " [ ";
-    std::string helpSeparator = " | ";
-    std::string helpOptional = "optional";
-    std::string helpList = "← list →";
-    std::string titleEnd = " ] ---";
+    const std::string titleStart = "--- " + title + " [ ";
+    const std::string helpSeparator = " | ";
+    const std::string helpOptional = "optional";
+    const std::string helpList = "← list →";
+    const std::string titleEnd = " ] ---";
 
     putText(pos, row, titleStart);
     pos += titleStart.length();
@@ -259,12 +259,20 @@ void drawFooter(int row)
     std::visit([&](auto& tab) {
         auto& currentList = tab.first;
         auto& currentDetails = tab.second;
+        using TabType = std::decay_t<decltype(tab)>;
 
         drawLine(0, row, 2*sectionWidth, '-');
         clearRow(row + 1);
         if(currentList->isActive())
         {
-            putText(0, row + 1, "↑ ↓ →: Select   TAB: Next Tab   A: Add   D: Delete   M: Move Up   Q: Quit");
+            if(std::is_same_v<TabType, std::pair<ListSection<Plant>*, DetailsSection<Plant>*>>)
+            {
+                putText(0, row + 1, "↑ ↓ →: Select | TAB: Next Tab | A: Add | D: Delete | M: Move Up | W: Water Now | Q: Quit");
+            }
+            else
+            {
+                putText(0, row + 1, "↑ ↓ →: Select | TAB: Next Tab | A: Add | D: Delete | M: Move Up                  Q: Quit");
+            }
         }
         else
         {
@@ -272,11 +280,16 @@ void drawFooter(int row)
             Field selectedField = record.getFields()[currentDetails->getPosition()];
             if(Field::isForeign(selectedField.dataType))
             {
-                putText(0, row + 1, "↑ ↓ ←: Select   TAB: Next Tab   E: Edit  →: Go To                 Q: Quit");
+                putText(0, row + 1, "↑ ↓ ←: Select | TAB: Next Tab | E: Edit | →: Go To                              Q: Quit");
+            }
+            else if(std::is_same_v<TabType, std::pair<ListSection<Plant>*, DetailsSection<Plant>*>>
+                    && (currentList->getSelectedRecord().getFields()[currentDetails->getPosition()].colNam == "lastWatered"))
+            {
+                putText(0, row + 1, "↑ ↓ ←: Select | TAB: Next Tab | E: Edit | W: Water Now                          Q: Quit");
             }
             else
             {
-                putText(0, row + 1, "↑ ↓ ←: Select   TAB: Next Tab   E: Edit                           Q: Quit");
+                putText(0, row + 1, "↑ ↓ ←: Select | TAB: Next Tab | E: Edit                                         Q: Quit");
             }
         }
     }, activeTab);

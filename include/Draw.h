@@ -16,6 +16,8 @@ void drawLine(int x, int y, int width, char symbol);
 void clearRow(int row, int offset=0);
 int getBottomRow();
 
+std::string getSeparatedListString(std::vector<std::string>& list, const std::string& separator);
+
 void drawInstructionsRow(int row, const std::string& title);
 
 void drawList(int row);

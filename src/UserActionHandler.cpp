@@ -231,7 +231,6 @@ std::string getValueByList(int x, int y, Field& field, const std::vector<std::pa
     }
 }
 
-
 bool userAdd() 
 {
     bool result = false;
@@ -297,7 +296,7 @@ bool userEdit()
         Field editField = record.getFields()[currentDetails->getPosition()];
         getFieldFromUser(0, bottomRow + 1, editField);
 
-        currentList->editRecord(currentList->getPosition());
+        currentList->updateRecord(currentList->getPosition());
 
         for(int i = bottomRow; i <= bottomRow + 2; i++) //one extra line for error, multi line notes etc.
         { 
@@ -389,4 +388,35 @@ std::string inputAt(int x, int y, const std::string& prompt, int maxLength, bool
         putError(inputStart, y+1, errorMessage);
         setCursor(inputStart, y);
     }
+}
+
+bool waterPlant()
+{
+    bool result = false;
+
+    std::visit([&](auto& tab) {
+        auto& currentList = tab.first;
+        auto& currentDetails = tab.second;
+
+        if(currentList->empty())
+        {
+            return;
+        }
+        using TabType = std::decay_t<decltype(tab)>;
+        if constexpr (std::is_same_v<TabType, std::pair<ListSection<Plant>*, DetailsSection<Plant>*>>) 
+        {
+            if(!currentList->isActive())
+            {
+                if(currentList->getSelectedRecord().getFields()[currentDetails->getPosition()].colNam != "lastWatered")
+                {
+                    return;
+                }
+            }
+
+            tab.first->getSelectedRecord().waterNow();
+        }
+        result = true;
+    }, activeTab);
+
+    return result;
 }

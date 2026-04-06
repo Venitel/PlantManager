@@ -60,7 +60,7 @@ void Record::deleteRecord()
     Database::getInstance().deleteDb(this);
 }
 
-void Record::editRecord()
+void Record::updateRecord()
 {
     Database::getInstance().updateDb(this);
 }
@@ -79,8 +79,8 @@ void Record::swapOrder(Record& recordSwap)
 {
     int orgOrder = orderNum_;
     setOrderNum(recordSwap.orderNum_);
-    editRecord();
+    updateRecord();
 
     recordSwap.setOrderNum(orgOrder);
-    recordSwap.editRecord();
+    recordSwap.updateRecord();
 }

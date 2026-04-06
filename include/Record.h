@@ -58,7 +58,7 @@ class Record
     
     virtual void addRecord();
     virtual void deleteRecord();
-    virtual void editRecord();
+    virtual void updateRecord();
 
     virtual int getId() const;
     virtual std::string getName() const;

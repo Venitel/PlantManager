@@ -62,6 +62,7 @@ int main()
                 case (Key)'D': redraw = userDelete(); break;
                 case (Key)'E': redraw = userEdit(); break;
                 case (Key)'M': redraw = userOrder(); break;
+                case (Key)'W': redraw = waterPlant(); break;
                 case (Key)'Q': quit(); return 0;
                 default: redraw = false;
             }

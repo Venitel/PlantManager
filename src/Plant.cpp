@@ -1,5 +1,6 @@
 #include "Plant.h"
 #include "Database.h"
+#include "DateUtils.h"
 
 std::string Plant::getTabName() const
 {
@@ -133,6 +134,12 @@ void Plant::setSpeciesId(std::string speciesId)
 void Plant::setLastWatered(std::string isoDate)
 {
     lastWatered_ = isoDate;
+}
+
+void Plant::waterNow()
+{
+    setLastWatered(DateUtils::today());
+    updateRecord();
 }
 
 void Plant::setNotes(std::string notes)

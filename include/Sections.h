@@ -51,7 +51,7 @@ class ListSection : public Section
 
     void addRecord(T record);
     void deleteRecord(int index);
-    void editRecord(int index);
+    void updateRecord(int index);
     void orderUp(int index);
 
     T& getRecord(int index);

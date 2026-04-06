@@ -29,11 +29,10 @@ std::vector<DetailLine> Schedule::getExtraDetails() const
 {
     std::vector<DetailLine> extraDetails;
    
-    extraDetails.push_back({4, "> Intervals (Days)", Colors::List}); //Before intervals
+    extraDetails.push_back({4, "> Intervals (Days)", Colors::Inactive}); //Before intervals
 
     return extraDetails;
 }
-
 
 void Schedule::setDormancyStart(int dormancyStart)
 {
