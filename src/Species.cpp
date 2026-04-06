@@ -20,16 +20,6 @@ std::string Species::getForeignName(const Field::DataType dataType) const
     return "";
 }
 
-int Species::getId() const
-{
-    return id_;
-}
-
-std::string Species::getName() const
-{
-    return name_;
-}
-
 std::vector<Field> Species::getFields() 
 {
     const std::string orderNum = std::to_string(orderNum_);
@@ -41,45 +31,6 @@ std::vector<Field> Species::getFields()
         { "scheduleId", "Schedule: ", scheduleId,   9,      Field::InputType::List,        Field::DataType::Schedule,[this](std::string v){ setScheduleId(v);}},
         { "orderNum",   "Order   : ", orderNum,     9,      Field::InputType::NoInput,     Field::DataType::Number,  [this](std::string v){ setOrderNum(v);  }}
     };
-}
-
-std::string Species::getDetailsHeader() const
-{
-    return "Details";
-}
-
-std::vector<DetailLine> Species::getExtraDetails() const 
-{
-    return {};
-}
-
-void Species::addRecord()
-{
-    const std::string orderQuery = "SELECT MIN(IFNULL(MAX(orderNum), 0)+1, 999999999) FROM species";
-    const std::string queryResult = Database::getInstance().getResult(orderQuery);
-    orderNum_ = stoi(queryResult);
-
-    Database::getInstance().insertDb(this);
-}
-
-void Species::deleteRecord()
-{
-    Database::getInstance().deleteDb(this);
-}
-
-void Species::editRecord()
-{
-    Database::getInstance().updateDb(this);
-}
-
-void Species::setId(int id)
-{
-    id_ = id;
-}
-
-void Species::setName(std::string name)
-{
-    name_ = name;
 }
 
 bool Species::hasSchedule() const
@@ -98,35 +49,4 @@ void Species::setScheduleId(std::string scheduleId)
     {
         setScheduleId(stoi(scheduleId));
     }
-}
-
-void Species::setOrderNum(std::string orderNum)
-{
-    setOrderNum(stoi(orderNum));
-}
-
-void Species::setOrderNum(int orderNum)
-{
-    orderNum_ = orderNum;
-}
-
-void Species::swapOrder(Species& speciesSwap)
-{
-    int orgOrder = orderNum_;
-    setOrderNum(speciesSwap.orderNum_);
-    editRecord();
-
-    speciesSwap.setOrderNum(orgOrder);
-    speciesSwap.editRecord();
-}
-
-std::string Species::toString()
-{
-    std::string ret = "SPECIES Id: " + std::to_string(id_);
-    for(Field& field : getFields())
-    {
-        ret += ", " + field.colNam + ": " + (field.value.empty() ? " null" : field.value);;
-    }
-
-    return ret;
 }

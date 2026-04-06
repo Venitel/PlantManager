@@ -12,6 +12,7 @@ target_compile_definitions(sqlite3 PRIVATE SQLITE_ENABLE_MATH_FUNCTIONS)
 #Lib
 add_library(PMLib
     src/Sections.cpp
+    src/Record.cpp
     src/Plant.cpp
     src/Console.cpp
     src/UserActionHandler.cpp

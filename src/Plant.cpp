@@ -20,16 +20,6 @@ std::string Plant::getForeignName(const Field::DataType dataType) const
     return "";
 }
 
-int Plant::getId() const
-{
-    return id_;
-}
-
-std::string Plant::getName() const
-{
-    return name_;
-}
-
 std::vector<Field> Plant::getFields() 
 {
     const std::string orderNum = std::to_string(orderNum_);
@@ -83,35 +73,6 @@ std::vector<DetailLine> Plant::getExtraDetails() const
     }
 
     return extraDetails;
-}
-
-void Plant::addRecord()
-{
-    const std::string orderQuery = "SELECT MIN(IFNULL(MAX(orderNum), 0)+1, 999999999) FROM plants";
-    const std::string queryResult = Database::getInstance().getResult(orderQuery);
-    orderNum_ = stoi(queryResult);
-
-    Database::getInstance().insertDb(this);
-}
-
-void Plant::deleteRecord()
-{
-    Database::getInstance().deleteDb(this);
-}
-
-void Plant::editRecord()
-{
-    Database::getInstance().updateDb(this);
-}
-
-void Plant::setId(int id)
-{
-    id_ = id;
-}
-
-void Plant::setName(std::string name)
-{
-    name_ = name;
 }
 
 bool Plant::hasSpecies() const
@@ -177,35 +138,4 @@ void Plant::setLastWatered(std::string isoDate)
 void Plant::setNotes(std::string notes)
 {
     notes_ = notes;
-}
-
-void Plant::setOrderNum(std::string orderNum)
-{
-    setOrderNum(stoi(orderNum));
-}
-
-void Plant::setOrderNum(int orderNum)
-{
-    orderNum_ = orderNum;
-}
-
-void Plant::swapOrder(Plant& plantSwap)
-{
-    int orgOrder = orderNum_;
-    setOrderNum(plantSwap.orderNum_);
-    editRecord();
-
-    plantSwap.setOrderNum(orgOrder);
-    plantSwap.editRecord();
-}
-
-std::string Plant::toString()
-{
-    std::string ret = "PLANT Id: " + std::to_string(id_);
-    for(Field& field : getFields())
-    {
-        ret += ", " + field.colNam + ": " + (field.value.empty() ? " null" : field.value);
-    }
-
-    return ret;
 }
