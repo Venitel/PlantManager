@@ -184,7 +184,10 @@ std::string getValueByList(int x, int y, Field& field, const std::vector<std::pa
                 index = std::distance(pairs.begin(), it);
             }
         }
-        catch(...) {} //do nothing, index is 0 already
+        catch(const std::exception& exc)
+        {
+            Logger::getInstance().error(exc.what()); //continue with index=0
+        }
 
         bool redraw = true;
         while(true)
