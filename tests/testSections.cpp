@@ -13,7 +13,8 @@ void insertDummyRecords(int num, T& section)
     Database::getInstance().exec("DELETE FROM " + section.getTabName());
     for(int i=0; i<num; i++)
     {
-        section.addRecord(section.getBlankRecord());
+        auto newRecord = section.getBlankRecord();
+        section.addRecord(newRecord);
     }
     Database::getInstance().close();
 }

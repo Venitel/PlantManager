@@ -29,7 +29,7 @@ namespace DateUtils
         return buf; 
     }
 
-    bool isValidDateLog(std::string& text)
+    bool isValidDateLog(const std::string& text)
     {
         bool ret = isValidDate(text);
         if(!ret)
@@ -39,9 +39,9 @@ namespace DateUtils
         return ret;
     }
 
-    bool isValidDate(std::string& text)
+    bool isValidDate(const std::string& text)
     {
-        std::regex pattern(R"(^\d{4}-\d{2}-\d{2}$)");
+        const std::regex pattern(R"(^\d{4}-\d{2}-\d{2}$)");
         if(!std::regex_match(text, pattern)) {return false;}
 
         int year = std::stoi(text.substr(0, 4));
@@ -69,7 +69,7 @@ namespace DateUtils
 
 namespace Utils
 {
-    bool isNumberLog(std::string& number)
+    bool isNumberLog(const std::string& number)
     {
         bool ret = isNumber(number);
         if(!ret)
@@ -79,9 +79,9 @@ namespace Utils
         return ret;
     }
 
-    bool isNumber(std::string& number)
+    bool isNumber(const std::string& number)
     {
-        std::regex pattern(R"(-?[0-9]+)");
+        const std::regex pattern(R"(-?[0-9]+)");
         return std::regex_match(number, pattern);
     }
 

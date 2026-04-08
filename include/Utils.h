@@ -8,14 +8,14 @@ namespace DateUtils
 {
     extern const std::vector<std::pair<int, std::string>> Months;
     std::string today();
-    bool isValidDate(std::string& text);
-    bool isValidDateLog(std::string& text);
+    bool isValidDate(const std::string& text);
+    bool isValidDateLog(const std::string& text);
 }
 
 namespace Utils
 {
-    bool isNumber(std::string& number);
-    bool isNumberLog(std::string& number);
+    bool isNumber(const std::string& number);
+    bool isNumberLogconst(const std::string& number);
     void prepareOptionalIntFromString(std::string& number);
 }
 

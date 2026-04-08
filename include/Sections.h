@@ -49,12 +49,12 @@ class ListSection : public Section
     T getBlankRecord() const;
     std::string getTabName() const;
 
-    void addRecord(T record);
-    void deleteRecord(int index);
-    void updateRecord(int index);
-    void orderUp(int index);
+    void addRecord(T& record);
+    void deleteRecord(const int index);
+    void updateRecord(const int index);
+    void orderUp(const int index);
 
-    T& getRecord(int index);
+    T& getRecord(const int index);
     T& getSelectedRecord();
 
     int recordCount() const;
@@ -62,8 +62,8 @@ class ListSection : public Section
 
     bool moveDown();
     void moveLast();
-    bool moveToRecord(int id);
-    bool moveToRecord(std::string& id);
+    bool moveToRecord(const int id);
+    bool moveToRecord(const std::string& id);
 
     void loadFromDb();
 

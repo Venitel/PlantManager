@@ -11,18 +11,18 @@ class Schedule : public Record
     std::vector<Field> getFields() override;
     std::vector<DetailLine> getExtraDetails() const override;
 
-    void setDormancyStart(int dormancyStart);
-    void setDormancyStart(std::string dormancyStart); //string as an argument because we read every db column as a text
-    void setDormancyEnd(int dormancyEnd);
-    void setDormancyEnd(std::string dormancyEnd); //string as an argument because we read every db column as a text
-    void setWaterInterval(int waterInterval);
-    void setWaterInterval(std::string waterInterval); //string as an argument because we read every db column as a text
-    void setWaterIntervalDormant(int waterIntervalDormant);
-    void setWaterIntervalDormant(std::string waterIntervalDormant); //string as an argument because we read every db column as a text
-    void setFeedInterval(int feedInterval);
-    void setFeedInterval(std::string feedInterval); //string as an argument because we read every db column as a text
-    void setFeedIntervalDormant(int feedIntervalDormant);
-    void setFeedIntervalDormant(std::string feedIntervalDormant); //string as an argument because we read every db column as a text
+    void setDormancyStart(const int dormancyStart);
+    void setDormancyStart(const std::string& dormancyStart); //string as an argument because we read every db column as a text
+    void setDormancyEnd(const int dormancyEnd);
+    void setDormancyEnd(const std::string& dormancyEnd); //string as an argument because we read every db column as a text
+    void setWaterInterval(const int waterInterval);
+    void setWaterInterval(std::string& waterInterval); //string as an argument because we read every db column as a text
+    void setWaterIntervalDormant(const int waterIntervalDormant);
+    void setWaterIntervalDormant(std::string& waterIntervalDormant); //string as an argument because we read every db column as a text
+    void setFeedInterval(const int feedInterval);
+    void setFeedInterval(std::string& feedInterval); //string as an argument because we read every db column as a text
+    void setFeedIntervalDormant(const int feedIntervalDormant);
+    void setFeedIntervalDormant(std::string& feedIntervalDormant); //string as an argument because we read every db column as a text
 
   private: 
     int dormancyStart_;

@@ -21,7 +21,7 @@ bool Logger::open(const std::string& file)
     return true;
 }
 
-std::string Logger::timestamp() 
+std::string Logger::timestamp() const
 {
     std::time_t now = std::time(nullptr);
     char time[20];
@@ -29,26 +29,28 @@ std::string Logger::timestamp()
     return time;
 }
 
+void Logger::write(const std::string& type, const std::string& msg)
+{
+    file_ << "[" << timestamp() << "] [" + type + "]  " << msg << "\n";
+    file_.flush(); //write immediately
+}
+
 void Logger::info(const std::string& msg) 
 {
-    file_ << "[" << timestamp() << "] [INFO]  " << msg << "\n";
-    file_.flush(); //write immediately
+    write("INFO", msg);
 }
 
 void Logger::error(const std::string& msg) 
 {
-    file_ << "[" << timestamp() << "] [ERROR] " << msg << "\n";
-    file_.flush(); //write immediately
+    write("ERROR", msg);
 }
 
 void Logger::query(const std::string& msg) 
 {
-    file_ << "[" << timestamp() << "] [QUERY]  " << msg << "\n";
-    file_.flush(); //write immediately
+    write("QUERY", msg);
 }
 
 void Logger::result(const std::string& msg) 
 {
-    file_ << "[" << timestamp() << "] [RESULT] " << msg << "\n";
-    file_.flush(); //write immediately
+    write("RESULT", msg);
 }

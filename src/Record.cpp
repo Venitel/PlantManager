@@ -21,12 +21,12 @@ std::string Record::getName() const
     return name_;
 }
 
-void Record::setId(int id)
+void Record::setId(const int id)
 {
     id_ = id;
 }
 
-void Record::setName(std::string name)
+void Record::setName(const std::string& name)
 {
     name_ = name;
 }
@@ -45,7 +45,7 @@ void Record::addRecord()
 {
     const std::string orderQuery = "SELECT MIN(IFNULL(MAX(orderNum), 0)+1, 999999999) FROM " + getTabName();
     const std::string queryResult = Database::getInstance().getResult(orderQuery);
-    orderNum_ = stoi(queryResult);
+    setOrderNum(queryResult);
 
     Database::getInstance().insertDb(this);
 }
@@ -60,19 +60,19 @@ void Record::updateRecord()
     Database::getInstance().updateDb(this);
 }
 
-void Record::setOrderNum(std::string orderNum)
+void Record::setOrderNum(const std::string& orderNum)
 {
     setOrderNum(stoi(orderNum));
 }
 
-void Record::setOrderNum(int orderNum)
+void Record::setOrderNum(const int orderNum)
 {
     orderNum_ = orderNum;
 }
 
 void Record::swapOrder(Record& recordSwap)
 {
-    int orgOrder = orderNum_;
+    const int orgOrder = orderNum_;
     setOrderNum(recordSwap.orderNum_);
     updateRecord();
 

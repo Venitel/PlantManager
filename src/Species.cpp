@@ -14,7 +14,7 @@ std::string Species::getForeignName(const Field::DataType dataType) const
         {
             return "";
         }
-        std::string tabName = Database::getTableName(dataType);
+        const std::string tabName = Database::getTableName(dataType);
         return Database::getInstance().getNameById(tabName, scheduleId_);
     }
     return "";
@@ -38,12 +38,12 @@ bool Species::hasSchedule() const
     return scheduleId_ > 0;
 }
 
-void Species::setScheduleId(int scheduleId)
+void Species::setScheduleId(const int scheduleId)
 {
     scheduleId_ = scheduleId;
 }
 
-void Species::setScheduleId(std::string scheduleId)
+void Species::setScheduleId(const std::string& scheduleId)
 {
     if(!scheduleId.empty()) //nullable col
     {

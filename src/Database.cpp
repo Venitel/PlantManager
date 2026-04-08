@@ -108,8 +108,8 @@ std::vector<T> Database::getAll() const
         first = false;
     }
 
-    std::string tabName = T().getTabName();
-    std::string sql = "SELECT id, " + cols + " FROM " + tabName + " ORDER BY orderNum";
+    const std::string tabName = T().getTabName();
+    const std::string sql = "SELECT id, " + cols + " FROM " + tabName + " ORDER BY orderNum";
     auto* stmt = prepare(sql);
 
     std::vector<T> retVec;
@@ -166,7 +166,7 @@ void Database::insertDb(Record* record)
         first = false;
     }
 
-    std::string sql = "INSERT INTO " + record->getTabName() + " (" + cols + ") VALUES (" + values + ")";
+    const std::string sql = "INSERT INTO " + record->getTabName() + " (" + cols + ") VALUES (" + values + ")";
     auto* stmt = prepare(sql);
     sqlite3_step(stmt);
     sqlite3_finalize(stmt);
@@ -190,7 +190,7 @@ void Database::updateDb(Record* record)
         first = false;
     }
 
-    std::string sql = "UPDATE " + record->getTabName() + " SET " + eqs + " WHERE id=" + std::to_string(record->getId());
+    const std::string sql = "UPDATE " + record->getTabName() + " SET " + eqs + " WHERE id=" + std::to_string(record->getId());
     auto* stmt = prepare(sql);
     sqlite3_step(stmt);
     sqlite3_finalize(stmt);
@@ -198,7 +198,7 @@ void Database::updateDb(Record* record)
 
 void Database::deleteDb(Record* record)
 {
-    std::string sql = "DELETE FROM " + record->getTabName() + " WHERE id=" + std::to_string(record->getId());
+    const std::string sql = "DELETE FROM " + record->getTabName() + " WHERE id=" + std::to_string(record->getId());
     auto* stmt = prepare(sql);
     sqlite3_step(stmt);
     sqlite3_finalize(stmt);
@@ -235,7 +235,7 @@ std::string Database::getResult(const std::string& sql) const
     {
         if(sqlite3_column_type(stmt, 0) != SQLITE_NULL)
         {
-            std::string result = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+            const std::string result = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
             Logger::getInstance().result("Result: " + result);
             return result;
         }
@@ -245,10 +245,10 @@ std::string Database::getResult(const std::string& sql) const
     return "";
 }
 
-std::string Database::getNameById(std::string& table, int id) const
+std::string Database::getNameById(const std::string& table, const int id) const
 {
     std::string name;
-    std::string sql = "SELECT name FROM " + table + " WHERE id = " + std::to_string(id);
+    const std::string sql = "SELECT name FROM " + table + " WHERE id = " + std::to_string(id);
     auto* stmt = prepare(sql);
     while (sqlite3_step(stmt) == SQLITE_ROW) 
     {
@@ -263,7 +263,7 @@ std::vector<std::pair<int, std::string>> Database::getAllKeys(const Field::DataT
 {
     const std::string table = getTableName(dataType);
     std::vector<std::pair<int, std::string>> allKeys;
-    std::string sql = "SELECT id, name FROM " + table + " ORDER BY orderNum ASC";
+    const std::string sql = "SELECT id, name FROM " + table + " ORDER BY orderNum ASC";
     auto* stmt = prepare(sql);
     while (sqlite3_step(stmt) == SQLITE_ROW) 
     {

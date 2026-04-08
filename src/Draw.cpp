@@ -18,7 +18,7 @@ int getBottomRow()
     return headerOffset + sectionHeight + footerOffset;
 }
 
-std::vector<std::string> wrapText(const std::string& text, int width) 
+std::vector<std::string> wrapText(const std::string& text, const int width) 
 {
     std::vector<std::string> lines;
     for (int i = 0; i <= (int)text.length()/width; i++)
@@ -29,24 +29,24 @@ std::vector<std::string> wrapText(const std::string& text, int width)
     return lines;
 }
 
-void drawLine(int x, int y, int width, char symbol) 
+void drawLine(const int x, const int y, const int width, const char symbol) 
 {
     std::string line(width, symbol);
     putText(x, y, line);
 }
 
-void clearRow(int row, int offset)
+void clearRow(const int row, const int offset)
 {
     drawLine(offset, row, sectionWidth*2 - offset, ' ');
 }
 
-void putText(int x, int y, const std::string& text) 
+void putText(const int x, const int y, const std::string& text) 
 {
     setCursor(x, y);
     std::cout << text;
 }
 
-void putError(int x, int y, const std::string& text)
+void putError(const int x, const int y, const std::string& text)
 {
     setColor(Colors::Error);
     putText(x, y, text);
@@ -105,7 +105,7 @@ void drawHeader()
     }, activeTab);
 }
 
-void clearSection(int x, int y, int width, int height)
+void clearSection(const int x, const int y, const int width, const int height)
 {
     for(int i = 0; i < height; i++)
     {
@@ -113,7 +113,7 @@ void clearSection(int x, int y, int width, int height)
     }
 }
 
-void drawInstructionsRow(int row, const std::string& title)
+void drawInstructionsRow(const int row, const std::string& title)
 {
     int pos = 0;
     const std::string titleStart = "--- " + title + " [ ";
@@ -141,7 +141,7 @@ void drawInstructionsRow(int row, const std::string& title)
     putText(pos, row, titleEnd);
 }
 
-void drawList(int row)
+void drawList(const int row)
 {
     std::visit([&](auto& tab) {
         auto& currentList = tab.first;
@@ -172,7 +172,7 @@ void drawList(int row)
     }, activeTab);
 }
 
-void drawDetails(int row) 
+void drawDetails(const int row) 
 {
     std::visit([&](auto& tab) {
         auto& currentList = tab.first;
@@ -237,7 +237,7 @@ void drawDetails(int row)
     }, activeTab);
 }
 
-void drawExtraDetailLine(int row, int& printedRows, const std::vector<DetailLine>& extraDetails)
+void drawExtraDetailLine(const int row, int& printedRows, const std::vector<DetailLine>& extraDetails)
 {
     auto it = std::find_if(extraDetails.begin(), extraDetails.end(), [&](auto& detail) {return printedRows+1 == detail.row;});
     if(it != extraDetails.end())
@@ -250,7 +250,7 @@ void drawExtraDetailLine(int row, int& printedRows, const std::vector<DetailLine
     }
 }
 
-void drawFooter(int row) 
+void drawFooter(const int row) 
 {
     std::visit([&](auto& tab) {
         auto& currentList = tab.first;
@@ -267,7 +267,7 @@ void drawFooter(int row)
             putText(0, row + 1, "↑ ↓ →: Select | TAB: Next Tab                                                                Q: Quit");
             std::string listKeys = "A: Add | D: Delete | M: Move Up";
 
-            if(std::is_same_v<TabType, std::pair<ListSection<Plant>*, DetailsSection<Plant>*>>)
+            if constexpr (std::is_same_v<TabType, std::pair<ListSection<Plant>*, DetailsSection<Plant>*>>)
             {
                 listKeys += " | W: Water Now | F: Feed Now";
             }
@@ -286,7 +286,7 @@ void drawFooter(int row)
             {
                 detailsKeys += " | →: Go To";
             }
-            else if(std::is_same_v<TabType, std::pair<ListSection<Plant>*, DetailsSection<Plant>*>>)
+            else if constexpr (std::is_same_v<TabType, std::pair<ListSection<Plant>*, DetailsSection<Plant>*>>)
             {
                 std::string plantColNam = currentList->getSelectedRecord().getFields()[currentDetails->getPosition()].colNam;
                 if(plantColNam == "lastWatered")

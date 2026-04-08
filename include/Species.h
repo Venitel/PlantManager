@@ -13,8 +13,8 @@ class Species : public Record
     std::string getForeignName(const Field::DataType dataType) const override;
 
     bool hasSchedule() const;
-    void setScheduleId(int scheduleId);
-    void setScheduleId(std::string scheduleId); //string as an argument because we read every db column as a text
+    void setScheduleId(const int scheduleId);
+    void setScheduleId(const std::string& scheduleId); //string as an argument because we read every db column as a text
 
   private: 
     int scheduleId_ = -1;

@@ -15,7 +15,7 @@ std::string Plant::getForeignName(const Field::DataType dataType) const
         {
             return "";
         }
-        std::string tabName = Database::getTableName(dataType);
+        const std::string tabName = Database::getTableName(dataType);
         return Database::getInstance().getNameById(tabName, speciesId_);
     }
     return "";
@@ -130,26 +130,26 @@ std::optional<int> Plant::countDaysUntil(const std::string& intervalCol, const s
     return stoi(Database::getInstance().getResult(orderQuery));
 }
 
-std::optional<int> Plant::daysUntilWatering(bool dormant) const
+std::optional<int> Plant::daysUntilWatering(const bool dormant) const
 {
     const std::string intervalColNam = dormant ? "waterIntervalDormant" : "waterInterval";
 
     return countDaysUntil(intervalColNam, "lastWatered");
 }
 
-std::optional<int> Plant::daysUntilFeeding(bool dormant) const
+std::optional<int> Plant::daysUntilFeeding(const bool dormant) const
 {
     const std::string intervalColNam = dormant ? "feedIntervalDormant" : "feedInterval";
 
     return countDaysUntil(intervalColNam, "lastFed");
 }
 
-void Plant::setSpeciesId(int speciesId)
+void Plant::setSpeciesId(const int speciesId)
 {
     speciesId_ = speciesId;
 }
 
-void Plant::setSpeciesId(std::string speciesId)
+void Plant::setSpeciesId(const std::string& speciesId)
 {
     if(!speciesId.empty()) //nullable col
     {
@@ -157,7 +157,7 @@ void Plant::setSpeciesId(std::string speciesId)
     }
 }
 
-void Plant::setLastWatered(std::string isoDate)
+void Plant::setLastWatered(const std::string& isoDate)
 {
     if(isoDate.empty() || DateUtils::isValidDateLog(isoDate))
     {
@@ -171,7 +171,7 @@ void Plant::waterNow()
     updateRecord();
 }
 
-void Plant::setLastFed(std::string isoDate)
+void Plant::setLastFed(const std::string& isoDate)
 {
     if(isoDate.empty() || DateUtils::isValidDateLog(isoDate))
     {
@@ -185,7 +185,7 @@ void Plant::feedNow()
     updateRecord();
 }
 
-void Plant::setNotes(std::string notes)
+void Plant::setNotes(const std::string& notes)
 {
     notes_ = notes;
 }

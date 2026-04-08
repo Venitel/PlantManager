@@ -27,7 +27,7 @@ int getKey()
     return key;
 }
 
-int getCooldown(int key)
+int getCooldown(const int key)
 {
     if(key >= 256)
     {
@@ -37,9 +37,9 @@ int getCooldown(int key)
     return 100;
 }
 
-bool onCooldown(int key)
+bool onCooldown(const int key)
 {
-    auto now     = std::chrono::steady_clock::now();
+    const auto now     = std::chrono::steady_clock::now();
     auto& last   = buttonCooldowns[key];
     auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - last);
         
@@ -141,7 +141,7 @@ bool goToForeignRecord()
     return result;
 }
 
-void getFieldFromUser(int x, int y, Field& field)
+void getFieldFromUser(const int x, const int y, Field& field)
 {
     if(field.inputType == Field::InputType::List) 
     {
@@ -161,14 +161,14 @@ void getFieldFromUser(int x, int y, Field& field)
             setColor(Colors::Optional);
         }
 
-        bool checkEmpty = field.inputType==Field::InputType::Mandatory;
-        bool checkDate = field.dataType==Field::DataType::Date;
-        bool checkPositive = field.dataType==Field::DataType::Number;
+        const bool checkEmpty = field.inputType == Field::InputType::Mandatory;
+        const bool checkDate = field.dataType == Field::DataType::Date;
+        const bool checkPositive = field.dataType == Field::DataType::Number;
         field.setter(inputAt(x, y, field.label, field.size, checkEmpty, checkDate, checkPositive)); 
     }
 }
 
-std::string getValueByList(int x, int y, Field& field, const std::vector<std::pair<int, std::string>>& pairs)
+std::string getValueByList(const int x, const int y, Field& field, const std::vector<std::pair<int, std::string>>& pairs)
 {
     setColor(Colors::List);
     putText(x, y, field.label);
@@ -201,7 +201,7 @@ std::string getValueByList(int x, int y, Field& field, const std::vector<std::pa
             }
 
             redraw = true;
-            int key = getKey();
+            const int key = getKey();
 
             if((Key)key == Key::Right) 
             {
@@ -291,7 +291,7 @@ bool userEdit()
 
         auto& record = currentList->getSelectedRecord();
 
-        int bottomRow = getBottomRow()+1; //one empty row
+        const int bottomRow = getBottomRow()+1; //one empty row
         drawInstructionsRow(bottomRow, "Edit " + record.getTabName());
 
         Field editField = record.getFields()[currentDetails->getPosition()];
@@ -321,7 +321,7 @@ bool userDelete()
             return;
         }
         const int bottomRow = getBottomRow();
-        std::string confirmation = inputAt(0, bottomRow, "Confirm delete " + currentList->getSelectedRecord().getName() + " [Y/N]: ", 1, true);
+        const std::string confirmation = inputAt(0, bottomRow, "Confirm delete " + currentList->getSelectedRecord().getName() + " [Y/N]: ", 1, true);
         clearRow(bottomRow);
 
         if(toupper(confirmation[0]) != 'Y')
@@ -359,7 +359,7 @@ bool userOrder()
     return result;
 }
 
-std::string inputAt(int x, int y, const std::string& prompt, int maxLength, bool checkEmpty, bool checkDate, bool checkPositiveNumber) 
+std::string inputAt(const int x, const int y, const std::string& prompt, const int maxLength, const bool checkEmpty, const bool checkDate, const bool checkPositiveNumber) 
 {
     //input row requires one free row below for error messages
 
@@ -393,7 +393,7 @@ std::string inputAt(int x, int y, const std::string& prompt, int maxLength, bool
     }
 }
 
-bool handlePlantAction(std::function<void(Plant&)> action, std::string field)
+bool handlePlantAction(std::function<void(Plant&)> action, const std::string& field)
 {
     bool result = false;
 

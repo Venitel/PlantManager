@@ -24,7 +24,7 @@ class Database
 
     template <typename T>
     std::vector<T> getAll() const;
-    std::string getNameById(std::string& table, int id) const;
+    std::string getNameById(const std::string& table, const int id) const;
     std::vector<std::pair<int, std::string>> getAllKeys(const Field::DataType dataType) const;
 
     void exec(const std::string& sql);

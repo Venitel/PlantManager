@@ -15,7 +15,7 @@ void terminateConsole()
     showCursor(true);
 }
 
-void setConsoleSize(int width, int height) 
+void setConsoleSize(const int width, const int height) 
 {    
     COORD bufferSize = {(SHORT)width, (SHORT)height};
     SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE), bufferSize);
@@ -24,13 +24,13 @@ void setConsoleSize(int width, int height)
     SetConsoleWindowInfo(GetStdHandle(STD_OUTPUT_HANDLE), TRUE, &windowSize);
 }
 
-void setCursor(int x, int y) 
+void setCursor(const int x, const int y) 
 {
     COORD coord{(SHORT)x, (SHORT)y};
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
 
-void setColor(WORD attribute) 
+void setColor(const WORD attribute) 
 {
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), attribute);
 }
@@ -40,7 +40,7 @@ void resetColor()
     setColor(Colors::Default);
 }
 
-void setColor(Colors color)
+void setColor(const Colors color)
 {
     switch(color)
     {
@@ -60,7 +60,7 @@ void setColor(Colors color)
     }
 }
 
-void showCursor(bool show) 
+void showCursor(const bool show) 
 {
     CONSOLE_CURSOR_INFO cursorInfo{1, show};
     SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);

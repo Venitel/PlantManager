@@ -16,8 +16,8 @@ enum class Key
 };
 
 int getKey();
-int getCooldown(int key);
-bool onCooldown(int key);
+int getCooldown(const int key);
+bool onCooldown(const int key);
 
 bool moveActiveSectionUp();
 bool moveActiveSectionDown();
@@ -26,13 +26,13 @@ bool activateDetails();
 bool nextTab();
 bool goToForeignRecord();
 
-bool handlePlantAction(std::function<void(Plant&)> action, std::string field);
+bool handlePlantAction(std::function<void(Plant&)> action, const std::string& field);
 bool waterPlant();
 bool feedPlant();
 
-void getFieldFromUser(int x, int y, Field& field);
-std::string getValueByList(int x, int y, Field& field, const std::vector<std::pair<int, std::string>>& pairs);
-std::string inputAt(int x, int y, const std::string& prompt, int maxLength, bool checkEmpty = false, bool checkDate = false, bool checkPositiveNumber = false);
+void getFieldFromUser(const int x, const int y, Field& field);
+std::string getValueByList(const int x, const int y, Field& field, const std::vector<std::pair<int, std::string>>& pairs);
+std::string inputAt(const int x, const int y, const std::string& prompt, const int maxLength, const bool checkEmpty = false, const bool checkDate = false, const bool checkPositiveNumber = false);
 
 bool userAdd();
 bool userEdit();

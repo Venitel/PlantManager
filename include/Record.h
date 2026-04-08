@@ -63,14 +63,14 @@ class Record
     virtual int getId() const;
     virtual std::string getName() const;
 
-    virtual void setId(int id);
-    virtual void setName(std::string name);
+    virtual void setId(const int id);
+    virtual void setName(const std::string& name);
 
     virtual std::string getForeignName(const Field::DataType dataType) const;
     virtual std::vector<DetailLine> getExtraDetails() const;
 
-    void setOrderNum(int orderNum);
-    void setOrderNum(std::string orderNum); //string as an argument because we read every db column as a text
+    void setOrderNum(const int orderNum);
+    void setOrderNum(const std::string& orderNum); //string as an argument because we read every db column as a text
     void swapOrder(Record& recordSwap);
 
     virtual std::string toString();

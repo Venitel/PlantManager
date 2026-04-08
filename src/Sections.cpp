@@ -100,14 +100,14 @@ std::string ListSection<T>::getTabName() const
 }
 
 template <typename T>
-void ListSection<T>::addRecord(T record)
+void ListSection<T>::addRecord(T& record)
 {
     record.addRecord();
     records_.push_back(record);
 }
 
 template <typename T>
-void ListSection<T>::deleteRecord(int index)
+void ListSection<T>::deleteRecord(const int index)
 {
     records_[index].deleteRecord();
     records_.erase(records_.begin() + index);
@@ -119,7 +119,7 @@ void ListSection<T>::deleteRecord(int index)
 }
 
 template <typename T>
-T& ListSection<T>::getRecord(int index)
+T& ListSection<T>::getRecord(const int index)
 {
     return records_[index];
 }
@@ -131,13 +131,13 @@ T& ListSection<T>::getSelectedRecord()
 }
 
 template <typename T>
-void ListSection<T>::updateRecord(int index)
+void ListSection<T>::updateRecord(const int index)
 {
     records_[index].updateRecord();
 }
 
 template <typename T>
-void ListSection<T>::orderUp(int index)
+void ListSection<T>::orderUp(const int index)
 {
     T& currentRecord = records_[index];
     T& previousRecord = records_[index - 1];
@@ -180,7 +180,7 @@ void ListSection<T>::moveLast()
 }
 
 template <typename T>
-bool ListSection<T>::moveToRecord(int id)
+bool ListSection<T>::moveToRecord(const int id)
 {
     auto it = std::find_if(records_.begin(), records_.end(), [&](const T& record) {return record.getId() == id;});
 
@@ -194,7 +194,7 @@ bool ListSection<T>::moveToRecord(int id)
 }
 
 template <typename T>
-bool ListSection<T>::moveToRecord(std::string& id)
+bool ListSection<T>::moveToRecord(const std::string& id)
 {
     if(!id.empty())
     {

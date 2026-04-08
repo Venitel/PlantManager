@@ -16,16 +16,16 @@ class Plant : public Record
 
     bool hasSpecies() const;
     bool isDormant() const;
-    std::optional<int> daysUntilWatering(bool dormant) const;
-    std::optional<int> daysUntilFeeding(bool dormant) const;
+    std::optional<int> daysUntilWatering(const bool dormant) const;
+    std::optional<int> daysUntilFeeding(const bool dormant) const;
 
-    void setSpeciesId(int speciesId);
-    void setSpeciesId(std::string speciesId); //string as an argument because we read every db column as a text
-    void setLastWatered(std::string isoDate);
+    void setSpeciesId(const int speciesId);
+    void setSpeciesId(const std::string& speciesId); //string as an argument because we read every db column as a text
+    void setLastWatered(const std::string& isoDate);
     void waterNow();
-    void setLastFed(std::string isoDate);
+    void setLastFed(const std::string& isoDate);
     void feedNow();
-    void setNotes(std::string notes);
+    void setNotes(const std::string& notes);
 
   private:
     int speciesId_ = -1;

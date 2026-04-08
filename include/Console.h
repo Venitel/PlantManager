@@ -6,15 +6,15 @@
 
 void initConsole();
 void terminateConsole();
-void setConsoleSize(int width, int height);
+void setConsoleSize(const int width, const int height);
 void clearScreen();
-void clearSection(int x, int y, int width, int height);
+void clearSection(const int x, const int y, const int width, const int height);
 
-void setCursor(int x, int y);
-void showCursor(bool show);
+void setCursor(const int x, const int y);
+void showCursor(const bool show);
 
-void setColor(WORD attribute);
-void setColor(Colors color);
+void setColor(const WORD attribute);
+void setColor(const Colors color);
 void resetColor();
 
 #endif

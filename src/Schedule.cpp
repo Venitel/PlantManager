@@ -39,32 +39,32 @@ std::vector<DetailLine> Schedule::getExtraDetails() const
     return extraDetails;
 }
 
-void Schedule::setDormancyStart(int dormancyStart)
+void Schedule::setDormancyStart(const int dormancyStart)
 {
     dormancyStart_ = dormancyStart;
 }
 
-void Schedule::setDormancyStart(std::string dormancyStart)
+void Schedule::setDormancyStart(const std::string& dormancyStart)
 {
     setDormancyStart(stoi(dormancyStart));
 }
 
-void Schedule::setDormancyEnd(int dormancyEnd)
+void Schedule::setDormancyEnd(const int dormancyEnd)
 {
     dormancyEnd_ = dormancyEnd;
 }
 
-void Schedule::setDormancyEnd(std::string dormancyEnd)
+void Schedule::setDormancyEnd(const std::string& dormancyEnd)
 {
     setDormancyEnd(stoi(dormancyEnd));
 }
 
-void Schedule::setWaterInterval(int waterInterval)
+void Schedule::setWaterInterval(const int waterInterval)
 {
     waterInterval_ = waterInterval;
 }
 
-void Schedule::setWaterInterval(std::string waterInterval)
+void Schedule::setWaterInterval(std::string& waterInterval)
 {
     Utils::prepareOptionalIntFromString(waterInterval);
     if(Utils::isNumberLog(waterInterval))
@@ -73,12 +73,12 @@ void Schedule::setWaterInterval(std::string waterInterval)
     }
 }
 
-void Schedule::setWaterIntervalDormant(int waterIntervalDormant)
+void Schedule::setWaterIntervalDormant(const int waterIntervalDormant)
 {
     waterIntervalDormant_ = waterIntervalDormant;
 }
 
-void Schedule::setWaterIntervalDormant(std::string waterIntervalDormant)
+void Schedule::setWaterIntervalDormant(std::string& waterIntervalDormant)
 {
     Utils::prepareOptionalIntFromString(waterIntervalDormant);
     if(Utils::isNumberLog(waterIntervalDormant))
@@ -87,12 +87,12 @@ void Schedule::setWaterIntervalDormant(std::string waterIntervalDormant)
     }
 }
 
-void Schedule::setFeedInterval(int feedInterval)
+void Schedule::setFeedInterval(const int feedInterval)
 {
     feedInterval_ = feedInterval;
 }
 
-void Schedule::setFeedInterval(std::string feedInterval)
+void Schedule::setFeedInterval(std::string& feedInterval)
 {
     Utils::prepareOptionalIntFromString(feedInterval);
     if(Utils::isNumberLog(feedInterval))
@@ -101,12 +101,12 @@ void Schedule::setFeedInterval(std::string feedInterval)
     }
 }
 
-void Schedule::setFeedIntervalDormant(int feedIntervalDormant)
+void Schedule::setFeedIntervalDormant(const int feedIntervalDormant)
 {
     feedIntervalDormant_ = feedIntervalDormant;
 }
 
-void Schedule::setFeedIntervalDormant(std::string feedIntervalDormant)
+void Schedule::setFeedIntervalDormant(std::string& feedIntervalDormant)
 {
     Utils::prepareOptionalIntFromString(feedIntervalDormant);
     if(Utils::isNumberLog(feedIntervalDormant))
