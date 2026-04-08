@@ -2,6 +2,7 @@
 #define USERACTIONHANDLER_H
 
 #include "Sections.h"
+#include <functional>
 
 enum class Key
 {
@@ -24,7 +25,10 @@ bool activateList();
 bool activateDetails();
 bool nextTab();
 bool goToForeignRecord();
+
+bool handlePlantAction(std::function<void(Plant&)> action, std::string field);
 bool waterPlant();
+bool feedPlant();
 
 void getFieldFromUser(int x, int y, Field& field);
 std::string getValueByList(int x, int y, Field& field, const std::vector<std::pair<int, std::string>>& pairs);

@@ -10,7 +10,7 @@ namespace
     constexpr int sectionWidth = 50;
     constexpr int sectionHeight = 10;
     constexpr int headerOffset = 3;
-    constexpr int footerOffset = 3;
+    constexpr int footerOffset = 4;
 }
 
 int getBottomRow()
@@ -208,7 +208,7 @@ void drawDetails(int row)
 
             int labelLength = (int)field.label.length();
             std::string text = field.value;
-            if(Field::isForeign(field.dataType))
+            if(field.isForeign())
             {
                 text = record.getForeignName(field.dataType);
             }
@@ -219,6 +219,10 @@ void drawDetails(int row)
             else if(field.dataType == Field::DataType::Date && text.empty())
             {
                 text = "Never";
+            }
+            else if(field.dataType == Field::DataType::Number && text == "-1")
+            {
+                text = "Disabled";
             }
 
             std::vector<std::string> textLines = wrapText(text, sectionWidth - labelLength);
@@ -246,7 +250,6 @@ void drawExtraDetailLine(int row, int& printedRows, const std::vector<DetailLine
     }
 }
 
-
 void drawFooter(int row) 
 {
     std::visit([&](auto& tab) {
@@ -256,34 +259,47 @@ void drawFooter(int row)
 
         drawLine(0, row, 2*sectionWidth, '-');
         clearRow(row + 1);
+        clearRow(row + 2);
+
         if(currentList->isActive())
         {
+            //List buttons
+            putText(0, row + 1, "↑ ↓ →: Select | TAB: Next Tab                                                                Q: Quit");
+            std::string listKeys = "A: Add | D: Delete | M: Move Up";
+
             if(std::is_same_v<TabType, std::pair<ListSection<Plant>*, DetailsSection<Plant>*>>)
             {
-                putText(0, row + 1, "↑ ↓ →: Select | TAB: Next Tab | A: Add | D: Delete | M: Move Up | W: Water Now | Q: Quit");
+                listKeys += " | W: Water Now | F: Feed Now";
             }
-            else
-            {
-                putText(0, row + 1, "↑ ↓ →: Select | TAB: Next Tab | A: Add | D: Delete | M: Move Up                  Q: Quit");
-            }
+
+            putText(0, row + 2, listKeys);
         }
         else
         {
+            //Details buttons
+            putText(0, row + 1, "↑ ↓ ←: Select | TAB: Next Tab                                                                Q: Quit");
+            std::string detailsKeys = "E: Edit";
+
             auto& record = currentList->getSelectedRecord();
             Field selectedField = record.getFields()[currentDetails->getPosition()];
-            if(Field::isForeign(selectedField.dataType))
+            if(selectedField.isForeign())
             {
-                putText(0, row + 1, "↑ ↓ ←: Select | TAB: Next Tab | E: Edit | →: Go To                              Q: Quit");
+                detailsKeys += " | →: Go To";
             }
-            else if(std::is_same_v<TabType, std::pair<ListSection<Plant>*, DetailsSection<Plant>*>>
-                    && (currentList->getSelectedRecord().getFields()[currentDetails->getPosition()].colNam == "lastWatered"))
+            else if(std::is_same_v<TabType, std::pair<ListSection<Plant>*, DetailsSection<Plant>*>>)
             {
-                putText(0, row + 1, "↑ ↓ ←: Select | TAB: Next Tab | E: Edit | W: Water Now                          Q: Quit");
+                std::string plantColNam = currentList->getSelectedRecord().getFields()[currentDetails->getPosition()].colNam;
+                if(plantColNam == "lastWatered")
+                {
+                    detailsKeys += " | W: Water Now";
+                }
+                else if(plantColNam == "lastFed")
+                {
+                    detailsKeys += " | F: Feed Now";
+                }
             }
-            else
-            {
-                putText(0, row + 1, "↑ ↓ ←: Select | TAB: Next Tab | E: Edit                                         Q: Quit");
-            }
+
+            putText(0, row + 2, detailsKeys);
         }
     }, activeTab);
 }
@@ -293,5 +309,5 @@ void drawAll()
     drawHeader();
     drawList(4); //offset by header
     drawDetails(4); //offset by header
-    drawFooter(sectionHeight + 4); //offset by header
+    drawFooter(sectionHeight + 4); //offset by header and sections
 }

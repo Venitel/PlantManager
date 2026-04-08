@@ -31,6 +31,7 @@ std::vector<Field> Plant::getFields()
         { "name",       "Name    : ", name_,        40,     Field::InputType::Mandatory,    Field::DataType::Text,      [this](std::string v){ setName(v);       }},
         { "speciesId",  "Species : ", speciesId,    9,      Field::InputType::List,         Field::DataType::Species,   [this](std::string v){ setSpeciesId(v);  }},
         { "lastWatered","Watered : ", lastWatered_, 10,     Field::InputType::Optional,     Field::DataType::Date,      [this](std::string v){ setLastWatered(v);}},
+        { "lastFed",    "Fed     : ", lastFed_,     10,     Field::InputType::Optional,     Field::DataType::Date,      [this](std::string v){ setLastFed(v);    }},
         { "notes",      "Notes   : ", notes_,       120,    Field::InputType::Optional,     Field::DataType::Text,      [this](std::string v){ setNotes(v);      }},
         { "orderNum",   "Order   : ", orderNum,     9,      Field::InputType::NoInput,      Field::DataType::Number,    [this](std::string v){ setOrderNum(v);   }}
     };
@@ -40,37 +41,49 @@ std::vector<DetailLine> Plant::getExtraDetails() const
 {
     std::vector<DetailLine> extraDetails;
     //Dormancy
-    if(isDormant())
+    bool dormant = isDormant();
+    if(dormant)
     {
         extraDetails.push_back({1, "Dormant", Colors::Dormant}); //after lastWatered field
     }
 
     //Days until watering
-    std::optional<int> days = daysUntilWatering();
-    if(days.has_value())
+    std::optional<int> daysWatering = daysUntilWatering(dormant);
+    if(daysWatering.has_value())
     {
-        std::string dayOrDays = abs(days.value()) == 1 ? " day" : " days";
-        std::string wateringDetailText = "Watering: ";
-        Colors color;
-        if(days.value() == 0)
-        {
-            wateringDetailText += "Today";
-            color = Colors::DueToday;
-        }
-        else if(days.value() > 0)
-        {
-            wateringDetailText += "In " + std::to_string(days.value()) + dayOrDays;
-            color = Colors::DueFuture;
-        }
-        else //days < 0
-        {
-            wateringDetailText += std::to_string(abs(days.value())) + dayOrDays + " ago";
-            color = Colors::DuePast;
-        }
-        extraDetails.push_back({4, wateringDetailText, color}); //after lastWatered field
+        extraDetails.push_back(daysUntilDetail(4+(int)extraDetails.size(), "Watering: ", daysWatering.value())); //after lastWatered field
+    }
+
+    //Days until feeding
+    std::optional<int> daysFeeding = daysUntilFeeding(dormant);
+    if(daysFeeding.has_value())
+    {
+        extraDetails.push_back(daysUntilDetail(5+(int)extraDetails.size(), "Feeding : ", daysFeeding.value())); //after lastWatered field
     }
 
     return extraDetails;
+}
+
+DetailLine Plant::daysUntilDetail(const int pos, std::string text, const int daysUntil) const
+{
+    std::string dayOrDays = abs(daysUntil) == 1 ? " day" : " days";
+    Colors color;
+    if(daysUntil == 0)
+    {
+        text += "Today";
+        color = Colors::DueToday;
+    }
+    else if(daysUntil > 0)
+    {
+        text += "In " + std::to_string(daysUntil) + dayOrDays;
+        color = Colors::DueFuture;
+    }
+    else //days < 0
+    {
+        text += std::to_string(abs(daysUntil)) + dayOrDays + " ago";
+        color = Colors::DuePast;
+    }
+    return {pos, text, color};
 }
 
 bool Plant::hasSpecies() const
@@ -95,14 +108,13 @@ bool Plant::isDormant() const
     return Database::getInstance().getResult(orderQuery) == "1";
 }
 
-std::optional<int> Plant::daysUntilWatering() const
+std::optional<int> Plant::countDaysUntil(const std::string& intervalCol, const std::string& checkCol) const
 {
     //Positive = days until, negative = days late
-    std::string intervalColNam = isDormant() ? "waterIntervalDormant" : "waterInterval";
     const std::string orderQuery = 
     "SELECT CASE "
-        "WHEN schedules." + intervalColNam + " = 0 THEN NULL " //0 = null = disabled
-        "ELSE CAST((julianday(plants.lastWatered, '+' || schedules." + intervalColNam + " || ' day') - julianday('now', 'localtime', 'start of day')) AS INTEGER) "
+        "WHEN schedules." + intervalCol + " = -1 THEN NULL " //-1 = null = disabled
+        "ELSE CAST((julianday(plants." + checkCol + ", '+' || schedules." + intervalCol + " || ' day') - julianday('now', 'localtime', 'start of day')) AS INTEGER) "
         "END "
     "FROM plants "
     "JOIN species ON species.id = plants.speciesId "
@@ -116,6 +128,20 @@ std::optional<int> Plant::daysUntilWatering() const
     }
 
     return stoi(Database::getInstance().getResult(orderQuery));
+}
+
+std::optional<int> Plant::daysUntilWatering(bool dormant) const
+{
+    const std::string intervalColNam = dormant ? "waterIntervalDormant" : "waterInterval";
+
+    return countDaysUntil(intervalColNam, "lastWatered");
+}
+
+std::optional<int> Plant::daysUntilFeeding(bool dormant) const
+{
+    const std::string intervalColNam = dormant ? "feedIntervalDormant" : "feedInterval";
+
+    return countDaysUntil(intervalColNam, "lastFed");
 }
 
 void Plant::setSpeciesId(int speciesId)
@@ -133,7 +159,7 @@ void Plant::setSpeciesId(std::string speciesId)
 
 void Plant::setLastWatered(std::string isoDate)
 {
-    if(DateUtils::isValidDateLog(isoDate))
+    if(isoDate.empty() || DateUtils::isValidDateLog(isoDate))
     {
         lastWatered_ = isoDate;
     }
@@ -142,6 +168,20 @@ void Plant::setLastWatered(std::string isoDate)
 void Plant::waterNow()
 {
     setLastWatered(DateUtils::today());
+    updateRecord();
+}
+
+void Plant::setLastFed(std::string isoDate)
+{
+    if(isoDate.empty() || DateUtils::isValidDateLog(isoDate))
+    {
+        lastFed_ = isoDate;
+    }
+}
+
+void Plant::feedNow()
+{
+    setLastFed(DateUtils::today());
     updateRecord();
 }
 

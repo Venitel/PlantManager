@@ -115,7 +115,7 @@ bool goToForeignRecord()
 
         auto& record = currentList->getSelectedRecord();
         Field selectedField = record.getFields()[currentDetails->getPosition()];
-        if(!Field::isForeign(selectedField.dataType))
+        if(!selectedField.isForeign())
         {
             return;
         }
@@ -244,7 +244,7 @@ bool userAdd()
             return;
         }
 
-        const int bottomRow = getBottomRow();
+        const int bottomRow = getBottomRow()+1; //one empty row
         auto newRecord = currentList->getBlankRecord();
 
         drawInstructionsRow(bottomRow, "Add " + newRecord.getTabName());
@@ -291,7 +291,7 @@ bool userEdit()
 
         auto& record = currentList->getSelectedRecord();
 
-        int bottomRow = getBottomRow();
+        int bottomRow = getBottomRow()+1; //one empty row
         drawInstructionsRow(bottomRow, "Edit " + record.getTabName());
 
         Field editField = record.getFields()[currentDetails->getPosition()];
@@ -374,11 +374,11 @@ std::string inputAt(int x, int y, const std::string& prompt, int maxLength, bool
     {
         if(!std::getline(std::cin, input)) {errorMessage = "Input invalid!";}
         else if(checkEmpty && input.empty()) {errorMessage = "Input cannot be empty!";}
-        else if(checkPositiveNumber && !Utils::isNumber(input)) {errorMessage = "Not a number!";}
-        else if(checkPositiveNumber && stoi(input) < 0) {errorMessage = "Number must be positive!";}
-        //In date we check !input.empty() because empty date is allowed if optional. If it's not allowed, checkEmpty will catch it first
+        //We check !input.empty() because empty is allowed if optional. If it's not allowed, checkEmpty will catch it first
+        else if(checkPositiveNumber && !input.empty() && !Utils::isNumber(input)) {errorMessage = "Not a number!";}
+        else if(checkPositiveNumber && !input.empty() && stoi(input) <= 0) {errorMessage = "Number must be positive!";}
         else if(checkDate && !input.empty() && !DateUtils::isValidDate(input)) {errorMessage = "Not a valid date! Expected format YYYY-MM-DD.";}
-        else if(checkDate && input > DateUtils::today()) {errorMessage = "Date cannot be in the future!";}
+        else if(checkDate && !input.empty() && input > DateUtils::today()) {errorMessage = "Date cannot be in the future!";}
         else if(input.length() > maxLength) {errorMessage = "Input too long!";}
         else // Accepted input
         {
@@ -393,7 +393,7 @@ std::string inputAt(int x, int y, const std::string& prompt, int maxLength, bool
     }
 }
 
-bool waterPlant()
+bool handlePlantAction(std::function<void(Plant&)> action, std::string field)
 {
     bool result = false;
 
@@ -410,16 +410,26 @@ bool waterPlant()
         {
             if(!currentList->isActive())
             {
-                if(currentList->getSelectedRecord().getFields()[currentDetails->getPosition()].colNam != "lastWatered")
+                if(currentList->getSelectedRecord().getFields()[currentDetails->getPosition()].colNam != field)
                 {
                     return;
                 }
             }
 
-            tab.first->getSelectedRecord().waterNow();
+            action(tab.first->getSelectedRecord());
         }
         result = true;
     }, activeTab);
 
     return result;
+}
+
+bool waterPlant()
+{
+    return handlePlantAction([](Plant& plant){plant.waterNow();}, "lastWatered");
+}
+
+bool feedPlant()
+{
+    return handlePlantAction([](Plant& plant){plant.feedNow();}, "lastFed");
 }

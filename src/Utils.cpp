@@ -78,9 +78,18 @@ namespace Utils
         }
         return ret;
     }
+
     bool isNumber(std::string& number)
     {
         std::regex pattern(R"(-?[0-9]+)");
         return std::regex_match(number, pattern);
+    }
+
+    void prepareOptionalIntFromString(std::string& number)
+    {
+        if(number.empty())
+        {
+            number = "-1";
+        }
     }
 }

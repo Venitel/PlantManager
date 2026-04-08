@@ -16,6 +16,7 @@ namespace Utils
 {
     bool isNumber(std::string& number);
     bool isNumberLog(std::string& number);
+    void prepareOptionalIntFromString(std::string& number);
 }
 
 #endif

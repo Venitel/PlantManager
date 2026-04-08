@@ -19,12 +19,19 @@ class Schedule : public Record
     void setWaterInterval(std::string waterInterval); //string as an argument because we read every db column as a text
     void setWaterIntervalDormant(int waterIntervalDormant);
     void setWaterIntervalDormant(std::string waterIntervalDormant); //string as an argument because we read every db column as a text
-  
+    void setFeedInterval(int feedInterval);
+    void setFeedInterval(std::string feedInterval); //string as an argument because we read every db column as a text
+    void setFeedIntervalDormant(int feedIntervalDormant);
+    void setFeedIntervalDormant(std::string feedIntervalDormant); //string as an argument because we read every db column as a text
+
   private: 
     int dormancyStart_;
     int dormancyEnd_;
-    int waterInterval_;
-    int waterIntervalDormant_;
+    int waterInterval_ = -1;
+    int waterIntervalDormant_ = -1;
+    int feedInterval_ = -1;
+    int feedIntervalDormant_ = -1;
+
 };
 
 #endif

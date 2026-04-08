@@ -59,31 +59,34 @@ void Database::createTables()
         CREATE TABLE IF NOT EXISTS plants (
             id          INTEGER PRIMARY KEY AUTOINCREMENT,
             name        TEXT NOT NULL,
+            orderNum    INTEGER NOT NULL,
             speciesId   INTEGER REFERENCES species(id) ON DELETE SET NULL,
             lastWatered TEXT DEFAULT '', 
-            notes       TEXT DEFAULT '',
-            orderNum    INTEGER NOT NULL
+            lastFed     TEXT DEFAULT '',
+            notes       TEXT DEFAULT ''
         );
     )");
 
     exec(R"(
         CREATE TABLE IF NOT EXISTS species (
             id          INTEGER PRIMARY KEY AUTOINCREMENT,
-            scheduleId  INTEGER REFERENCES schedules(id) ON DELETE SET NULL,
             name        TEXT NOT NULL,
-            orderNum    INTEGER NOT NULL
+            orderNum    INTEGER NOT NULL,
+            scheduleId  INTEGER REFERENCES schedules(id) ON DELETE SET NULL
         );
     )");
 
     exec(R"(
         CREATE TABLE IF NOT EXISTS schedules (
             id                   INTEGER PRIMARY KEY AUTOINCREMENT,
+            name                 TEXT NOT NULL,
+            orderNum             INTEGER NOT NULL,
             dormancyStart        INTEGER NOT NULL,
             dormancyEnd          INTEGER NOT NULL,
             waterInterval        INTEGER NOT NULL,
             waterIntervalDormant INTEGER NOT NULL,
-            name                 TEXT NOT NULL,
-            orderNum             INTEGER NOT NULL
+            feedInterval         INTEGER NOT NULL,
+            feedIntervalDormant  INTEGER NOT NULL
         );
     )");
 }

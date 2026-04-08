@@ -28,11 +28,11 @@ struct Field
     Schedule
   };
 
-  static bool isForeign(const DataType type) 
+  bool isForeign() const
   {
-    return type == DataType::Plant ||
-           type == DataType::Species ||
-           type == DataType::Schedule;
+    return dataType == DataType::Plant ||
+           dataType == DataType::Species ||
+           dataType == DataType::Schedule;
   }
 
   std::string colNam;
@@ -79,9 +79,9 @@ class Record
     virtual std::vector<Field> getFields() = 0;
 
 protected:
-    int id_;
+    int id_ = -1;
     std::string name_;
-    int orderNum_;
+    int orderNum_ = -1;
 };
 
 #endif
