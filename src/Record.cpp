@@ -5,7 +5,7 @@ std::string Record::toString()
     std::string ret = getTabName() +  " Id: " + std::to_string(id_);
     for(Field& field : getFields())
     {
-        ret += ", " + field.colNam + ": " + (field.value.empty() ? " null" : field.value);;
+        ret += ", " + field.colNam + ": " + (field.value.empty() ? "null" : field.value);;
     }
 
     return ret;

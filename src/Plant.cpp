@@ -127,7 +127,7 @@ std::optional<int> Plant::countDaysUntil(const std::string& intervalCol, const s
         return std::nullopt;
     }
 
-    return stoi(Database::getInstance().getResult(orderQuery));
+    return stoi(result);
 }
 
 std::optional<int> Plant::daysUntilWatering(const bool dormant) const
