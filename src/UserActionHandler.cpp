@@ -34,7 +34,7 @@ int getCooldown(const int key)
         //Arrow keys are offset by 256, we want arrows to have shorter cooldown
         return 50;
     }
-    return 100;
+    return 125;
 }
 
 bool onCooldown(const int key)
@@ -114,7 +114,7 @@ bool goToForeignRecord()
         }
 
         auto& record = currentList->getSelectedRecord();
-        Field selectedField = record.getFields()[currentDetails->getPosition()];
+        Field selectedField = record.getEditableFields()[currentDetails->getPosition()];
         if(!selectedField.isForeign())
         {
             return;
@@ -249,7 +249,7 @@ bool userAdd()
 
         drawInstructionsRow(bottomRow, "Add " + newRecord.getTabName());
 
-        std::vector<Field> fields = newRecord.getFields();
+        std::vector<Field> fields = newRecord.getEditableFields();
         int rowNum = 1; //title is first
         for(Field& field : fields)
         {
@@ -294,7 +294,7 @@ bool userEdit()
         const int bottomRow = getBottomRow()+1; //one empty row
         drawInstructionsRow(bottomRow, "Edit " + record.getTabName());
 
-        Field editField = record.getFields()[currentDetails->getPosition()];
+        Field editField = record.getEditableFields()[currentDetails->getPosition()];
         getFieldFromUser(0, bottomRow + 1, editField);
 
         currentList->updateRecord(currentList->getPosition());
@@ -393,7 +393,7 @@ std::string inputAt(const int x, const int y, const std::string& prompt, const i
     }
 }
 
-bool handlePlantAction(std::function<void(Plant&)> action, const std::string& field)
+bool handlePlantAction(std::function<bool(Plant&)> action, const std::string& field)
 {
     bool result = false;
 
@@ -410,15 +410,14 @@ bool handlePlantAction(std::function<void(Plant&)> action, const std::string& fi
         {
             if(!currentList->isActive())
             {
-                if(currentList->getSelectedRecord().getFields()[currentDetails->getPosition()].colNam != field)
+                if(currentList->getSelectedRecord().getEditableFields()[currentDetails->getPosition()].colNam != field)
                 {
                     return;
                 }
             }
 
-            action(tab.first->getSelectedRecord());
+            result = action(tab.first->getSelectedRecord());
         }
-        result = true;
     }, activeTab);
 
     return result;
@@ -426,10 +425,19 @@ bool handlePlantAction(std::function<void(Plant&)> action, const std::string& fi
 
 bool waterPlant()
 {
-    return handlePlantAction([](Plant& plant){plant.waterNow();}, "lastWatered");
+    return handlePlantAction([](Plant& plant){return plant.waterNow();}, "lastWatered");
 }
 
 bool feedPlant()
 {
-    return handlePlantAction([](Plant& plant){plant.feedNow();}, "lastFed");
+    return handlePlantAction([](Plant& plant){return plant.feedNow();}, "lastFed");
+}
+
+bool postponePlant()
+{
+    //Postpones both if list position is selected
+    //Postpones either if particular detail is selected
+    bool postponedWatering = handlePlantAction([](Plant& plant){return plant.delayWatering();}, "lastWatered");
+    bool postponedFeeding = handlePlantAction([](Plant& plant){return plant.delayFeeding();}, "lastFed");
+    return postponedWatering || postponedFeeding;
 }

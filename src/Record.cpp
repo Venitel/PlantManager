@@ -1,4 +1,6 @@
+#include "Record.h"
 #include "Database.h"
+#include <algorithm>
 
 std::string Record::toString()
 {
@@ -78,4 +80,16 @@ void Record::swapOrder(Record& recordSwap)
 
     recordSwap.setOrderNum(orgOrder);
     recordSwap.updateRecord();
+}
+
+std::vector<Field> Record::getEditableFields()
+{
+    std::vector<Field> fields = getFields();
+    std::vector<Field> editableFields;
+    editableFields.reserve(fields.size());
+
+    std::copy_if(fields.begin(), fields.end(), std::back_inserter(editableFields), 
+                [](const Field& f) {return f.inputType != Field::InputType::NoInput;});
+
+    return editableFields;
 }

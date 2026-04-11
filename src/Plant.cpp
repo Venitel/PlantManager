@@ -21,19 +21,23 @@ std::string Plant::getForeignName(const Field::DataType dataType) const
     return "";
 }
 
-std::vector<Field> Plant::getFields() 
+std::vector<Field> Plant::getFields()
 {
     const std::string orderNum = std::to_string(orderNum_);
     const std::string speciesId = std::to_string(speciesId_);
+    const std::string wateringDelay = std::to_string(wateringDelay_);
+    const std::string feedingDelay = std::to_string(feedingDelay_);
 
     return 
-    {//   ColNam        Label         Var           Length  InputType                       DataType                    Setter
-        { "name",       "Name    : ", name_,        40,     Field::InputType::Mandatory,    Field::DataType::Text,      [this](std::string v){ setName(v);       }},
-        { "speciesId",  "Species : ", speciesId,    9,      Field::InputType::List,         Field::DataType::Species,   [this](std::string v){ setSpeciesId(v);  }},
-        { "lastWatered","Watered : ", lastWatered_, 10,     Field::InputType::Optional,     Field::DataType::Date,      [this](std::string v){ setLastWatered(v);}},
-        { "lastFed",    "Fed     : ", lastFed_,     10,     Field::InputType::Optional,     Field::DataType::Date,      [this](std::string v){ setLastFed(v);    }},
-        { "notes",      "Notes   : ", notes_,       120,    Field::InputType::Optional,     Field::DataType::Text,      [this](std::string v){ setNotes(v);      }},
-        { "orderNum",   "Order   : ", orderNum,     9,      Field::InputType::NoInput,      Field::DataType::Number,    [this](std::string v){ setOrderNum(v);   }}
+    {//   ColNam            Label         Var             Length  InputType                       DataType                    Setter
+        { "name",           "Name    : ", name_,          40,     Field::InputType::Mandatory,    Field::DataType::Text,      [this](std::string v){ setName(v);         }},
+        { "speciesId",      "Species : ", speciesId,      9,      Field::InputType::List,         Field::DataType::Species,   [this](std::string v){ setSpeciesId(v);    }},
+        { "lastWatered",    "Watered : ", lastWatered_,   10,     Field::InputType::Optional,     Field::DataType::Date,      [this](std::string v){ setLastWatered(v);  }},
+        { "wateringDelay",  "W. Delay: ", wateringDelay,  3,      Field::InputType::NoInput,      Field::DataType::Number,    [this](std::string v){ setWateringDelay(v);}},
+        { "lastFed",        "Fed     : ", lastFed_,       10,     Field::InputType::Optional,     Field::DataType::Date,      [this](std::string v){ setLastFed(v);      }},
+        { "feedingDelay",   "F. Delay: ", feedingDelay,   3,      Field::InputType::NoInput,      Field::DataType::Number,    [this](std::string v){ setFeedingDelay(v); }},
+        { "notes",          "Notes   : ", notes_,         120,    Field::InputType::Optional,     Field::DataType::Text,      [this](std::string v){ setNotes(v);        }},
+        { "orderNum",       "Order   : ", orderNum,       9,      Field::InputType::NoInput,      Field::DataType::Number,    [this](std::string v){ setOrderNum(v);     }}
     };
 }
 
@@ -51,37 +55,51 @@ std::vector<DetailLine> Plant::getExtraDetails() const
     std::optional<int> daysWatering = daysUntilWatering(dormant);
     if(daysWatering.has_value())
     {
-        extraDetails.push_back(daysUntilDetail(4+(int)extraDetails.size(), "Watering: ", daysWatering.value())); //after lastWatered field
+        extraDetails.push_back(daysUntilDetail(4+(int)extraDetails.size(), "Watering: ", daysWatering.value(), wateringDelay_)); //after lastWatered field
     }
 
     //Days until feeding
     std::optional<int> daysFeeding = daysUntilFeeding(dormant);
     if(daysFeeding.has_value())
     {
-        extraDetails.push_back(daysUntilDetail(5+(int)extraDetails.size(), "Feeding : ", daysFeeding.value())); //after lastWatered field
+        extraDetails.push_back(daysUntilDetail(5+(int)extraDetails.size(), "Feeding : ", daysFeeding.value(), feedingDelay_)); //after lastWatered field
     }
 
     return extraDetails;
 }
 
-DetailLine Plant::daysUntilDetail(const int pos, std::string text, const int daysUntil) const
+DetailLine Plant::daysUntilDetail(const int pos, std::string text, const int daysUntil, const int delay) const
 {
-    std::string dayOrDays = abs(daysUntil) == 1 ? " day" : " days";
     Colors color;
     if(daysUntil == 0)
     {
         text += "Today";
         color = Colors::DueToday;
     }
-    else if(daysUntil > 0)
+    else if(daysUntil == 1)
     {
-        text += "In " + std::to_string(daysUntil) + dayOrDays;
+        text += "Tomorrow";
         color = Colors::DueFuture;
+    }
+    else if(daysUntil > 1)
+    {
+        text += "In " + std::to_string(daysUntil) + " days";
+        color = Colors::DueFuture;
+    }
+    else if(daysUntil == -1)
+    {
+        text += "Yesterday";
+        color = Colors::DuePast;
     }
     else //days < 0
     {
-        text += std::to_string(abs(daysUntil)) + dayOrDays + " ago";
+        text += std::to_string(abs(daysUntil)) + " days ago";
         color = Colors::DuePast;
+    }
+
+    if(delay > 0)
+    {
+        text += " (" + std::to_string(delay) + (delay == 1 ? " day" : " days") + " delayed)";
     }
     return {pos, text, color};
 }
@@ -108,13 +126,13 @@ bool Plant::isDormant() const
     return Database::getInstance().getResult(orderQuery) == "1";
 }
 
-std::optional<int> Plant::countDaysUntil(const std::string& intervalCol, const std::string& checkCol) const
+std::optional<int> Plant::countDaysUntil(const std::string& intervalCol, const std::string& checkCol, const std::string& delayCol) const
 {
     //Positive = days until, negative = days late
     const std::string orderQuery = 
     "SELECT CASE "
         "WHEN schedules." + intervalCol + " = -1 THEN NULL " //-1 = null = disabled
-        "ELSE CAST((julianday(plants." + checkCol + ", '+' || schedules." + intervalCol + " || ' day') - julianday('now', 'localtime', 'start of day')) AS INTEGER) "
+        "ELSE CAST((julianday(plants." + checkCol + ", '+' || schedules." + intervalCol + " || ' day') - julianday('now', 'localtime', 'start of day')) AS INTEGER) + plants." + delayCol + " "
         "END "
     "FROM plants "
     "JOIN species ON species.id = plants.speciesId "
@@ -134,14 +152,14 @@ std::optional<int> Plant::daysUntilWatering(const bool dormant) const
 {
     const std::string intervalColNam = dormant ? "waterIntervalDormant" : "waterInterval";
 
-    return countDaysUntil(intervalColNam, "lastWatered");
+    return countDaysUntil(intervalColNam, "lastWatered", "wateringDelay");
 }
 
 std::optional<int> Plant::daysUntilFeeding(const bool dormant) const
 {
     const std::string intervalColNam = dormant ? "feedIntervalDormant" : "feedInterval";
 
-    return countDaysUntil(intervalColNam, "lastFed");
+    return countDaysUntil(intervalColNam, "lastFed", "FeedingDelay");
 }
 
 void Plant::setSpeciesId(const int speciesId)
@@ -162,13 +180,50 @@ void Plant::setLastWatered(const std::string& isoDate)
     if(isoDate.empty() || DateUtils::isValidDateLog(isoDate))
     {
         lastWatered_ = isoDate;
+        setWateringDelay(0);
     }
 }
 
-void Plant::waterNow()
+bool Plant::waterNow()
 {
-    setLastWatered(DateUtils::today());
-    updateRecord();
+    std::string today = DateUtils::today();
+    if(lastWatered_ != today)
+    {
+        setLastWatered(today);
+        setWateringDelay(0);
+        updateRecord();
+        return true;
+    }
+    return false;
+}
+
+void Plant::setWateringDelay(const int delay)
+{
+    wateringDelay_ = delay;
+}
+
+void Plant::setWateringDelay(const std::string& delay)
+{
+    setWateringDelay(stoi(delay));
+}
+
+bool Plant::delayWatering()
+{
+    std::optional<int> daysUntil = daysUntilWatering(isDormant());
+    if(daysUntil.has_value())
+    {
+        if(daysUntil.value() <= 0) //if watering is due, set it to tomorrow
+        {
+            setWateringDelay(abs(daysUntil.value()) + 1);
+        }
+        else //add one day
+        {
+            setWateringDelay(wateringDelay_ + 1);
+        }
+        updateRecord();
+        return true;
+    }
+    return false;
 }
 
 void Plant::setLastFed(const std::string& isoDate)
@@ -176,13 +231,50 @@ void Plant::setLastFed(const std::string& isoDate)
     if(isoDate.empty() || DateUtils::isValidDateLog(isoDate))
     {
         lastFed_ = isoDate;
+        setFeedingDelay(0);
     }
 }
 
-void Plant::feedNow()
+bool Plant::feedNow()
 {
-    setLastFed(DateUtils::today());
-    updateRecord();
+    std::string today = DateUtils::today();
+    if(lastFed_ != today)
+    {
+        setLastFed(today);
+        setFeedingDelay(0);
+        updateRecord();
+        return true;
+    }
+    return false;
+}
+
+void Plant::setFeedingDelay(const int delay)
+{
+    feedingDelay_ = delay;
+}
+
+void Plant::setFeedingDelay(const std::string& delay)
+{
+    setFeedingDelay(stoi(delay));
+}
+
+bool Plant::delayFeeding()
+{
+    std::optional<int> daysUntil = daysUntilFeeding(isDormant());
+    if(daysUntil.has_value())
+    {
+        if(daysUntil.value() <= 0) //if feeding is due, set it to tomorrow
+        {
+            setFeedingDelay(abs(daysUntil.value()) + 1);
+        }
+        else //add one day
+        {
+            setFeedingDelay(feedingDelay_ + 1);
+        }
+        updateRecord();
+        return true;
+    }
+    return false;
 }
 
 void Plant::setNotes(const std::string& notes)

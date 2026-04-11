@@ -64,6 +64,7 @@ int main()
                 case (Key)'M': redraw = userOrder(); break;
                 case (Key)'W': redraw = waterPlant(); break;
                 case (Key)'F': redraw = feedPlant(); break;
+                case (Key)'P': redraw = postponePlant(); break;
                 case (Key)'Q': quit(); return 0;
                 default: redraw = false;
             }

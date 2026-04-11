@@ -74,6 +74,8 @@ class Record
     void swapOrder(Record& recordSwap);
 
     virtual std::string toString();
+
+    virtual std::vector<Field> getEditableFields();
     //Pure virtual
     virtual std::string getTabName() const = 0;
     virtual std::vector<Field> getFields() = 0;

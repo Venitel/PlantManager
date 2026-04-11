@@ -7,7 +7,7 @@ std::string Schedule::getTabName() const
     return Database::getTableName(Field::DataType::Schedule);
 }
 
-std::vector<Field> Schedule::getFields() 
+std::vector<Field> Schedule::getFields()
 {
     const std::string orderNum = std::to_string(orderNum_);
     const std::string dormancyStart = std::to_string(dormancyStart_);

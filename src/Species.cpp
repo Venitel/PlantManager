@@ -20,7 +20,7 @@ std::string Species::getForeignName(const Field::DataType dataType) const
     return "";
 }
 
-std::vector<Field> Species::getFields() 
+std::vector<Field> Species::getFields()
 {
     const std::string orderNum = std::to_string(orderNum_);
     const std::string scheduleId = std::to_string(scheduleId_);

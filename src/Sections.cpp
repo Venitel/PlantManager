@@ -229,9 +229,8 @@ template <typename T>
 int DetailsSection<T>::editableFieldsCount() const
 {
     T dummy;
-    std::vector<Field> fields = dummy.getFields();
-    int count = count_if(fields.begin(), fields.end(), [](const Field& f) {return f.inputType != Field::InputType::NoInput;});
-    return count;
+    std::vector<Field> fields = dummy.getEditableFields();
+    return fields.size();
 }
 
 template <typename T>

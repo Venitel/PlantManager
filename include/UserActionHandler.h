@@ -26,9 +26,10 @@ bool activateDetails();
 bool nextTab();
 bool goToForeignRecord();
 
-bool handlePlantAction(std::function<void(Plant&)> action, const std::string& field);
+bool handlePlantAction(std::function<bool(Plant&)> action, const std::string& field);
 bool waterPlant();
 bool feedPlant();
+bool postponePlant();
 
 void getFieldFromUser(const int x, const int y, Field& field);
 std::string getValueByList(const int x, const int y, Field& field, const std::vector<std::pair<int, std::string>>& pairs);

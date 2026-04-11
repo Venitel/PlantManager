@@ -57,13 +57,15 @@ void Database::createTables()
 {
     exec(R"(
         CREATE TABLE IF NOT EXISTS plants (
-            id          INTEGER PRIMARY KEY AUTOINCREMENT,
-            name        TEXT NOT NULL,
-            orderNum    INTEGER NOT NULL,
-            speciesId   INTEGER REFERENCES species(id) ON DELETE SET NULL,
-            lastWatered TEXT DEFAULT '', 
-            lastFed     TEXT DEFAULT '',
-            notes       TEXT DEFAULT ''
+            id              INTEGER PRIMARY KEY AUTOINCREMENT,
+            name            TEXT NOT NULL,
+            orderNum        INTEGER NOT NULL,
+            speciesId       INTEGER REFERENCES species(id) ON DELETE SET NULL,
+            lastWatered     TEXT DEFAULT '',
+            wateringDelay   INTEGER NOT NULL,
+            lastFed         TEXT DEFAULT '',
+            feedingDelay    INTEGER NOT NULL,
+            notes           TEXT DEFAULT ''
         );
     )");
 

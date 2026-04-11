@@ -186,7 +186,7 @@ void drawDetails(const int row)
 
         int selection = currentDetails->isActive() ? currentDetails->getPosition() : -1;
 
-        std::vector<Field> fields = record.getFields();
+        std::vector<Field> fields = record.getEditableFields();
         std::vector<DetailLine> extraDetails = record.getExtraDetails();
 
         int fieldsNum = 0;
@@ -196,10 +196,6 @@ void drawDetails(const int row)
         for(Field& field : fields)
         {
             drawExtraDetailLine(row, printedRows, extraDetails);
-            if(field.inputType == Field::InputType::NoInput)
-            {
-                continue;
-            }
             if(selection == fieldsNum) 
             {
                 setColor(Colors::Selection);
@@ -269,7 +265,7 @@ void drawFooter(const int row)
 
             if constexpr (std::is_same_v<TabType, std::pair<ListSection<Plant>*, DetailsSection<Plant>*>>)
             {
-                listKeys += " | W: Water Now | F: Feed Now";
+                listKeys += " | W: Water Now | F: Feed Now | P: Postpone";
             }
 
             putText(0, row + 2, listKeys);
@@ -281,21 +277,21 @@ void drawFooter(const int row)
             std::string detailsKeys = "E: Edit";
 
             auto& record = currentList->getSelectedRecord();
-            Field selectedField = record.getFields()[currentDetails->getPosition()];
+            Field selectedField = record.getEditableFields()[currentDetails->getPosition()];
             if(selectedField.isForeign())
             {
                 detailsKeys += " | →: Go To";
             }
             else if constexpr (std::is_same_v<TabType, std::pair<ListSection<Plant>*, DetailsSection<Plant>*>>)
             {
-                std::string plantColNam = currentList->getSelectedRecord().getFields()[currentDetails->getPosition()].colNam;
+                std::string plantColNam = currentList->getSelectedRecord().getEditableFields()[currentDetails->getPosition()].colNam;
                 if(plantColNam == "lastWatered")
                 {
-                    detailsKeys += " | W: Water Now";
+                    detailsKeys += " | W: Water Now | P: Postpone";
                 }
                 else if(plantColNam == "lastFed")
                 {
-                    detailsKeys += " | F: Feed Now";
+                    detailsKeys += " | F: Feed Now | P: Postpone";
                 }
             }
 
