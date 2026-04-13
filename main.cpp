@@ -40,6 +40,7 @@ int main()
     SetConsoleCtrlHandler(exitHandler, TRUE);
     Logger::getInstance().info("--- RUN ---");
     loadAllListsFromDb();
+    cachePlantData();
     initConsole();
     drawAll();
 

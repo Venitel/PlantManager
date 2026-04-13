@@ -26,10 +26,10 @@ std::vector<Field> Species::getFields()
     const std::string scheduleId = std::to_string(scheduleId_);
 
     return 
-    {//   ColNam        Label         Var           Length  InputType                      DataType                  Setter
-        { "name",       "Name    : ", name_,        40,     Field::InputType::Mandatory,   Field::DataType::Text,    [this](std::string v){ setName(v);      }},
-        { "scheduleId", "Schedule: ", scheduleId,   9,      Field::InputType::List,        Field::DataType::Schedule,[this](std::string v){ setScheduleId(v);}},
-        { "orderNum",   "Order   : ", orderNum,     9,      Field::InputType::NoInput,     Field::DataType::Number,  [this](std::string v){ setOrderNum(v);  }}
+    {//   ColNam        Label         Var           Length  InputType                      DataType                  Setter                                     onEdit
+        { "name",       "Name    : ", name_,        40,     Field::InputType::Mandatory,   Field::DataType::Text,    [this](std::string v){setName(v);},        [this](){updateRecord();} },
+        { "scheduleId", "Schedule: ", scheduleId,   9,      Field::InputType::List,        Field::DataType::Schedule,[this](std::string v){setScheduleId(v);},  [this](){updateRecord();} },
+        { "orderNum",   "Order   : ", orderNum,     9,      Field::InputType::NoInput,     Field::DataType::Number,  [this](std::string v){setOrderNum(v);},    [this](){} }
     };
 }
 

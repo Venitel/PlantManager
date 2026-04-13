@@ -29,6 +29,16 @@ void loadAllListsFromDb()
     }
 }
 
+void cachePlantData()
+{
+    for(Plant& plant : plantList.getAllRecords())
+    {
+        plant.checkDormancy();
+        plant.checkDaysUntilWatering();
+        plant.checkDaysUntilFeeding();
+    }
+}
+
 // BASE SECTION
 Section::Section(SectionType type) 
     :   type_{type}
@@ -102,7 +112,7 @@ std::string ListSection<T>::getTabName() const
 template <typename T>
 void ListSection<T>::addRecord(T& record)
 {
-    record.addRecord();
+    record.onCreate();
     records_.push_back(record);
 }
 
@@ -128,6 +138,12 @@ template <typename T>
 T& ListSection<T>::getSelectedRecord()
 {
     return records_[getPosition()];
+}
+
+template <typename T>
+std::vector<T>& ListSection<T>::getAllRecords() 
+{ 
+    return records_; 
 }
 
 template <typename T>

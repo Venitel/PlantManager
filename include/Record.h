@@ -42,6 +42,7 @@ struct Field
   InputType inputType;
   DataType dataType;
   std::function<void(std::string)> setter;
+  std::function<void()> onEdit;
 };
 
 struct DetailLine
@@ -59,6 +60,8 @@ class Record
     virtual void addRecord();
     virtual void deleteRecord();
     virtual void updateRecord();
+
+    virtual void onCreate();
 
     virtual int getId() const;
     virtual std::string getName() const;

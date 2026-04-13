@@ -296,8 +296,7 @@ bool userEdit()
 
         Field editField = record.getEditableFields()[currentDetails->getPosition()];
         getFieldFromUser(0, bottomRow + 1, editField);
-
-        currentList->updateRecord(currentList->getPosition());
+        editField.onEdit();
 
         for(int i = bottomRow; i <= bottomRow + 2; i++) //one extra line for error, multi line notes etc.
         { 

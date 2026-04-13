@@ -8,6 +8,7 @@
 #include <variant>
 
 void loadAllListsFromDb();
+void cachePlantData();
 
 class Section 
 {
@@ -56,6 +57,7 @@ class ListSection : public Section
 
     T& getRecord(const int index);
     T& getSelectedRecord();
+    std::vector<T>& getAllRecords();
 
     int recordCount() const;
     bool empty() const;

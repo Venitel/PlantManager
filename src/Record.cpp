@@ -52,6 +52,11 @@ void Record::addRecord()
     Database::getInstance().insertDb(this);
 }
 
+void Record::onCreate()
+{
+    addRecord();
+}
+
 void Record::deleteRecord()
 {
     Database::getInstance().deleteDb(this);
