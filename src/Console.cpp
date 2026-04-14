@@ -4,7 +4,7 @@ void initConsole()
 {
     SetConsoleCP(CP_UTF8);
     SetConsoleOutputCP(CP_UTF8);
-    setConsoleSize(100, 25);
+    setConsoleSize(100, 33);
     showCursor(false);
     clearScreen();
 }
