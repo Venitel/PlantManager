@@ -24,6 +24,8 @@ class Schedule : public Record
     void setFeedIntervalDormant(const int feedIntervalDormant);
     void setFeedIntervalDormant(std::string& feedIntervalDormant); //string as an argument because we read every db column as a text
 
+    void scheduleChanged();
+
   private: 
     int dormancyStart_;
     int dormancyEnd_;

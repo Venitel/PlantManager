@@ -407,6 +407,7 @@ bool handlePlantAction(std::function<bool(Plant&)> action, const std::string& fi
         using TabType = std::decay_t<decltype(tab)>;
         if constexpr (std::is_same_v<TabType, std::pair<ListSection<Plant>*, DetailsSection<Plant>*>>) 
         {
+            //If not active, check if col is selected
             if(!currentList->isActive())
             {
                 if(currentList->getSelectedRecord().getEditableFields()[currentDetails->getPosition()].colNam != field)
@@ -414,7 +415,7 @@ bool handlePlantAction(std::function<bool(Plant&)> action, const std::string& fi
                     return;
                 }
             }
-
+            //If active just do it without any conditions
             result = action(tab.first->getSelectedRecord());
         }
     }, activeTab);

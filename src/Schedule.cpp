@@ -1,6 +1,8 @@
 #include "Schedule.h"
 #include "Database.h"
 #include "Utils.cpp"
+#include "Sections.h"
+#include "Species.h"
 
 std::string Schedule::getTabName() const
 {
@@ -20,12 +22,12 @@ std::vector<Field> Schedule::getFields()
     return 
     {//    ColNam                Label                    Var                   Length  InputType                       DataType                    Setter                                              onEdit
         { "name",                "Name             : ",   name_,                31,     Field::InputType::Mandatory,    Field::DataType::Text,      [this](std::string v){setName(v);},                 [this](){updateRecord();} }, 
-        { "dormancyStart",       "Dormancy Start   : ",   dormancyStart,        9,      Field::InputType::List,         Field::DataType::Month,     [this](std::string v){setDormancyStart(v);},        [this](){updateRecord();} },
-        { "dormancyEnd",         "Dormancy End     : ",   dormancyEnd,          9,      Field::InputType::List,         Field::DataType::Month,     [this](std::string v){setDormancyEnd(v);},          [this](){updateRecord();} },
-        { "waterInterval",       "Watering         : ",   waterInterval,        3,      Field::InputType::Optional,     Field::DataType::Number,    [this](std::string v){setWaterInterval(v);},        [this](){updateRecord();} },
-        { "waterIntervalDormant","Dormant Watering : ",   waterIntervalDormant, 3,      Field::InputType::Optional,     Field::DataType::Number,    [this](std::string v){setWaterIntervalDormant(v);}, [this](){updateRecord();} },
-        { "feedInterval",        "Feeding          : ",   feedInterval,         3,      Field::InputType::Optional,     Field::DataType::Number,    [this](std::string v){setFeedInterval(v);},         [this](){updateRecord();} },
-        { "feedIntervalDormant", "Dormant Feeding  : ",   feedIntervalDormant,  3,      Field::InputType::Optional,     Field::DataType::Number,    [this](std::string v){setFeedIntervalDormant(v);},  [this](){updateRecord();} },
+        { "dormancyStart",       "Dormancy Start   : ",   dormancyStart,        9,      Field::InputType::List,         Field::DataType::Month,     [this](std::string v){setDormancyStart(v);},        [this](){updateRecord(); scheduleChanged();} },
+        { "dormancyEnd",         "Dormancy End     : ",   dormancyEnd,          9,      Field::InputType::List,         Field::DataType::Month,     [this](std::string v){setDormancyEnd(v);},          [this](){updateRecord(); scheduleChanged();} },
+        { "waterInterval",       "Watering         : ",   waterInterval,        3,      Field::InputType::Optional,     Field::DataType::Number,    [this](std::string v){setWaterInterval(v);},        [this](){updateRecord(); scheduleChanged();} },
+        { "waterIntervalDormant","Dormant Watering : ",   waterIntervalDormant, 3,      Field::InputType::Optional,     Field::DataType::Number,    [this](std::string v){setWaterIntervalDormant(v);}, [this](){updateRecord(); scheduleChanged();} },
+        { "feedInterval",        "Feeding          : ",   feedInterval,         3,      Field::InputType::Optional,     Field::DataType::Number,    [this](std::string v){setFeedInterval(v);},         [this](){updateRecord(); scheduleChanged();} },
+        { "feedIntervalDormant", "Dormant Feeding  : ",   feedIntervalDormant,  3,      Field::InputType::Optional,     Field::DataType::Number,    [this](std::string v){setFeedIntervalDormant(v);},  [this](){updateRecord(); scheduleChanged();} },
         { "orderNum",            "Order            : ",   orderNum,             9,      Field::InputType::NoInput,      Field::DataType::Number,    [this](std::string v){setOrderNum(v);},             [this](){} }
     };
 }
@@ -112,5 +114,16 @@ void Schedule::setFeedIntervalDormant(std::string& feedIntervalDormant)
     if(Utils::isNumberLog(feedIntervalDormant))
     {
         setFeedIntervalDormant(stoi(feedIntervalDormant));
+    }
+}
+
+void Schedule::scheduleChanged()
+{
+    for(Species& species : getAllSpecies())
+    {
+        if(species.hasSchedule() && species.getScheduleId() == getId())
+        {
+            species.scheduleChanged();
+        }
     }
 }

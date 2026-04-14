@@ -15,6 +15,8 @@ class Species : public Record
     bool hasSchedule() const;
     void setScheduleId(const int scheduleId);
     void setScheduleId(const std::string& scheduleId); //string as an argument because we read every db column as a text
+    int getScheduleId() const;
+    void scheduleChanged();
 
   private: 
     int scheduleId_ = -1;

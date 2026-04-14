@@ -31,7 +31,7 @@ std::vector<Field> Plant::getFields()
     return 
     {//   ColNam            Label         Var             Length  InputType                       DataType                    Setter (DB)                                   onEdit       
         { "name",           "Name    : ", name_,          40,     Field::InputType::Mandatory,    Field::DataType::Text,      [this](std::string v){setName(v);},           [this](){updateRecord();} },
-        { "speciesId",      "Species : ", speciesId,      9,      Field::InputType::List,         Field::DataType::Species,   [this](std::string v){setSpeciesId(v);},      [this](){updateRecord();} },
+        { "speciesId",      "Species : ", speciesId,      9,      Field::InputType::List,         Field::DataType::Species,   [this](std::string v){setSpeciesId(v);},      [this](){speciesChanged();} },
         { "lastWatered",    "Watered : ", lastWatered_,   10,     Field::InputType::Optional,     Field::DataType::Date,      [this](std::string v){setLastWatered(v);},    [this](){lastWateredChanged();} },
         { "wateringDelay",  "W. Delay: ", wateringDelay,  3,      Field::InputType::NoInput,      Field::DataType::Number,    [this](std::string v){setWateringDelay(v);},  [this](){} },
         { "lastFed",        "Fed     : ", lastFed_,       10,     Field::InputType::Optional,     Field::DataType::Date,      [this](std::string v){setLastFed(v);},        [this](){lastFedChanged();} },
@@ -199,6 +199,11 @@ void Plant::setSpeciesId(const std::string& speciesId)
     }
 }
 
+int Plant::getSpeciesId() const
+{
+    return speciesId_;
+}
+
 void Plant::setLastWatered(const std::string& isoDate)
 {
     if(isoDate.empty() || DateUtils::isValidDateLog(isoDate))
@@ -316,4 +321,15 @@ bool Plant::delayFeeding()
 void Plant::setNotes(const std::string& notes)
 {
     notes_ = notes;
+}
+
+void Plant::speciesChanged()
+{
+    setWateringDelay(0);
+    setFeedingDelay(0);
+    updateRecord();
+
+    checkDormancy();
+    checkDaysUntilWatering();
+    checkDaysUntilFeeding();
 }

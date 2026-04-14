@@ -31,12 +31,27 @@ void loadAllListsFromDb()
 
 void cachePlantData()
 {
-    for(Plant& plant : plantList.getAllRecords())
+    for(Plant& plant : getAllPlants())
     {
         plant.checkDormancy();
         plant.checkDaysUntilWatering();
         plant.checkDaysUntilFeeding();
     }
+}
+
+std::vector<Plant>& getAllPlants()
+{
+    return plantList.getAllRecords();
+}
+
+std::vector<Species>& getAllSpecies()
+{
+    return speciesList.getAllRecords();
+}
+
+std::vector<Schedule>& getAllSchedules()
+{
+    return scheduleList.getAllRecords();
 }
 
 // BASE SECTION

@@ -10,6 +10,10 @@
 void loadAllListsFromDb();
 void cachePlantData();
 
+std::vector<Plant>& getAllPlants();
+std::vector<Species>& getAllSpecies();
+std::vector<Schedule>& getAllSchedules();
+
 class Section 
 {
   public:
