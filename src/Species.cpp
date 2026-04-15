@@ -2,6 +2,7 @@
 #include "Database.h"
 #include "Plant.h"
 #include "Sections.h"
+#include "Utils.h"
 
 std::string Species::getTabName() const
 {
@@ -16,8 +17,7 @@ std::string Species::getForeignName(const Field::DataType dataType) const
         {
             return "";
         }
-        const std::string tabName = Database::getTableName(dataType);
-        return Database::getInstance().getNameById(tabName, scheduleId_);
+        return CommonCache::getName(dataType, getScheduleId());
     }
     return "";
 }
@@ -29,7 +29,7 @@ std::vector<Field> Species::getFields()
 
     return 
     {//   ColNam        Label         Var           Length  InputType                      DataType                  Setter                                     onEdit
-        { "name",       "Name    : ", name_,        40,     Field::InputType::Mandatory,   Field::DataType::Text,    [this](std::string v){setName(v);},        [this](){updateRecord();} },
+        { "name",       "Name    : ", name_,        40,     Field::InputType::Mandatory,   Field::DataType::Text,    [this](std::string v){setName(v);},        [this](){updateRecord(); CommonCache::updateElement(Field::DataType::Species, {getId(), getName()});} },
         { "scheduleId", "Schedule: ", scheduleId,   9,      Field::InputType::List,        Field::DataType::Schedule,[this](std::string v){setScheduleId(v);},  [this](){updateRecord(); scheduleChanged();} },
         { "orderNum",   "Order   : ", orderNum,     9,      Field::InputType::NoInput,     Field::DataType::Number,  [this](std::string v){setOrderNum(v);},    [this](){} }
     };

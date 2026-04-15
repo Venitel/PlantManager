@@ -15,8 +15,8 @@ std::string Plant::getForeignName(const Field::DataType dataType) const
         {
             return "";
         }
-        const std::string tabName = Database::getTableName(dataType);
-        return Database::getInstance().getNameById(tabName, speciesId_);
+
+        return CommonCache::getName(dataType, getSpeciesId());
     }
     return "";
 }

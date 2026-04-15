@@ -21,7 +21,7 @@ std::vector<Field> Schedule::getFields()
 
     return 
     {//    ColNam                Label                    Var                   Length  InputType                       DataType                    Setter                                              onEdit
-        { "name",                "Name             : ",   name_,                31,     Field::InputType::Mandatory,    Field::DataType::Text,      [this](std::string v){setName(v);},                 [this](){updateRecord();} }, 
+        { "name",                "Name             : ",   name_,                31,     Field::InputType::Mandatory,    Field::DataType::Text,      [this](std::string v){setName(v);},                 [this](){updateRecord(); CommonCache::updateElement(Field::DataType::Schedule, {getId(), getName()});} }, 
         { "dormancyStart",       "Dormancy Start   : ",   dormancyStart,        9,      Field::InputType::List,         Field::DataType::Month,     [this](std::string v){setDormancyStart(v);},        [this](){updateRecord(); scheduleChanged();} },
         { "dormancyEnd",         "Dormancy End     : ",   dormancyEnd,          9,      Field::InputType::List,         Field::DataType::Month,     [this](std::string v){setDormancyEnd(v);},          [this](){updateRecord(); scheduleChanged();} },
         { "waterInterval",       "Watering         : ",   waterInterval,        3,      Field::InputType::Optional,     Field::DataType::Number,    [this](std::string v){setWaterInterval(v);},        [this](){updateRecord(); scheduleChanged();} },

@@ -1,7 +1,9 @@
 #include "Utils.h"
 #include "Logger.h"
+#include "Database.h"
 
 #include <regex>
+#include <algorithm>
 
 namespace DateUtils
 {
@@ -91,5 +93,43 @@ namespace Utils
         {
             number = "-1";
         }
+    }
+}
+
+namespace CommonCache
+{
+    std::map<Field::DataType, std::vector<std::pair<int, std::string>>>& getIdNames()
+    {
+        static std::map<Field::DataType, std::vector<std::pair<int, std::string>>> IdNames =
+        {
+            {Field::DataType::Species, Database::getInstance().getAllKeys(Field::DataType::Species)},
+            {Field::DataType::Schedule, Database::getInstance().getAllKeys(Field::DataType::Schedule)},
+        };
+
+        return IdNames;
+    }
+
+    std::string getName(const Field::DataType dataType, const int id)
+    {
+        std::vector<std::pair<int, std::string>>& names = getIdNames()[dataType];
+        auto it = std::find_if(names.begin(), names.end(), [&](auto& pair) {return id == pair.first;});
+        if(it != names.end())
+        {
+            return it->second;
+        }
+        return "";
+    }
+
+    void updateElement(const Field::DataType dataType, const std::pair<int, std::string>& changedIdName)
+    {
+        std::vector<std::pair<int, std::string>>& names = getIdNames()[dataType];
+        {
+            auto it = std::find_if(names.begin(), names.end(), [&](auto& pair) {return changedIdName.first == pair.first;});
+            if(it != names.end())
+            {
+                it->second = changedIdName.second;
+            }
+        }
+
     }
 }
