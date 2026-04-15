@@ -4,6 +4,7 @@
 #include "Database.h"
 #include "Logger.h"
 #include "Sections.h"
+#include "Utils.h"
 
 void quit()
 {
@@ -27,6 +28,18 @@ BOOL WINAPI exitHandler(DWORD signal)
     return FALSE;
 }
 
+void checkPlantCache()
+{
+    static std::string dateCached;
+    
+    const std::string today = DateUtils::today();
+    if(dateCached != today)
+    {
+        cachePlantData();
+        dateCached = today;
+    }
+}
+
 int main() 
 {
     if(!Database::getInstance().open("PlantManager.db")
@@ -40,12 +53,14 @@ int main()
     SetConsoleCtrlHandler(exitHandler, TRUE);
     Logger::getInstance().info("--- RUN ---");
     loadAllListsFromDb();
-    cachePlantData();
+    checkPlantCache();
     initConsole();
     drawAll();
 
     while(true) 
     {
+        checkPlantCache();
+
         int key = toupper(getKey());
         if(!onCooldown(key))
         {
