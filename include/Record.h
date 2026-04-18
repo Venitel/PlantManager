@@ -65,6 +65,7 @@ class Record
 
     virtual int getId() const;
     virtual std::string getName() const;
+    virtual Colors getNameColor() const;
 
     virtual void setId(const int id);
     virtual void setName(const std::string& name);

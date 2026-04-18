@@ -23,6 +23,11 @@ std::string Record::getName() const
     return name_;
 }
 
+Colors Record::getNameColor() const
+{
+    return Colors::Default;
+}
+
 void Record::setId(const int id)
 {
     id_ = id;

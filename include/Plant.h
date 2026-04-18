@@ -12,9 +12,10 @@ class Plant : public Record
     std::vector<Field> getFields() override;
     std::vector<DetailLine> getExtraDetails() const override;
 
-    void onCreate();
+    void onCreate() override;
 
     std::string getForeignName(const Field::DataType dataType) const override;
+    Colors getNameColor() const override;
 
     bool hasSpecies() const;
 

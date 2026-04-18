@@ -166,6 +166,10 @@ void drawList(const int row)
             {
                 setColor(Colors::Selection);
             }
+            else
+            {
+                setColor(currentList->getRecord(i).getNameColor());
+            }
             putText(0, row + (i % sectionHeight), currentList->getRecord(i).getName());
             resetColor();
         }

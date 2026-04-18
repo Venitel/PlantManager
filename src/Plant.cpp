@@ -78,12 +78,12 @@ DetailLine Plant::daysUntilDetail(const int pos, std::string text, const int day
     else if(daysUntil == 1)
     {
         text += "Tomorrow";
-        color = Colors::DueFuture;
+        color = Colors::Default;
     }
     else if(daysUntil > 1)
     {
         text += "In " + std::to_string(daysUntil) + " days";
-        color = Colors::DueFuture;
+        color = Colors::Default;
     }
     else if(daysUntil == -1)
     {
@@ -332,4 +332,20 @@ void Plant::speciesChanged()
     checkDormancy();
     checkDaysUntilWatering();
     checkDaysUntilFeeding();
+}
+
+Colors Plant::getNameColor() const
+{
+    int watering = daysUntilWatering().value_or(1);
+    int feeding = daysUntilFeeding().value_or(1);
+
+    if(watering < 0 || feeding < 0)
+    {
+        return Colors::DuePast;
+    }
+    else if(watering == 0 || feeding == 0)
+    {
+        return Colors::DueToday;
+    }
+    return Colors::Default;
 }

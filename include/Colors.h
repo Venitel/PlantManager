@@ -18,7 +18,6 @@ enum class Colors
     //Due dates
     DueToday,
     DuePast,
-    DueFuture,
     //Other
     Dormant
 };
