@@ -303,7 +303,7 @@ bool Plant::delayFeeding()
     std::optional<int> daysUntil = daysUntilFeeding();
     if(daysUntil.has_value())
     {
-        if(daysUntil.value() <= 0) //if feeding is due, set it to tomorrow
+        if(daysUntil.value() < 0) //if feeding is due, set it to tomorrow
         {
             setFeedingDelay(abs(daysUntil.value()) + 1);
         }
