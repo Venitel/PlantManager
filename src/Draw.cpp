@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <algorithm>
+#include <cmath>
 
 namespace
 {
@@ -97,9 +98,17 @@ void drawHeader()
         
         std::string currentTab = currentList->getTabName();
         currentTab[0] = toupper(currentTab[0]); //capitalize first letter to look pretty
+        
+        int pages = std::ceil(static_cast<double>(currentList->recordCount()) / sectionHeight);
+        if(pages > 1)
+        {
+            int currentPage = std::ceil(static_cast<double>(currentList->getPosition()+1) / sectionHeight); //Position starts with 0, add 1
+            currentTab += " (Page " + std::to_string(currentPage) + "/" + std::to_string(pages) + ")";
+        }
 
         setColor(Colors::Title);
         putText(0, 3, currentTab);
+
         putText(sectionWidth, 3, "Details");
         resetColor();
     }, activeTab);
