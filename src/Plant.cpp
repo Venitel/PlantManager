@@ -31,7 +31,7 @@ std::vector<Field> Plant::getFields()
     return 
     {//   ColNam            Label         Var             Length  InputType                       DataType                    Setter (DB)                                   onEdit       
         { "name",           "Name    : ", name_,          40,     Field::InputType::Mandatory,    Field::DataType::Text,      [this](std::string v){setName(v);},           [this](){updateRecord();} },
-        { "speciesId",      "Species : ", speciesId,      9,      Field::InputType::List,         Field::DataType::Species,   [this](std::string v){setSpeciesId(v);},      [this](){speciesChanged();} },
+        { "speciesId",      "Species : ", speciesId,      9,      Field::InputType::List,         Field::DataType::Species,   [this](std::string v){setSpeciesId(v);},      [this](){scheduleChanged();} },
         { "lastWatered",    "Watered : ", lastWatered_,   10,     Field::InputType::Optional,     Field::DataType::Date,      [this](std::string v){setLastWatered(v);},    [this](){lastWateredChanged();} },
         { "wateringDelay",  "W. Delay: ", wateringDelay,  3,      Field::InputType::NoDisplay,    Field::DataType::Number,    [this](std::string v){setWateringDelay(v);},  {} },
         { "lastFed",        "Fed     : ", lastFed_,       10,     Field::InputType::Optional,     Field::DataType::Date,      [this](std::string v){setLastFed(v);},        [this](){lastFedChanged();} },
@@ -331,7 +331,7 @@ void Plant::setNotes(const std::string& notes)
     notes_ = notes;
 }
 
-void Plant::speciesChanged()
+void Plant::scheduleChanged()
 {
     setWateringDelay(0);
     setFeedingDelay(0);
@@ -344,6 +344,10 @@ void Plant::speciesChanged()
 
 Colors Plant::getNameColor() const
 {
+    if(!hasSpecies())
+    {
+        return Colors::Error;
+    }
     std::optional<int> watering = daysUntilWatering();
     std::optional<int> feeding = daysUntilFeeding();
 

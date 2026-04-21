@@ -117,12 +117,16 @@ void Schedule::setFeedIntervalDormant(std::string& feedIntervalDormant)
     }
 }
 
-void Schedule::scheduleChanged()
+void Schedule::scheduleChanged(bool deleted)
 {
     for(Species& species : getAllSpecies())
     {
         if(species.hasSchedule() && species.getScheduleId() == getId())
         {
+            if(deleted)
+            {
+                species.setScheduleId(-1);
+            }
             species.scheduleChanged();
         }
     }
@@ -138,4 +142,5 @@ void Schedule::onDelete()
 {
     deleteRecord();
     CommonCache::deleteElement(Field::DataType::Schedule, getId());
+    scheduleChanged(true);
 }

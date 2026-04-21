@@ -14,7 +14,7 @@ ListSection<Setting> settingList;
 DetailsSection<Setting> settingDetails;
 
 std::vector<Tabs> allTabs = {
-    std::make_pair(&plantList,   &plantDetails),
+    std::make_pair(&plantList, &plantDetails),
     std::make_pair(&speciesList, &speciesDetails),
     std::make_pair(&scheduleList, &scheduleDetails),
     std::make_pair(&settingList, &settingDetails)
@@ -153,11 +153,6 @@ void ListSection<T>::deleteRecord(const int index)
 {
     records_[index].onDelete();
     records_.erase(records_.begin() + index);
-    /* Deletion can break foreign table references
-       Reload all lists to get their current state
-       Perhaps there's a better way to handle this
-       But this will do for now */ 
-    loadAllListsFromDb();
 }
 
 template <typename T>

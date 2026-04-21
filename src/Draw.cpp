@@ -205,15 +205,15 @@ void drawDetails(const int row)
                 ++fieldsNum;
             }
 
-            if(selection >= 0 && selection+1 == fieldsNum) //Selection index starts from 0 
-            {
-                setColor(Colors::Selection);
-            }
-
             int labelLength = (int)field.label.length();
             std::string text = field.value;
             if(field.isForeign())
             {
+                if(field.value == "-1")
+                {
+                    //Empty foreign reference, either from delete or empty list
+                    setColor(Colors::Error);
+                }
                 text = record.getForeignName(field.dataType);
             }
             else if(field.dataType == Field::DataType::Month)
@@ -227,6 +227,12 @@ void drawDetails(const int row)
             else if(field.dataType == Field::DataType::Number && text == "-1")
             {
                 text = "Disabled";
+            }
+
+            if(selection >= 0 && selection+1 == fieldsNum) //Selection index starts from 0 
+            {
+                //this is intentionally at the end - overwrite other colors, selection has prio
+                setColor(Colors::Selection);
             }
 
             std::vector<std::string> textLines = wrapText(text, sectionWidth - labelLength);

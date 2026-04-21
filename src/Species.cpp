@@ -58,13 +58,17 @@ int Species::getScheduleId() const
     return scheduleId_;
 }
 
-void Species::scheduleChanged()
+void Species::scheduleChanged(bool deleted)
 {
     for(Plant& plant : getAllPlants())
     {
         if(plant.hasSpecies() && plant.getSpeciesId() == getId())
         {
-            plant.speciesChanged();
+            if(deleted)
+            {
+                plant.setSpeciesId(-1);
+            }
+            plant.scheduleChanged();
         }
     }
 }
@@ -79,4 +83,15 @@ void Species::onDelete()
 {
     deleteRecord();
     CommonCache::deleteElement(Field::DataType::Species, getId());
+    scheduleChanged(true);
+}
+
+Colors Species::getNameColor() const
+{
+    if(!hasSchedule())
+    {
+        return Colors::Error;
+    }
+
+    return Colors::Default;
 }

@@ -30,7 +30,7 @@ class Plant : public Record
     void setSpeciesId(const int speciesId);
     void setSpeciesId(const std::string& speciesId); //string as an argument because we read every db column as a text
     int getSpeciesId() const;
-    void speciesChanged();
+    void scheduleChanged();
     
     void setLastWatered(const std::string& isoDate);
     void lastWateredChanged();

@@ -14,12 +14,14 @@ class Species : public Record
     void onDelete() override;
 
     std::string getForeignName(const Field::DataType dataType) const override;
+    Colors getNameColor() const override;
 
     bool hasSchedule() const;
     void setScheduleId(const int scheduleId);
     void setScheduleId(const std::string& scheduleId); //string as an argument because we read every db column as a text
     int getScheduleId() const;
-    void scheduleChanged();
+    
+    void scheduleChanged(bool deleted = false);
 
   private: 
     int scheduleId_ = -1;
