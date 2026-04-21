@@ -115,7 +115,7 @@ bool goToForeignRecord()
 
         auto& record = currentList->getSelectedRecord();
         Field selectedField = record.getEditableFields()[currentDetails->getPosition()];
-        if(!selectedField.isForeign())
+        if(!selectedField.isForeign() || selectedField.value == "-1") //-1 = no reference
         {
             return;
         }
