@@ -98,6 +98,13 @@ namespace Utils
 
 namespace CommonCache
 {
+    std::map<std::string, int>& getSettings()
+    {
+        static std::map<std::string, int> settings;
+
+        return settings;
+    }
+
     std::map<Field::DataType, std::vector<std::pair<int, std::string>>>& getIdNames()
     {
         static std::map<Field::DataType, std::vector<std::pair<int, std::string>>> IdNames =
@@ -130,6 +137,17 @@ namespace CommonCache
                 it->second = changedIdName.second;
             }
         }
+    }
 
+    void deleteElement(const Field::DataType dataType, const int id)
+    {
+        std::vector<std::pair<int, std::string>>& names = getIdNames()[dataType];
+        {
+            auto it = std::find_if(names.begin(), names.end(), [&](auto& pair) {return id == pair.first;});
+            if(it != names.end())
+            {
+                names.erase(it);
+            }
+        }
     }
 }

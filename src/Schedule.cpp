@@ -1,6 +1,6 @@
 #include "Schedule.h"
 #include "Database.h"
-#include "Utils.cpp"
+#include "Utils.h"
 #include "Sections.h"
 #include "Species.h"
 
@@ -28,7 +28,7 @@ std::vector<Field> Schedule::getFields()
         { "waterIntervalDormant","Dormant Watering : ",   waterIntervalDormant, 3,      Field::InputType::Optional,     Field::DataType::Number,    [this](std::string v){setWaterIntervalDormant(v);}, [this](){updateRecord(); scheduleChanged();} },
         { "feedInterval",        "Feeding          : ",   feedInterval,         3,      Field::InputType::Optional,     Field::DataType::Number,    [this](std::string v){setFeedInterval(v);},         [this](){updateRecord(); scheduleChanged();} },
         { "feedIntervalDormant", "Dormant Feeding  : ",   feedIntervalDormant,  3,      Field::InputType::Optional,     Field::DataType::Number,    [this](std::string v){setFeedIntervalDormant(v);},  [this](){updateRecord(); scheduleChanged();} },
-        { "orderNum",            "Order            : ",   orderNum,             9,      Field::InputType::NoInput,      Field::DataType::Number,    [this](std::string v){setOrderNum(v);},             [this](){} }
+        { "orderNum",            "Order            : ",   orderNum,             9,      Field::InputType::NoDisplay,    Field::DataType::Number,    [this](std::string v){setOrderNum(v);},             {} }
     };
 }
 
@@ -126,4 +126,16 @@ void Schedule::scheduleChanged()
             species.scheduleChanged();
         }
     }
+}
+
+void Schedule::onCreate()
+{
+    addRecord();
+    CommonCache::getIdNames()[Field::DataType::Schedule].push_back({getId(), getName()});
+}
+
+void Schedule::onDelete()
+{
+    deleteRecord();
+    CommonCache::deleteElement(Field::DataType::Schedule, getId());
 }

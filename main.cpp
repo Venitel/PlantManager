@@ -10,7 +10,7 @@ void quit()
 {
     Database::getInstance().close(); 
     terminateConsole(); 
-    Logger::getInstance().info("--- QUIT ---\n");
+    Logger::getInstance().close();
 }
 
 BOOL WINAPI exitHandler(DWORD signal)
@@ -42,8 +42,8 @@ void checkPlantCache()
 
 int main() 
 {
-    if(!Database::getInstance().open("PlantManager.db")
-        || !Logger::getInstance().open("PlantManager.log"))
+    if(!Logger::getInstance().open("PlantManager.log")
+       || !Database::getInstance().open("PlantManager.db"))
     {
         putError(0, 0, "Failed to open Database/Log files!");
         getKey();
@@ -51,9 +51,9 @@ int main()
     }
 
     SetConsoleCtrlHandler(exitHandler, TRUE);
-    Logger::getInstance().info("--- RUN ---");
     loadAllListsFromDb();
     checkPlantCache();
+    cacheSettings();
     initConsole();
     drawAll();
 

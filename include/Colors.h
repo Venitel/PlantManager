@@ -16,7 +16,7 @@ enum class Colors
     Optional, 
     List,
     //Due dates
-    DueToday,
+    DueNow,
     DuePast,
     //Other
     Dormant

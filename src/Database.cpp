@@ -2,6 +2,7 @@
 #include "Plant.h"
 #include "Species.h"
 #include "Schedule.h"
+#include "Setting.h"
 #include "Logger.h"
 
 #include <filesystem>
@@ -30,12 +31,13 @@ bool Database::open(const std::string& file)
  
     exec("PRAGMA foreign_keys = ON;");
     createTables();
+    Setting::initializeSettings();
     return true;
 }
  
 void Database::close()
 {
-    if (m_db) 
+    if(m_db) 
     { 
         sqlite3_close(m_db); 
         m_db = nullptr; 
@@ -49,12 +51,14 @@ std::string Database::getTableName(const Field::DataType dataType)
         case Field::DataType::Plant : return "plants";
         case Field::DataType::Species : return "species";
         case Field::DataType::Schedule : return "schedules";
+        case Field::DataType::Setting : return "settings";
         default : return "";
     }
 }
  
 void Database::createTables()
 {
+    //Tables
     exec(R"(
         CREATE TABLE IF NOT EXISTS plants (
             id              INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -89,6 +93,16 @@ void Database::createTables()
             waterIntervalDormant INTEGER NOT NULL,
             feedInterval         INTEGER NOT NULL,
             feedIntervalDormant  INTEGER NOT NULL
+        );
+    )");
+    
+    exec(R"(
+        CREATE TABLE IF NOT EXISTS settings (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            name        TEXT NOT NULL,
+            notes       TEXT DEFAULT '',
+            value       INTEGER NOT NULL,
+            orderNum    INTEGER NOT NULL
         );
     )");
 }
@@ -143,6 +157,7 @@ std::vector<T> Database::getAll() const
 template std::vector<Plant> Database::getAll<Plant>() const;
 template std::vector<Species> Database::getAll<Species>() const;
 template std::vector<Schedule> Database::getAll<Schedule>() const;
+template std::vector<Setting> Database::getAll<Setting>() const;
 
 std::string Database::sqlString(const std::string& text)
 {

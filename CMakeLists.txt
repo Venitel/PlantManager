@@ -22,6 +22,7 @@ add_library(PMLib
     src/Species.cpp
     src/Schedule.cpp
     src/Utils.cpp
+    src/Setting.cpp
 )
 target_include_directories(PMLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 

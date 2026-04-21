@@ -18,7 +18,17 @@ bool Logger::open(const std::string& file)
     {
         return false;
     }
+    info("--- RUN ---");
     return true;
+}
+
+void Logger::close()
+{
+    if (!file_.is_open()) 
+    { 
+        file_.close();
+    }
+    info("--- QUIT ---\n");
 }
 
 std::string Logger::timestamp() const

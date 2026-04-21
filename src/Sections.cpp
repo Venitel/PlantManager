@@ -1,5 +1,6 @@
 #include "Sections.h"
 #include "Database.h"
+#include "Utils.h"
 
 #include <algorithm>
 
@@ -9,11 +10,14 @@ ListSection<Species> speciesList;
 DetailsSection<Species> speciesDetails;
 ListSection<Schedule> scheduleList;
 DetailsSection<Schedule> scheduleDetails;
+ListSection<Setting> settingList;
+DetailsSection<Setting> settingDetails;
 
 std::vector<Tabs> allTabs = {
     std::make_pair(&plantList,   &plantDetails),
     std::make_pair(&speciesList, &speciesDetails),
     std::make_pair(&scheduleList, &scheduleDetails),
+    std::make_pair(&settingList, &settingDetails)
 };
 int activeTabIndex = 0;
 Tabs activeTab = allTabs[activeTabIndex];
@@ -39,6 +43,14 @@ void cachePlantData()
     }
 }
 
+void cacheSettings()
+{
+    for(Setting& setting : getAllSettings())
+    {
+        CommonCache::getSettings()[setting.getName()] = setting.getValue();
+    }
+}
+
 std::vector<Plant>& getAllPlants()
 {
     return plantList.getAllRecords();
@@ -52,6 +64,11 @@ std::vector<Species>& getAllSpecies()
 std::vector<Schedule>& getAllSchedules()
 {
     return scheduleList.getAllRecords();
+}
+
+std::vector<Setting>& getAllSettings()
+{
+    return settingList.getAllRecords();
 }
 
 // BASE SECTION
@@ -134,7 +151,7 @@ void ListSection<T>::addRecord(T& record)
 template <typename T>
 void ListSection<T>::deleteRecord(const int index)
 {
-    records_[index].deleteRecord();
+    records_[index].onDelete();
     records_.erase(records_.begin() + index);
     /* Deletion can break foreign table references
        Reload all lists to get their current state
@@ -176,7 +193,6 @@ void ListSection<T>::orderUp(const int index)
     currentRecord.swapOrder(previousRecord);
     std::swap(currentRecord, previousRecord);
 }
-
 
 template <typename T>
 int ListSection<T>::recordCount() const
@@ -244,6 +260,7 @@ void ListSection<T>::loadFromDb()
 template class ListSection<Plant>;
 template class ListSection<Species>;
 template class ListSection<Schedule>;
+template class ListSection<Setting>;
 
 // DETAILS SECTION
 template <typename T>
@@ -285,3 +302,4 @@ void DetailsSection<T>::moveLast()
 template class DetailsSection<Plant>;
 template class DetailsSection<Species>;
 template class DetailsSection<Schedule>;
+template class DetailsSection<Setting>;

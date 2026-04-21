@@ -62,6 +62,11 @@ void Record::onCreate()
     addRecord();
 }
 
+void Record::onDelete()
+{
+    deleteRecord();
+}
+
 void Record::deleteRecord()
 {
     Database::getInstance().deleteDb(this);
@@ -99,7 +104,19 @@ std::vector<Field> Record::getEditableFields()
     editableFields.reserve(fields.size());
 
     std::copy_if(fields.begin(), fields.end(), std::back_inserter(editableFields), 
-                [](const Field& f) {return f.inputType != Field::InputType::NoInput;});
+                [](const Field& f) {return f.inputType != Field::InputType::NoDisplay && f.inputType != Field::InputType::ReadOnly;});
 
     return editableFields;
+}
+
+std::vector<Field> Record::getDisplayableFields()
+{
+    std::vector<Field> fields = getFields();
+    std::vector<Field> displayableFields;
+    displayableFields.reserve(fields.size());
+
+    std::copy_if(fields.begin(), fields.end(), std::back_inserter(displayableFields), 
+                [](const Field& f) {return f.inputType != Field::InputType::NoDisplay;});
+
+    return displayableFields;
 }

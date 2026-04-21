@@ -52,7 +52,7 @@ void setColor(const Colors color)
         case Colors::Optional : setColor(FOREGROUND_INTENSITY); break; //this by itself is grey
         case Colors::Dormant:
         case Colors::List : setColor(FOREGROUND_GREEN | FOREGROUND_BLUE); break;
-        case Colors::DueToday : setColor(FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY); break;
+        case Colors::DueNow : setColor(FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY); break;
         case Colors::DuePast : setColor(FOREGROUND_RED | FOREGROUND_INTENSITY); break;
         case Colors::Default : setColor(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE); break; //White
         default : resetColor(); 

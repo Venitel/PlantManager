@@ -11,6 +11,9 @@ class Schedule : public Record
     std::vector<Field> getFields() override;
     std::vector<DetailLine> getExtraDetails() const override;
 
+    void onCreate() override;
+    void onDelete() override;
+
     void setDormancyStart(const int dormancyStart);
     void setDormancyStart(const std::string& dormancyStart); //string as an argument because we read every db column as a text
     void setDormancyEnd(const int dormancyEnd);

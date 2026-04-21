@@ -190,7 +190,7 @@ void drawDetails(const int row)
 
         int selection = currentDetails->isActive() ? currentDetails->getPosition() : -1;
 
-        std::vector<Field> fields = record.getEditableFields();
+        std::vector<Field> fields = record.getDisplayableFields();
         std::vector<DetailLine> extraDetails = record.getExtraDetails();
 
         int fieldsNum = 0;
@@ -200,11 +200,15 @@ void drawDetails(const int row)
         for(Field& field : fields)
         {
             drawExtraDetailLine(row, printedRows, extraDetails);
-            if(selection == fieldsNum) 
+            if(field.inputType != Field::InputType::ReadOnly)
+            {
+                ++fieldsNum;
+            }
+
+            if(selection >= 0 && selection+1 == fieldsNum) //Selection index starts from 0 
             {
                 setColor(Colors::Selection);
             }
-            ++fieldsNum;
 
             int labelLength = (int)field.label.length();
             std::string text = field.value;
@@ -265,8 +269,11 @@ void drawFooter(const int row)
         {
             //List buttons
             putText(0, row + 1, "↑ ↓ →: Select | TAB: Next Tab                                                                Q: Quit");
-            std::string listKeys = "A: Add | D: Delete | M: Move Up";
-
+            std::string listKeys = "";
+            if constexpr (!std::is_same_v<TabType, std::pair<ListSection<Setting>*, DetailsSection<Setting>*>>)
+            {
+                listKeys += "A: Add | D: Delete | M: Move Up";
+            }
             if constexpr (std::is_same_v<TabType, std::pair<ListSection<Plant>*, DetailsSection<Plant>*>>)
             {
                 listKeys += " | W: Water Now | F: Feed Now | P: Postpone";

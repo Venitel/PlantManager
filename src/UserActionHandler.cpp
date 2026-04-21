@@ -243,6 +243,11 @@ bool userAdd()
         {
             return;
         }
+        using TabType = std::decay_t<decltype(tab)>;
+        if constexpr (std::is_same_v<TabType, std::pair<ListSection<Setting>*, DetailsSection<Setting>*>>)
+        {
+            return;
+        }
 
         const int bottomRow = getBottomRow()+1; //one empty row
         auto newRecord = currentList->getBlankRecord();
@@ -253,7 +258,7 @@ bool userAdd()
         int rowNum = 1; //title is first
         for(Field& field : fields)
         {
-            if(field.inputType != Field::InputType::NoInput)
+            if(field.inputType != Field::InputType::NoDisplay)
             {
                 getFieldFromUser(0, bottomRow + rowNum, field);
             }
@@ -296,7 +301,10 @@ bool userEdit()
 
         Field editField = record.getEditableFields()[currentDetails->getPosition()];
         getFieldFromUser(0, bottomRow + 1, editField);
-        editField.onEdit();
+        if(editField.onEdit)
+        {
+            editField.onEdit();
+        }
 
         for(int i = bottomRow; i <= bottomRow + 2; i++) //one extra line for error, multi line notes etc.
         { 
@@ -319,6 +327,12 @@ bool userDelete()
         {
             return;
         }
+        using TabType = std::decay_t<decltype(tab)>;
+        if constexpr (std::is_same_v<TabType, std::pair<ListSection<Setting>*, DetailsSection<Setting>*>>)
+        {
+            return;
+        }
+
         const int bottomRow = getBottomRow();
         const std::string confirmation = inputAt(0, bottomRow, "Confirm delete " + currentList->getSelectedRecord().getName() + " [Y/N]: ", 1, true);
         clearRow(bottomRow);
@@ -350,6 +364,12 @@ bool userOrder()
         {
             return;
         }
+        using TabType = std::decay_t<decltype(tab)>;
+        if constexpr (std::is_same_v<TabType, std::pair<ListSection<Setting>*, DetailsSection<Setting>*>>)
+        {
+            return;
+        }
+
         currentList->orderUp(currentList->getPosition());
         currentList->moveUp();
         result = true;

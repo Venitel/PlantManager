@@ -4,15 +4,18 @@
 #include "Plant.h"
 #include "Species.h"
 #include "Schedule.h"
+#include "Setting.h"
 #include <vector>
 #include <variant>
 
 void loadAllListsFromDb();
 void cachePlantData();
+void cacheSettings();
 
 std::vector<Plant>& getAllPlants();
 std::vector<Species>& getAllSpecies();
 std::vector<Schedule>& getAllSchedules();
+std::vector<Setting>& getAllSettings();
 
 class Section 
 {
@@ -98,11 +101,14 @@ extern template class ListSection<Species>;
 extern template class DetailsSection<Species>;
 extern template class ListSection<Schedule>;
 extern template class DetailsSection<Schedule>;
+extern template class ListSection<Setting>;
+extern template class DetailsSection<Setting>;
 
 using Tabs = std::variant <
     std::pair<ListSection<Plant>*,   DetailsSection<Plant>*>,
     std::pair<ListSection<Species>*, DetailsSection<Species>*>,
-    std::pair<ListSection<Schedule>*, DetailsSection<Schedule>*>
+    std::pair<ListSection<Schedule>*, DetailsSection<Schedule>*>,
+    std::pair<ListSection<Setting>*, DetailsSection<Setting>*>
 >;
 
 extern Section* activeSection;

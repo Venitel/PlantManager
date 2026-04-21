@@ -21,12 +21,14 @@ void insertDummyRecords(int num, T& section)
 template void insertDummyRecords<ListSection<Plant>>(int num, ListSection<Plant>& section);
 template void insertDummyRecords<ListSection<Species>>(int num, ListSection<Species>& section);
 template void insertDummyRecords<ListSection<Schedule>>(int num, ListSection<Schedule>& section);
+template void insertDummyRecords<ListSection<Setting>>(int num, ListSection<Setting>& section);
 
 //List sections
 using ListSectionTypes = ::testing::Types<
                         ListSection<Plant>, 
                         ListSection<Species>,
-                        ListSection<Schedule>
+                        ListSection<Schedule>,
+                        ListSection<Setting>
                     >;
 
 template <typename T>
@@ -91,7 +93,8 @@ TYPED_TEST(ListSectionTest, ResetPosition)
 using DetailsSectionTypes = ::testing::Types<
                         DetailsSection<Plant>, 
                         DetailsSection<Species>,
-                        DetailsSection<Schedule>
+                        DetailsSection<Schedule>,
+                        DetailsSection<Setting>
                     >;
 
 template <typename T>
@@ -154,7 +157,9 @@ TYPED_TEST(DetailsSectionTest, ResetPosition)
 //Pairs
 using SectionPairTypes = ::testing::Types<
                     std::pair<ListSection<Plant>,   DetailsSection<Plant>>,
-                    std::pair<ListSection<Species>, DetailsSection<Species>>
+                    std::pair<ListSection<Species>, DetailsSection<Species>>,
+                    std::pair<ListSection<Schedule>, DetailsSection<Schedule>>,
+                    std::pair<ListSection<Setting>, DetailsSection<Setting>>
                     >;
 
 template <typename T>

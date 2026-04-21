@@ -9,6 +9,7 @@ public:
     static Logger& getInstance();
 
     bool open(const std::string& path);
+    void close();
     std::string timestamp() const; 
     void write(const std::string& type, const std::string& msg);
 

@@ -33,11 +33,11 @@ std::vector<Field> Plant::getFields()
         { "name",           "Name    : ", name_,          40,     Field::InputType::Mandatory,    Field::DataType::Text,      [this](std::string v){setName(v);},           [this](){updateRecord();} },
         { "speciesId",      "Species : ", speciesId,      9,      Field::InputType::List,         Field::DataType::Species,   [this](std::string v){setSpeciesId(v);},      [this](){speciesChanged();} },
         { "lastWatered",    "Watered : ", lastWatered_,   10,     Field::InputType::Optional,     Field::DataType::Date,      [this](std::string v){setLastWatered(v);},    [this](){lastWateredChanged();} },
-        { "wateringDelay",  "W. Delay: ", wateringDelay,  3,      Field::InputType::NoInput,      Field::DataType::Number,    [this](std::string v){setWateringDelay(v);},  [this](){} },
+        { "wateringDelay",  "W. Delay: ", wateringDelay,  3,      Field::InputType::NoDisplay,    Field::DataType::Number,    [this](std::string v){setWateringDelay(v);},  {} },
         { "lastFed",        "Fed     : ", lastFed_,       10,     Field::InputType::Optional,     Field::DataType::Date,      [this](std::string v){setLastFed(v);},        [this](){lastFedChanged();} },
-        { "feedingDelay",   "F. Delay: ", feedingDelay,   3,      Field::InputType::NoInput,      Field::DataType::Number,    [this](std::string v){setFeedingDelay(v);},   [this](){} },
+        { "feedingDelay",   "F. Delay: ", feedingDelay,   3,      Field::InputType::NoDisplay,    Field::DataType::Number,    [this](std::string v){setFeedingDelay(v);},   {} },
         { "notes",          "Notes   : ", notes_,         120,    Field::InputType::Optional,     Field::DataType::Text,      [this](std::string v){setNotes(v);},          [this](){updateRecord();} },
-        { "orderNum",       "Order   : ", orderNum,       9,      Field::InputType::NoInput,      Field::DataType::Number,    [this](std::string v){setOrderNum(v);},       [this](){} }
+        { "orderNum",       "Order   : ", orderNum,       9,      Field::InputType::NoDisplay,    Field::DataType::Number,    [this](std::string v){setOrderNum(v);},       {} }
     };
 }
 
@@ -47,7 +47,7 @@ std::vector<DetailLine> Plant::getExtraDetails() const
     //Dormancy
     if(isDormant())
     {
-        extraDetails.push_back({1, "Dormant", Colors::Dormant}); //after lastWatered field
+        extraDetails.push_back({2, "Dormant", Colors::Dormant});
     }
 
     //Days until watering
@@ -69,31 +69,37 @@ std::vector<DetailLine> Plant::getExtraDetails() const
 
 DetailLine Plant::daysUntilDetail(const int pos, std::string text, const int daysUntil, const int delay) const
 {
-    Colors color;
+    Colors color = Colors::Default;
+
+    int due = CommonCache::getSettings()["Action required"];
+    if(daysUntil < 0)
+    {
+        color = Colors::DuePast;
+    }
+    else if(daysUntil < due)
+    {
+        color = Colors::DueNow;
+    }
+
     if(daysUntil == 0)
     {
         text += "Today";
-        color = Colors::DueToday;
     }
     else if(daysUntil == 1)
     {
         text += "Tomorrow";
-        color = Colors::Default;
     }
     else if(daysUntil > 1)
     {
         text += "In " + std::to_string(daysUntil) + " days";
-        color = Colors::Default;
     }
     else if(daysUntil == -1)
     {
         text += "Yesterday";
-        color = Colors::DuePast;
     }
     else //days < 0
     {
         text += std::to_string(abs(daysUntil)) + " days ago";
-        color = Colors::DuePast;
     }
 
     if(delay > 0)
@@ -246,13 +252,14 @@ bool Plant::delayWatering()
     std::optional<int> daysUntil = daysUntilWatering();
     if(daysUntil.has_value())
     {
-        if(daysUntil.value() < 0) //if watering is due, delay it to tomorrow
+        int postponeDays = CommonCache::getSettings()["Postpone"];
+        if(daysUntil.value() < 0) //if watering is due, delay it to extra days ahead
         {
-            setWateringDelay(abs(daysUntil.value()) + 1);
+            setWateringDelay(abs(daysUntil.value()) + postponeDays);
         }
-        else //add one day
+        else //add extra days
         {
-            setWateringDelay(wateringDelay_ + 1);
+            setWateringDelay(wateringDelay_ + postponeDays);
         }
         updateRecord();
         checkDaysUntilWatering(); //technically we could just set daysUntilWatering to 1 / +1 but its cleaner this way
@@ -303,13 +310,14 @@ bool Plant::delayFeeding()
     std::optional<int> daysUntil = daysUntilFeeding();
     if(daysUntil.has_value())
     {
-        if(daysUntil.value() < 0) //if feeding is due, set it to tomorrow
+        int postponeDays = CommonCache::getSettings()["Postpone"];
+        if(daysUntil.value() < 0) //if feeding is due, set it to extra days ahead
         {
-            setFeedingDelay(abs(daysUntil.value()) + 1);
+            setFeedingDelay(abs(daysUntil.value()) + postponeDays);
         }
-        else //add one day
+        else //add extra days
         {
-            setFeedingDelay(feedingDelay_ + 1);
+            setFeedingDelay(feedingDelay_ + postponeDays);
         }
         updateRecord();
         checkDaysUntilFeeding(); //technically we could just set daysUntilFeeding to 1 / +1 but its cleaner this way
@@ -336,16 +344,18 @@ void Plant::speciesChanged()
 
 Colors Plant::getNameColor() const
 {
-    int watering = daysUntilWatering().value_or(1);
-    int feeding = daysUntilFeeding().value_or(1);
+    std::optional<int> watering = daysUntilWatering();
+    std::optional<int> feeding = daysUntilFeeding();
 
-    if(watering < 0 || feeding < 0)
+    int due = CommonCache::getSettings()["Action required"];
+
+    if((watering.has_value() && watering.value() < 0) || (feeding.has_value() && feeding.value() < 0))
     {
         return Colors::DuePast;
     }
-    else if(watering == 0 || feeding == 0)
+    else if((watering.has_value() && watering.value() < due) || (feeding.has_value() && feeding.value() < due))
     {
-        return Colors::DueToday;
+        return Colors::DueNow;
     }
     return Colors::Default;
 }

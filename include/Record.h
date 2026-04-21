@@ -10,7 +10,8 @@ struct Field
 {
   enum class InputType
   {
-    NoInput,
+    NoDisplay,
+    ReadOnly,
     Optional,
     Mandatory,
     List
@@ -25,14 +26,16 @@ struct Field
     //Foreign keys
     Plant,
     Species,
-    Schedule
+    Schedule,
+    Setting
   };
 
   bool isForeign() const
   {
     return dataType == DataType::Plant ||
            dataType == DataType::Species ||
-           dataType == DataType::Schedule;
+           dataType == DataType::Schedule ||
+           dataType == DataType::Setting;
   }
 
   std::string colNam;
@@ -62,6 +65,7 @@ class Record
     virtual void updateRecord();
 
     virtual void onCreate();
+    virtual void onDelete();
 
     virtual int getId() const;
     virtual std::string getName() const;
@@ -80,6 +84,7 @@ class Record
     virtual std::string toString();
 
     virtual std::vector<Field> getEditableFields();
+    virtual std::vector<Field> getDisplayableFields();    
     //Pure virtual
     virtual std::string getTabName() const = 0;
     virtual std::vector<Field> getFields() = 0;

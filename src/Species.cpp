@@ -31,7 +31,7 @@ std::vector<Field> Species::getFields()
     {//   ColNam        Label         Var           Length  InputType                      DataType                  Setter                                     onEdit
         { "name",       "Name    : ", name_,        40,     Field::InputType::Mandatory,   Field::DataType::Text,    [this](std::string v){setName(v);},        [this](){updateRecord(); CommonCache::updateElement(Field::DataType::Species, {getId(), getName()});} },
         { "scheduleId", "Schedule: ", scheduleId,   9,      Field::InputType::List,        Field::DataType::Schedule,[this](std::string v){setScheduleId(v);},  [this](){updateRecord(); scheduleChanged();} },
-        { "orderNum",   "Order   : ", orderNum,     9,      Field::InputType::NoInput,     Field::DataType::Number,  [this](std::string v){setOrderNum(v);},    [this](){} }
+        { "orderNum",   "Order   : ", orderNum,     9,      Field::InputType::NoDisplay,   Field::DataType::Number,  [this](std::string v){setOrderNum(v);},    {} }
     };
 }
 
@@ -67,4 +67,16 @@ void Species::scheduleChanged()
             plant.speciesChanged();
         }
     }
+}
+
+void Species::onCreate()
+{
+    addRecord();
+    CommonCache::getIdNames()[Field::DataType::Species].push_back({getId(), getName()});
+}
+
+void Species::onDelete()
+{
+    deleteRecord();
+    CommonCache::deleteElement(Field::DataType::Species, getId());
 }

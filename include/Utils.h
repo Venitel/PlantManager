@@ -18,14 +18,17 @@ namespace DateUtils
 namespace Utils
 {
     bool isNumber(const std::string& number);
-    bool isNumberLogconst(const std::string& number);
+    bool isNumberLog(const std::string& number);
     void prepareOptionalIntFromString(std::string& number);
 }
 
 namespace CommonCache
 {
     std::map<Field::DataType, std::vector<std::pair<int, std::string>>>& getIdNames();
+    std::map<std::string, int>& getSettings();
     void updateElement(const Field::DataType dataType, const std::pair<int, std::string>& changedIdName);
+    void deleteElement(const Field::DataType dataType, const int id);
+
     std::string getName(const Field::DataType dataType, const int id);
 }
 
