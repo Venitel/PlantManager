@@ -258,11 +258,7 @@ bool userAdd()
         int rowNum = 1; //title is first
         for(Field& field : fields)
         {
-            if(field.inputType != Field::InputType::NoDisplay)
-            {
-                getFieldFromUser(0, bottomRow + rowNum, field);
-            }
-            
+            getFieldFromUser(0, bottomRow + rowNum, field);
             resetColor();
             ++rowNum;
         }
