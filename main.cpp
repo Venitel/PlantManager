@@ -28,7 +28,7 @@ BOOL WINAPI exitHandler(DWORD signal)
     return FALSE;
 }
 
-void checkPlantCache()
+bool checkPlantCache()
 {
     static std::string dateCached;
     
@@ -37,7 +37,9 @@ void checkPlantCache()
     {
         cachePlantData();
         dateCached = today;
+        return true;
     }
+    return false;
 }
 
 int main() 
@@ -59,8 +61,6 @@ int main()
 
     while(true) 
     {
-        checkPlantCache();
-
         int key = toupper(getKey());
         if(!onCooldown(key))
         {
@@ -84,7 +84,7 @@ int main()
                 case (Key)'Q': quit(); return 0;
                 default: redraw = false;
             }
-            if(redraw) {drawAll();}
+            if(checkPlantCache() || redraw) {drawAll();}
         }
     }
 }
