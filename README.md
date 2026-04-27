@@ -29,6 +29,6 @@ cmake --build build --preset buildAndTest
 build\PlantManager.exe
 ```
 ## Sample
-Rename sample.db to PlantManager.db and run the program with sample data to get a quick preview.
+Rename sample.db to PlantManager.db, put it in the .exe directoryu and run the program with sample data to get a quick preview.
 ## License
 This project is open source under the [MIT License](LICENSE).
