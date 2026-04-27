@@ -56,6 +56,7 @@ int main()
     loadAllListsFromDb();
     checkPlantCache();
     cacheSettings();
+    CommonCache::getIdNames();
     initConsole();
     drawAll();
 
