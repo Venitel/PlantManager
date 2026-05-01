@@ -1,27 +1,40 @@
+/*  This tests general section operations:
+- database loading 
+- navigation - up, down, reset position, activate, deactivate etc.
+*/
 #include <gtest/gtest.h>
+#include <filesystem>
 #include "Database.h"
 #include "Sections.h"
 #include "Plant.h"
 #include "Species.h"
 #include "Schedule.h"
+#include "Setting.h"
 
-//Common func
-template <typename T>
-void insertDummyRecords(int num, T& section)
+void initTestDb()
 {
+    std::filesystem::copy_file("../TestDatabaseSource.db", "PMTests.db", std::filesystem::copy_options::overwrite_existing);
     Database::getInstance().open("PMTests.db");
-    Database::getInstance().exec("DELETE FROM " + section.getTabName());
-    for(int i=0; i<num; i++)
-    {
-        auto newRecord = section.getBlankRecord();
-        section.addRecord(newRecord);
-    }
-    Database::getInstance().close();
 }
-template void insertDummyRecords<ListSection<Plant>>(int num, ListSection<Plant>& section);
-template void insertDummyRecords<ListSection<Species>>(int num, ListSection<Species>& section);
-template void insertDummyRecords<ListSection<Schedule>>(int num, ListSection<Schedule>& section);
-template void insertDummyRecords<ListSection<Setting>>(int num, ListSection<Setting>& section);
+
+void terminateTestDb()
+{
+    Database::getInstance().close();
+    std::filesystem::remove("PMTests.db");
+}
+
+class DbTestObject
+{
+protected:
+    DbTestObject() 
+    {
+        initTestDb();
+    }
+    ~DbTestObject()
+    {
+        terminateTestDb();
+    }
+};
 
 //List sections
 using ListSectionTypes = ::testing::Types<
@@ -32,13 +45,13 @@ using ListSectionTypes = ::testing::Types<
                     >;
 
 template <typename T>
-class ListSectionTest : public ::testing::Test 
+class ListSectionTest : public ::testing::Test, public DbTestObject 
 {
 protected:
     T section;
-    ListSectionTest() 
+    ListSectionTest()
     {
-        insertDummyRecords(5, section);
+        section.loadFromDb();
     }
 };
 
@@ -98,7 +111,7 @@ using DetailsSectionTypes = ::testing::Types<
                     >;
 
 template <typename T>
-class DetailsSectionTest : public ::testing::Test 
+class DetailsSectionTest : public ::testing::Test, public DbTestObject 
 {
 protected:
     T section;
@@ -158,18 +171,18 @@ TYPED_TEST(DetailsSectionTest, ResetPosition)
 using SectionPairTypes = ::testing::Types<
                     std::pair<ListSection<Plant>,   DetailsSection<Plant>>,
                     std::pair<ListSection<Species>, DetailsSection<Species>>,
-                    std::pair<ListSection<Schedule>, DetailsSection<Schedule>>,
+                    std::pair<ListSection<Schedule>,DetailsSection<Schedule>>,
                     std::pair<ListSection<Setting>, DetailsSection<Setting>>
                     >;
 
 template <typename T>
-class SectionPairTest : public ::testing::Test 
+class SectionPairTest : public ::testing::Test, public DbTestObject 
 {
 protected:
     T sectionPair;
-    SectionPairTest() 
+    SectionPairTest()
     {
-        insertDummyRecords(5, sectionPair.first);
+        sectionPair.first.loadFromDb();
     }
 };
 

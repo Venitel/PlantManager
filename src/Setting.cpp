@@ -1,6 +1,7 @@
 #include "Setting.h"
 #include "Database.h"
 #include "Utils.h"
+#include "Logger.h"
 
 std::string Setting::getTabName() const
 {
@@ -64,4 +65,15 @@ void Setting::insertDbSetting(const std::string& name, const std::string& descri
 void Setting::updateCache()
 {
     CommonCache::getSettings()[getName()] = getValue();
+}
+
+//These are not exposed in the UI, but we add implementation just in case
+void Setting::addRecord()
+{
+    Logger::getInstance().error("Cannot add setting!");
+}
+
+void Setting::deleteRecord()
+{
+    Logger::getInstance().error("Cannot delete setting!");
 }

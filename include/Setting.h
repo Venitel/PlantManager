@@ -19,6 +19,8 @@ class Setting : public Record
     void updateCache();
 
     static void initializeSettings();
+    void addRecord() override;
+    void deleteRecord() override;
   private: 
     std::string notes_;
     int value_ = 0;
