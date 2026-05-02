@@ -46,7 +46,9 @@ enable_testing()
 
 #Text Exec
 add_executable(PMTests
+    tests/DbTestObject.cpp
     tests/testSections.cpp
+    tests/testPlant.cpp
 )
 
 target_link_libraries(PMTests

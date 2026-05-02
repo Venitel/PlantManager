@@ -262,7 +262,7 @@ bool Plant::delayWatering()
             setWateringDelay(wateringDelay_ + postponeDays);
         }
         updateRecord();
-        checkDaysUntilWatering(); //technically we could just set daysUntilWatering to 1 / +1 but its cleaner this way
+        checkDaysUntilWatering(); //technically we could just set daysUntilWatering to 1 / +postponeDays but its cleaner this way
         return true;
     }
     return false;

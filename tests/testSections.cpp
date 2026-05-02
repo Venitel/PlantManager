@@ -1,44 +1,17 @@
 /*  This tests general section operations:
-- database loading 
-- navigation - up, down, reset position, activate, deactivate etc.
-- add / delete record as well as database operations
-*/
+    - database loading 
+    - navigation - up, down, reset position, activate, deactivate etc.
+    - add / delete record as well as database operations */
 #include <gtest/gtest.h>
-#include <filesystem>
+
+#include "DbTestObject.h"
+
 #include "Database.h"
 #include "Sections.h"
 #include "Plant.h"
 #include "Species.h"
 #include "Schedule.h"
 #include "Setting.h"
-
-void initTestDb()
-{
-    std::error_code error;
-    std::filesystem::remove("PMTests.db", error);
-    std::filesystem::copy_file("../Tests/TestDatabaseSource.db", "PMTests.db", std::filesystem::copy_options::overwrite_existing);
-    Database::getInstance().open("PMTests.db");
-}
-
-void terminateTestDb()
-{
-    Database::getInstance().close();
-    std::error_code error;
-    std::filesystem::remove("PMTests.db", error);
-}
-
-class DbTestObject
-{
-protected:
-    DbTestObject() 
-    {
-        initTestDb();
-    }
-    ~DbTestObject()
-    {
-        terminateTestDb();
-    }
-};
 
 //List sections
 //Navigation
