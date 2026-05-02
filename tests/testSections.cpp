@@ -16,7 +16,7 @@ void initTestDb()
 {
     std::error_code error;
     std::filesystem::remove("PMTests.db", error);
-    std::filesystem::copy_file("../TestDatabaseSource.db", "PMTests.db", std::filesystem::copy_options::overwrite_existing);
+    std::filesystem::copy_file("../Tests/TestDatabaseSource.db", "PMTests.db", std::filesystem::copy_options::overwrite_existing);
     Database::getInstance().open("PMTests.db");
 }
 
