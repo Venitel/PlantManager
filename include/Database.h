@@ -19,6 +19,8 @@ class Database
     void updateDb(Record* record);
     void deleteDb(Record* record);
 
+    void bindFieldsToStmt(sqlite3_stmt* stmt, std::vector<Field>& fields); 
+
     static std::string sqlString(const std::string& text);
     std::string getResult(const std::string& sql) const;
 
@@ -34,7 +36,7 @@ class Database
     sqlite3* m_db = nullptr;
 
     void createTables();
-    sqlite3_stmt* prepare(const std::string& sql) const;
+    sqlite3_stmt* prepare(const std::string& sql, bool log=true) const;
 };
  
 #endif

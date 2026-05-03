@@ -164,10 +164,34 @@ std::string Database::sqlString(const std::string& text)
     return "'" + text + "'";
 }
 
+void Database::bindFieldsToStmt(sqlite3_stmt* stmt, std::vector<Field>& fields)
+{
+    int i = 1;
+    for(Field& field : fields)
+    {
+        if(field.value.empty())
+        {
+            sqlite3_bind_null(stmt, i);
+        }
+        else
+        {
+            sqlite3_bind_text(stmt, i, field.value.c_str(), -1, SQLITE_TRANSIENT);
+        }
+        ++i;
+    }
+
+    char* expanded = sqlite3_expanded_sql(stmt);
+    if(expanded) 
+    {
+        Logger::getInstance().query(expanded);
+        sqlite3_free(expanded);  // must free manually
+    }
+}
+
 void Database::insertDb(Record* record)
 {
     std::string cols = "";
-    std::string values = "";
+    std::string placeholders = "";
     bool first = true;
 
     std::vector<Field> fields = record->getFields();
@@ -176,16 +200,23 @@ void Database::insertDb(Record* record)
         if(!first)
         {
             cols += + ", ";
-            values += + ", ";
+            placeholders += + ", ";
         }
         cols += field.colNam;
-        values += sqlString(field.value);
+        placeholders += "?";
         first = false;
     }
 
-    const std::string sql = "INSERT INTO " + record->getTabName() + " (" + cols + ") VALUES (" + values + ")";
-    auto* stmt = prepare(sql);
-    sqlite3_step(stmt);
+    const std::string sql = "INSERT INTO " + record->getTabName() + " (" + cols + ") VALUES (" + placeholders + ")";
+    auto* stmt = prepare(sql, false);
+
+    bindFieldsToStmt(stmt, fields);
+
+    int code = sqlite3_step(stmt);
+    if(code != SQLITE_DONE) 
+    {
+        Logger::getInstance().error("Insert error: " + std::string(sqlite3_errmsg(m_db)));
+    }
     sqlite3_finalize(stmt);
  
     record->setId((int)sqlite3_last_insert_rowid(m_db));
@@ -203,13 +234,20 @@ void Database::updateDb(Record* record)
         {
             eqs += + ", ";
         }
-        eqs += field.colNam + "=" + sqlString(field.value);
+        eqs += field.colNam + "= ?";
         first = false;
     }
 
     const std::string sql = "UPDATE " + record->getTabName() + " SET " + eqs + " WHERE id=" + std::to_string(record->getId());
-    auto* stmt = prepare(sql);
-    sqlite3_step(stmt);
+    auto* stmt = prepare(sql, false);
+
+    bindFieldsToStmt(stmt, fields);
+
+    int code = sqlite3_step(stmt);
+    if(code != SQLITE_DONE) 
+    {
+        Logger::getInstance().error("Update error: " + std::string(sqlite3_errmsg(m_db)));
+    }
     sqlite3_finalize(stmt);
 }
 
@@ -232,9 +270,12 @@ void Database::exec(const std::string& sql)
     }
 }
  
-sqlite3_stmt* Database::prepare(const std::string& sql) const
+sqlite3_stmt* Database::prepare(const std::string& sql, bool log) const
 {
-    Logger::getInstance().query(sql);
+    if(log)
+    {
+        Logger::getInstance().query(sql);
+    }
 
     sqlite3_stmt* stmt = nullptr;
     if (sqlite3_prepare_v2(m_db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) 

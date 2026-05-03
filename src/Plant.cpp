@@ -138,7 +138,7 @@ void Plant::checkDormancy()
     "JOIN schedules ON schedules.id = species.scheduleId "
     "WHERE plants.id = " + Database::sqlString(std::to_string(getId()));
 
-    dormant_ =  Database::getInstance().getResult(orderQuery) == "1";
+    dormant_ = Database::getInstance().getResult(orderQuery) == "1";
 }
 
 bool Plant::isDormant() const

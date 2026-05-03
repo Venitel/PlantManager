@@ -113,6 +113,8 @@ TYPED_TEST(ListSectionAddDelTest, Add)
     int initialCount = this->section.recordCount();
     auto newRecord = this->section.getBlankRecord();
 
+    newRecord.setName("Test");
+
     using SectionType = std::decay_t<decltype(this->section)>;
     if constexpr (std::is_same_v<SectionType, ListSection<Plant>>) 
     {
