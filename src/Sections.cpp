@@ -43,12 +43,28 @@ void cachePlantData()
     }
 }
 
-void cacheSettings()
+std::vector<std::pair<int, std::string>> getIdNames(Field::DataType dataType)
 {
-    for(Setting& setting : getAllSettings())
+    switch(dataType)
     {
-        CommonCache::getSettings()[setting.getName()] = setting.getValue();
+        case Field::DataType::Plant : return plantList.getIdNames();
+        case Field::DataType::Species : return speciesList.getIdNames();
+        case Field::DataType::Schedule : return scheduleList.getIdNames();
+        case Field::DataType::Setting : return settingList.getIdNames();
+        default : return {};
     }
+}
+
+std::string getNameById(Field::DataType dataType, int id)
+{
+    std::vector<std::pair<int, std::string>> idNames = getIdNames(dataType);
+    auto it = std::find_if(idNames.begin(), idNames.end(), [&](auto& idName) {return idName.first == id;});
+    if(it != idNames.end())
+    {
+        return it->second;
+    }
+
+    return "";
 }
 
 std::vector<Plant>& getAllPlants()
@@ -249,6 +265,18 @@ template <typename T>
 void ListSection<T>::loadFromDb()
 {
     records_ = Database::getInstance().getAll<T>();
+}
+
+template <typename T>
+std::vector<std::pair<int, std::string>> ListSection<T>::getIdNames()
+{
+    std::vector<std::pair<int, std::string>> idNames;
+    idNames.reserve(records_.size());
+    for(const T& record : records_)
+    {
+        idNames.emplace_back(record.getId(), record.getName());
+    }
+    return idNames;
 }
 
 //explicit instantiation

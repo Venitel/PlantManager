@@ -1,6 +1,7 @@
 #include "Plant.h"
 #include "Database.h"
 #include "Utils.h"
+#include "Sections.h"
 
 std::string Plant::getTabName() const
 {
@@ -16,7 +17,7 @@ std::string Plant::getForeignName(const Field::DataType dataType) const
             return "";
         }
 
-        return CommonCache::getName(dataType, getSpeciesId());
+        return getNameById(dataType, getSpeciesId());
     }
     return "";
 }
@@ -71,7 +72,7 @@ DetailLine Plant::daysUntilDetail(const int pos, std::string text, const int day
 {
     Colors color = Colors::Default;
 
-    int due = CommonCache::getSettings()["Action required"];
+    int due = Setting::getValue("Action required");
     if(daysUntil < 0)
     {
         color = Colors::DuePast;
@@ -252,7 +253,7 @@ bool Plant::delayWatering()
     std::optional<int> daysUntil = daysUntilWatering();
     if(daysUntil.has_value())
     {
-        int postponeDays = CommonCache::getSettings()["Postpone"];
+        int postponeDays = Setting::getValue("Postpone");
         if(daysUntil.value() < 0) //if watering is due, delay it to extra days ahead
         {
             setWateringDelay(abs(daysUntil.value()) + postponeDays);
@@ -310,7 +311,7 @@ bool Plant::delayFeeding()
     std::optional<int> daysUntil = daysUntilFeeding();
     if(daysUntil.has_value())
     {
-        int postponeDays = CommonCache::getSettings()["Postpone"];
+        int postponeDays = Setting::getValue("Postpone");
         if(daysUntil.value() < 0) //if feeding is due, set it to extra days ahead
         {
             setFeedingDelay(abs(daysUntil.value()) + postponeDays);
@@ -351,7 +352,7 @@ Colors Plant::getNameColor() const
     std::optional<int> watering = daysUntilWatering();
     std::optional<int> feeding = daysUntilFeeding();
 
-    int due = CommonCache::getSettings()["Action required"];
+    int due = Setting::getValue("Action required");
 
     if((watering.has_value() && watering.value() < 0) || (feeding.has_value() && feeding.value() < 0))
     {

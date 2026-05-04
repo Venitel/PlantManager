@@ -151,7 +151,7 @@ void getFieldFromUser(const int x, const int y, Field& field)
         }
         else
         {
-            field.setter(getValueByList(x, y, field, CommonCache::getIdNames()[field.dataType]));
+            field.setter(getValueByList(x, y, field, getIdNames(field.dataType)));
         }
     }
     else

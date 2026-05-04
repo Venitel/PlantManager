@@ -16,9 +16,9 @@ class Setting : public Record
 
     int getValue() const;
 
-    void updateCache();
-
     static void initializeSettings();
+    static int getValue(const std::string& name);
+
     void addRecord() override;
     void deleteRecord() override;
   private: 

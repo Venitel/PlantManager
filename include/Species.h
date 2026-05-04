@@ -10,7 +10,6 @@ class Species : public Record
 
     std::vector<Field> getFields() override;
 
-    void onCreate() override;
     void onDelete() override;
 
     std::string getForeignName(const Field::DataType dataType) const override;

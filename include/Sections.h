@@ -10,7 +10,8 @@
 
 void loadAllListsFromDb();
 void cachePlantData();
-void cacheSettings();
+std::vector<std::pair<int, std::string>> getIdNames(Field::DataType dataType);
+std::string getNameById(Field::DataType dataType, int id);
 
 std::vector<Plant>& getAllPlants();
 std::vector<Species>& getAllSpecies();
@@ -75,6 +76,7 @@ class ListSection : public Section
     bool moveToRecord(const std::string& id);
 
     void loadFromDb();
+    std::vector<std::pair<int, std::string>> getIdNames();
 
   private:
     std::vector<T> records_;

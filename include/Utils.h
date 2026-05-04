@@ -22,14 +22,4 @@ namespace Utils
     void prepareOptionalIntFromString(std::string& number);
 }
 
-namespace CommonCache
-{
-    std::map<Field::DataType, std::vector<std::pair<int, std::string>>>& getIdNames();
-    std::map<std::string, int>& getSettings();
-    void updateElement(const Field::DataType dataType, const std::pair<int, std::string>& changedIdName);
-    void deleteElement(const Field::DataType dataType, const int id);
-
-    std::string getName(const Field::DataType dataType, const int id);
-}
-
 #endif

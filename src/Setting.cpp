@@ -2,6 +2,9 @@
 #include "Database.h"
 #include "Utils.h"
 #include "Logger.h"
+#include "Sections.h"
+
+#include <algorithm>
 
 std::string Setting::getTabName() const
 {
@@ -17,7 +20,7 @@ std::vector<Field> Setting::getFields()
     {//   ColNam        Label         Var           Length  InputType                    DataType                  Setter                                     onEdit
         { "name",       "Name    : ", name_,        40,     Field::InputType::ReadOnly,  Field::DataType::Text,    [this](std::string v){setName(v);},        {} },
         { "notes",      "Notes   : ", notes_,       120,    Field::InputType::ReadOnly,  Field::DataType::Text,    [this](std::string v){setNotes(v);},       {} },
-        { "value",      "Value   : ", value,        3,      Field::InputType::Mandatory, Field::DataType::Number,  [this](std::string v){setValue(v);},       [this](){updateRecord(); updateCache();} },
+        { "value",      "Value   : ", value,        3,      Field::InputType::Mandatory, Field::DataType::Number,  [this](std::string v){setValue(v);},       [this](){updateRecord();} },
         { "orderNum",   "Order   : ", orderNum,     9,      Field::InputType::NoDisplay, Field::DataType::Number,  [this](std::string v){setOrderNum(v);},    {} }
     };
 }
@@ -62,11 +65,6 @@ void Setting::insertDbSetting(const std::string& name, const std::string& descri
     Database::getInstance().exec(query);
 }
 
-void Setting::updateCache()
-{
-    CommonCache::getSettings()[getName()] = getValue();
-}
-
 //These are not exposed in the UI, but we add implementation just in case
 void Setting::addRecord()
 {
@@ -76,4 +74,17 @@ void Setting::addRecord()
 void Setting::deleteRecord()
 {
     Logger::getInstance().error("Cannot delete setting!");
+}
+
+int Setting::getValue(const std::string& name)
+{
+    std::vector<Setting>& allSettings = getAllSettings();
+
+    auto it = std::find_if(allSettings.begin(), allSettings.end(), [&](Setting& setting) {return setting.getName() == name;});
+    if(it != allSettings.end())
+    {
+        return it->getValue();
+    }
+
+    return -1;
 }

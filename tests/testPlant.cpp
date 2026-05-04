@@ -35,10 +35,9 @@ void makeNotDormant(int index)
 
 void editSetting(const int index, const int days)
 {
-    Setting postponeSetting = getAllSettings()[index];
+    Setting& postponeSetting = getAllSettings()[index];
     postponeSetting.setValue(days);
     postponeSetting.updateRecord();
-    postponeSetting.updateCache();
 }
 
 void editDueSetting(const int days)
@@ -57,7 +56,6 @@ protected:
     PlantListSectionTest()
     {
         loadAllListsFromDb();
-        cacheSettings();
         cachePlantData();
     }
 };

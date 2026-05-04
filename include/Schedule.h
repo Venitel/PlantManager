@@ -11,7 +11,6 @@ class Schedule : public Record
     std::vector<Field> getFields() override;
     std::vector<DetailLine> getExtraDetails() const override;
 
-    void onCreate() override;
     void onDelete() override;
 
     void setDormancyStart(const int dormancyStart);

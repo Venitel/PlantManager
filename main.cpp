@@ -55,8 +55,6 @@ int main()
     SetConsoleCtrlHandler(exitHandler, TRUE);
     loadAllListsFromDb();
     checkPlantCache();
-    cacheSettings();
-    CommonCache::getIdNames();
     initConsole();
     drawAll();
 
