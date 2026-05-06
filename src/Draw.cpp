@@ -308,14 +308,13 @@ void drawFooter(const int row)
             {
                 detailsKeys += " | →: Go To";
             }
-            else if constexpr (std::is_same_v<TabType, std::pair<ListSection<Plant>*, DetailsSection<Plant>*>>)
+            if constexpr (std::is_same_v<TabType, std::pair<ListSection<Plant>*, DetailsSection<Plant>*>>)
             {
-                std::string plantColNam = currentList->getSelectedRecord().getEditableFields()[currentDetails->getPosition()].colNam;
-                if(plantColNam == "lastWatered")
+                if(selectedField.colNam == "lastWatered")
                 {
                     detailsKeys += " | W: Water Now | P: Postpone";
                 }
-                else if(plantColNam == "lastFed")
+                else if(selectedField.colNam == "lastFed")
                 {
                     detailsKeys += " | F: Feed Now | P: Postpone";
                 }

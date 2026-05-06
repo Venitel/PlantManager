@@ -13,7 +13,8 @@ DetailsSection<Schedule> scheduleDetails;
 ListSection<Setting> settingList;
 DetailsSection<Setting> settingDetails;
 
-std::vector<Tabs> allTabs = {
+std::vector<Tabs> allTabs = 
+{
     std::make_pair(&plantList, &plantDetails),
     std::make_pair(&speciesList, &speciesDetails),
     std::make_pair(&scheduleList, &scheduleDetails),
