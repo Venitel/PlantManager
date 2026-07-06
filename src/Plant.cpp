@@ -256,7 +256,7 @@ bool Plant::delayWatering()
         int postponeDays = Setting::getValue("Postpone");
         if(daysUntil.value() < 0) //if watering is due, delay it to extra days ahead
         {
-            setWateringDelay(abs(daysUntil.value()) + postponeDays);
+            setWateringDelay(abs(daysUntil.value()) + wateringDelay_ + postponeDays);
         }
         else //add extra days
         {
@@ -314,7 +314,7 @@ bool Plant::delayFeeding()
         int postponeDays = Setting::getValue("Postpone");
         if(daysUntil.value() < 0) //if feeding is due, set it to extra days ahead
         {
-            setFeedingDelay(abs(daysUntil.value()) + postponeDays);
+            setFeedingDelay(abs(daysUntil.value()) + feedingDelay_ + postponeDays);
         }
         else //add extra days
         {
