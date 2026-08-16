@@ -1,6 +1,7 @@
 #include "Draw.h"
 #include "Console.h"
 #include "Utils.h"
+#include "Menu.h"
 
 #include <iostream>
 #include <algorithm>
@@ -271,58 +272,24 @@ void drawExtraDetailLine(const int row, int& printedRows, const std::vector<Deta
 
 void drawFooter(const int row) 
 {
-    std::visit([&](auto& tab) {
-        auto& currentList = tab.first;
-        auto& currentDetails = tab.second;
-        using TabType = std::decay_t<decltype(tab)>;
+    drawLine(0, row, 2*sectionWidth, '-');
+    clearRow(row + 1);
+    clearRow(row + 2);
 
-        drawLine(0, row, 2*sectionWidth, '-');
-        clearRow(row + 1);
-        clearRow(row + 2);
-
-        if(currentList->isActive())
+    std::string keys[2];
+    for(auto& item : getMenu())
+    {
+        if(item.active())
         {
-            //List buttons
-            putText(0, row + 1, "↑ ↓ →: Select | TAB: Next Tab                                                                Q: Quit");
-            std::string listKeys = "";
-            if constexpr (!std::is_same_v<TabType, std::pair<ListSection<Setting>*, DetailsSection<Setting>*>>)
+            if(!keys[item.row].empty()) 
             {
-                listKeys += "A: Add | D: Delete | M: Move Up";
+                keys[item.row] += " | ";
             }
-            if constexpr (std::is_same_v<TabType, std::pair<ListSection<Plant>*, DetailsSection<Plant>*>>)
-            {
-                listKeys += " | W: Water Now | F: Feed Now | P: Postpone";
-            }
-
-            putText(0, row + 2, listKeys);
+            keys[item.row] += item.label;
         }
-        else
-        {
-            //Details buttons
-            putText(0, row + 1, "↑ ↓ ←: Select | TAB: Next Tab                                                                Q: Quit");
-            std::string detailsKeys = "E: Edit";
-
-            auto& record = currentList->getSelectedRecord();
-            Field selectedField = record.getEditableFields()[currentDetails->getPosition()];
-            if(selectedField.isForeign())
-            {
-                detailsKeys += " | →: Go To";
-            }
-            if constexpr (std::is_same_v<TabType, std::pair<ListSection<Plant>*, DetailsSection<Plant>*>>)
-            {
-                if(selectedField.colNam == "lastWatered")
-                {
-                    detailsKeys += " | W: Water Now | P: Postpone";
-                }
-                else if(selectedField.colNam == "lastFed")
-                {
-                    detailsKeys += " | F: Feed Now | P: Postpone";
-                }
-            }
-
-            putText(0, row + 2, detailsKeys);
-        }
-    }, activeTab);
+    }
+    putText(0, row + 1, keys[0]);
+    putText(0, row + 2, keys[1]);
 }
 
 void drawAll() 

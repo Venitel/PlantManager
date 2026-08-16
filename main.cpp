@@ -5,6 +5,7 @@
 #include "Logger.h"
 #include "Sections.h"
 #include "Utils.h"
+#include "Menu.h"
 
 void quit()
 {
@@ -63,27 +64,21 @@ int main()
         int key = toupper(getKey());
         if(!onCooldown(key))
         {
-            bool redraw;
-            switch((Key)key) 
+            Action action = Action::NoRedraw;
+            for(auto& item : getMenu())
             {
-                //Each key handler returns true/false if successful
-                //Only redraw on true (if something changed) to prevent unnecessary flicker
-                case Key::Up : redraw = moveActiveSectionUp(); break;
-                case Key::Down : redraw = moveActiveSectionDown(); break;
-                case Key::Left : redraw = activateList(); break;
-                case Key::Right : redraw = activateDetails() || goToForeignRecord(); break;
-                case Key::Tab : redraw = nextTab(); break;
-                case (Key)'A': redraw = userAdd(); break; 
-                case (Key)'D': redraw = userDelete(); break;
-                case (Key)'E': redraw = userEdit(); break;
-                case (Key)'M': redraw = userOrder(); break;
-                case (Key)'W': redraw = waterPlant(); break;
-                case (Key)'F': redraw = feedPlant(); break;
-                case (Key)'P': redraw = postponePlant(); break;
-                case (Key)'Q': quit(); return 0;
-                default: redraw = false;
+                if(item.key == (Key)key && item.active())
+                {
+                    action = item.action();
+                    if(action == Action::Quit)
+                    {
+                        quit(); 
+                        return 0;
+                    }
+                    break;
+                }
             }
-            if(checkPlantCache() || redraw) {drawAll();}
+            if(checkPlantCache() || action == Action::Redraw) {drawAll();}
         }
     }
 }
