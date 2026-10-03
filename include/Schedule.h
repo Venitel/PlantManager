@@ -29,13 +29,12 @@ class Schedule : public Record
     void scheduleChanged(bool deleted = false);
 
   private: 
-    int dormancyStart_;
-    int dormancyEnd_;
-    int waterInterval_ = -1;
-    int waterIntervalDormant_ = -1;
-    int feedInterval_ = -1;
-    int feedIntervalDormant_ = -1;
-
+    DbVar<int> dormancyStart_;
+    DbVar<int> dormancyEnd_;
+    DbVar<int> waterInterval_{-1};
+    DbVar<int> waterIntervalDormant_{-1};
+    DbVar<int> feedInterval_{-1};
+    DbVar<int> feedIntervalDormant_{-1};
 };
 
 #endif

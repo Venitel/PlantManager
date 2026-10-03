@@ -1,4 +1,5 @@
 #include "Database.h"
+#include "DbVar.h"
 #include "Plant.h"
 #include "Species.h"
 #include "Schedule.h"
@@ -146,6 +147,7 @@ std::vector<T> Database::getAll() const
             }
             ++colCounter;
         }
+        record.clean(); //setters mark dirty but thats a fresh record
         retVec.push_back(record);
         Logger::getInstance().result(record.toString());
     }
@@ -164,20 +166,23 @@ std::string Database::sqlString(const std::string& text)
     return "'" + text + "'";
 }
 
-void Database::bindFieldsToStmt(sqlite3_stmt* stmt, std::vector<Field>& fields)
+void Database::bindFieldsToStmt(sqlite3_stmt* stmt, std::vector<Field>& fields, bool bindAll)
 {
     int i = 1;
     for(Field& field : fields)
     {
-        if(field.value.empty())
+        if(bindAll || field.var->isDirty())
         {
-            sqlite3_bind_null(stmt, i);
+            if(field.var->getString().empty())
+            {
+                sqlite3_bind_null(stmt, i);
+            }
+            else
+            {
+                sqlite3_bind_text(stmt, i, field.var->getString().c_str(), -1, SQLITE_TRANSIENT);
+            }
+            ++i;
         }
-        else
-        {
-            sqlite3_bind_text(stmt, i, field.value.c_str(), -1, SQLITE_TRANSIENT);
-        }
-        ++i;
     }
 
     char* expanded = sqlite3_expanded_sql(stmt);
@@ -210,12 +215,16 @@ void Database::insertDb(Record* record)
     const std::string sql = "INSERT INTO " + record->getTabName() + " (" + cols + ") VALUES (" + placeholders + ")";
     auto* stmt = prepare(sql, false);
 
-    bindFieldsToStmt(stmt, fields);
+    bindFieldsToStmt(stmt, fields, true);
 
     int code = sqlite3_step(stmt);
     if(code != SQLITE_DONE) 
     {
         Logger::getInstance().error("Insert error: " + std::string(sqlite3_errmsg(m_db)));
+    }
+    else
+    {
+        record->clean();
     }
     sqlite3_finalize(stmt);
  
@@ -230,25 +239,35 @@ void Database::updateDb(Record* record)
     std::vector<Field> fields = record->getFields();
     for(Field& field : fields)
     {
-        if(!first)
+        if(field.var->isDirty())
         {
-            eqs += + ", ";
+            if(!first)
+            {
+                eqs += + ", ";
+            }
+            eqs += field.colNam + "=?";
+            first = false;
         }
-        eqs += field.colNam + "= ?";
-        first = false;
     }
 
-    const std::string sql = "UPDATE " + record->getTabName() + " SET " + eqs + " WHERE id=" + std::to_string(record->getId());
-    auto* stmt = prepare(sql, false);
-
-    bindFieldsToStmt(stmt, fields);
-
-    int code = sqlite3_step(stmt);
-    if(code != SQLITE_DONE) 
+    if(!eqs.empty())
     {
-        Logger::getInstance().error("Update error: " + std::string(sqlite3_errmsg(m_db)));
+        const std::string sql = "UPDATE " + record->getTabName() + " SET " + eqs + " WHERE id=" + std::to_string(record->getId());
+        auto* stmt = prepare(sql, false);
+
+        bindFieldsToStmt(stmt, fields, false);
+
+        int code = sqlite3_step(stmt);
+        if(code != SQLITE_DONE) 
+        {
+            Logger::getInstance().error("Update error: " + std::string(sqlite3_errmsg(m_db)));
+        }
+        else
+        {
+            record->clean();
+        }
+        sqlite3_finalize(stmt);
     }
-    sqlite3_finalize(stmt);
 }
 
 void Database::deleteDb(Record* record)

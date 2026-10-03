@@ -22,8 +22,8 @@ class Setting : public Record
     void addRecord() override;
     void deleteRecord() override;
   private: 
-    std::string notes_;
-    int value_ = 0;
+    DbVar<std::string> notes_;
+    DbVar<int> value_{0};
 
     static void insertDbSetting(const std::string& name, const std::string& description, const int defaultValue);
 };

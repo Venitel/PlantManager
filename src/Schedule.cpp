@@ -11,24 +11,16 @@ std::string Schedule::getTabName() const
 
 std::vector<Field> Schedule::getFields()
 {
-    const std::string orderNum = std::to_string(orderNum_);
-    const std::string dormancyStart = std::to_string(dormancyStart_);
-    const std::string dormancyEnd = std::to_string(dormancyEnd_);
-    const std::string waterInterval = std::to_string(waterInterval_);
-    const std::string waterIntervalDormant = std::to_string(waterIntervalDormant_);
-    const std::string feedInterval = std::to_string(feedInterval_);
-    const std::string feedIntervalDormant = std::to_string(feedIntervalDormant_);
-
     return 
-    {//    ColNam                Label                    Var                   Length  InputType                       DataType                    Setter                                              onEdit
-        { "name",                "Name             : ",   name_,                31,     Field::InputType::Mandatory,    Field::DataType::Text,      [this](std::string v){setName(v);},                 [this](){updateRecord();} }, 
-        { "dormancyStart",       "Dormancy Start   : ",   dormancyStart,        9,      Field::InputType::List,         Field::DataType::Month,     [this](std::string v){setDormancyStart(v);},        [this](){updateRecord(); scheduleChanged();} },
-        { "dormancyEnd",         "Dormancy End     : ",   dormancyEnd,          9,      Field::InputType::List,         Field::DataType::Month,     [this](std::string v){setDormancyEnd(v);},          [this](){updateRecord(); scheduleChanged();} },
-        { "waterInterval",       "Watering         : ",   waterInterval,        3,      Field::InputType::Optional,     Field::DataType::Number,    [this](std::string v){setWaterInterval(v);},        [this](){updateRecord(); scheduleChanged();} },
-        { "waterIntervalDormant","Dormant Watering : ",   waterIntervalDormant, 3,      Field::InputType::Optional,     Field::DataType::Number,    [this](std::string v){setWaterIntervalDormant(v);}, [this](){updateRecord(); scheduleChanged();} },
-        { "feedInterval",        "Feeding          : ",   feedInterval,         3,      Field::InputType::Optional,     Field::DataType::Number,    [this](std::string v){setFeedInterval(v);},         [this](){updateRecord(); scheduleChanged();} },
-        { "feedIntervalDormant", "Dormant Feeding  : ",   feedIntervalDormant,  3,      Field::InputType::Optional,     Field::DataType::Number,    [this](std::string v){setFeedIntervalDormant(v);},  [this](){updateRecord(); scheduleChanged();} },
-        { "orderNum",            "Order            : ",   orderNum,             9,      Field::InputType::NoDisplay,    Field::DataType::Number,    [this](std::string v){setOrderNum(v);},             {} }
+    {//    ColNam                Label                    Var                     Length  InputType                       DataType                    Setter                                              onEdit
+        { "name",                "Name             : ",   &name_,                 31,     Field::InputType::Mandatory,    Field::DataType::Text,      [this](std::string v){setName(v);},                 [this](){updateRecord();} }, 
+        { "dormancyStart",       "Dormancy Start   : ",   &dormancyStart_,        9,      Field::InputType::List,         Field::DataType::Month,     [this](std::string v){setDormancyStart(v);},        [this](){updateRecord(); scheduleChanged();} },
+        { "dormancyEnd",         "Dormancy End     : ",   &dormancyEnd_,          9,      Field::InputType::List,         Field::DataType::Month,     [this](std::string v){setDormancyEnd(v);},          [this](){updateRecord(); scheduleChanged();} },
+        { "waterInterval",       "Watering         : ",   &waterInterval_,        3,      Field::InputType::Optional,     Field::DataType::Number,    [this](std::string v){setWaterInterval(v);},        [this](){updateRecord(); scheduleChanged();} },
+        { "waterIntervalDormant","Dormant Watering : ",   &waterIntervalDormant_, 3,      Field::InputType::Optional,     Field::DataType::Number,    [this](std::string v){setWaterIntervalDormant(v);}, [this](){updateRecord(); scheduleChanged();} },
+        { "feedInterval",        "Feeding          : ",   &feedInterval_,         3,      Field::InputType::Optional,     Field::DataType::Number,    [this](std::string v){setFeedInterval(v);},         [this](){updateRecord(); scheduleChanged();} },
+        { "feedIntervalDormant", "Dormant Feeding  : ",   &feedIntervalDormant_,  3,      Field::InputType::Optional,     Field::DataType::Number,    [this](std::string v){setFeedIntervalDormant(v);},  [this](){updateRecord(); scheduleChanged();} },
+        { "orderNum",            "Order            : ",   &orderNum_,             9,      Field::InputType::NoDisplay,    Field::DataType::Number,    [this](std::string v){setOrderNum(v);},             {} }
     };
 }
 

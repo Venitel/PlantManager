@@ -1,6 +1,7 @@
 #ifndef RECORD_H
 #define RECORD_H
 
+#include "DbVar.h"
 #include "Colors.h"
 #include <string>
 #include <vector>
@@ -40,7 +41,7 @@ struct Field
 
   std::string colNam;
   std::string label;
-  std::string value;
+  IDbVar* var = nullptr;
   int size;
   InputType inputType;
   DataType dataType;
@@ -84,15 +85,17 @@ class Record
     virtual std::string toString();
 
     virtual std::vector<Field> getEditableFields();
-    virtual std::vector<Field> getDisplayableFields();    
+    virtual std::vector<Field> getDisplayableFields();
+
+    void clean();
     //Pure virtual
     virtual std::string getTabName() const = 0;
     virtual std::vector<Field> getFields() = 0;
 
 protected:
     int id_ = -1;
-    std::string name_;
-    int orderNum_ = -1;
+    DbVar<std::string> name_;
+    DbVar<int> orderNum_{-1};
 };
 
 #endif

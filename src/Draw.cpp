@@ -216,10 +216,10 @@ void drawDetails(const int row)
             }
 
             int labelLength = (int)field.label.length();
-            std::string text = field.value;
+            std::string text = field.var->getString();
             if(field.isForeign())
             {
-                if(field.value == "-1")
+                if(field.var->getInt() == -1)
                 {
                     //Empty foreign reference, either from delete or empty list
                     setColor(Colors::Error);
@@ -228,7 +228,7 @@ void drawDetails(const int row)
             }
             else if(field.dataType == Field::DataType::Month)
             {
-                text = DateUtils::Months[stoi(field.value)-1].second;
+                text = DateUtils::Months[field.var->getInt()-1].second;
             }
             else if(field.dataType == Field::DataType::Date && text.empty())
             {

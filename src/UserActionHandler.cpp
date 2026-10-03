@@ -115,7 +115,7 @@ bool goToForeignRecord()
 
         auto& record = currentList->getSelectedRecord();
         Field selectedField = record.getEditableFields()[currentDetails->getPosition()];
-        if(!selectedField.isForeign() || selectedField.value == "-1") //-1 = no reference
+        if(!selectedField.isForeign() || selectedField.var->getInt() == -1) //-1 = no reference
         {
             return;
         }
@@ -133,7 +133,7 @@ bool goToForeignRecord()
             activeTabIndex = std::distance(allTabs.begin(), it);
             activeTab = *it;
             std::visit([&](auto& newTab) {
-                result = newTab.first->activate() && newTab.first->moveToRecord(selectedField.value);
+                result = newTab.first->activate() && newTab.first->moveToRecord(selectedField.var->getString());
             }, activeTab);
         }
     }, activeTab);
@@ -177,9 +177,9 @@ std::string getValueByList(const int x, const int y, Field& field, const std::ve
     if(!pairs.empty())
     {
         int index = 0;
-        try //in case stoi fails
+        try //in case stoi from getInt fails
         {
-            auto it = std::find_if(pairs.begin(), pairs.end(), [&](auto& pair) {return stoi(field.value) == pair.first;});
+            auto it = std::find_if(pairs.begin(), pairs.end(), [&](auto& pair) {return field.var->getInt() == pair.first;});
             if(it != pairs.end())
             {
                 index = std::distance(pairs.begin(), it);

@@ -23,7 +23,7 @@ class Species : public Record
     void scheduleChanged(bool deleted = false);
 
   private: 
-    int scheduleId_ = -1;
+    DbVar<int> scheduleId_{-1};
 };
 
 #endif

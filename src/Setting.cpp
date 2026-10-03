@@ -13,15 +13,12 @@ std::string Setting::getTabName() const
 
 std::vector<Field> Setting::getFields()
 {
-    const std::string value = std::to_string(value_);
-    const std::string orderNum = std::to_string(orderNum_);
-
     return 
-    {//   ColNam        Label         Var           Length  InputType                    DataType                  Setter                                     onEdit
-        { "name",       "Name    : ", name_,        40,     Field::InputType::ReadOnly,  Field::DataType::Text,    [this](std::string v){setName(v);},        {} },
-        { "notes",      "Notes   : ", notes_,       120,    Field::InputType::ReadOnly,  Field::DataType::Text,    [this](std::string v){setNotes(v);},       {} },
-        { "value",      "Value   : ", value,        3,      Field::InputType::Mandatory, Field::DataType::Number,  [this](std::string v){setValue(v);},       [this](){updateRecord();} },
-        { "orderNum",   "Order   : ", orderNum,     9,      Field::InputType::NoDisplay, Field::DataType::Number,  [this](std::string v){setOrderNum(v);},    {} }
+    {//   ColNam        Label         Var            Length  InputType                    DataType                  Setter                                     onEdit
+        { "name",       "Name    : ", &name_,        40,     Field::InputType::ReadOnly,  Field::DataType::Text,    [this](std::string v){setName(v);},        {} },
+        { "notes",      "Notes   : ", &notes_,       120,    Field::InputType::ReadOnly,  Field::DataType::Text,    [this](std::string v){setNotes(v);},       {} },
+        { "value",      "Value   : ", &value_,       3,      Field::InputType::Mandatory, Field::DataType::Number,  [this](std::string v){setValue(v);},       [this](){updateRecord();} },
+        { "orderNum",   "Order   : ", &orderNum_,    9,      Field::InputType::NoDisplay, Field::DataType::Number,  [this](std::string v){setOrderNum(v);},    {} }
     };
 }
 

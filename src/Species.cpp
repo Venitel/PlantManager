@@ -24,14 +24,11 @@ std::string Species::getForeignName(const Field::DataType dataType) const
 
 std::vector<Field> Species::getFields()
 {
-    const std::string orderNum = std::to_string(orderNum_);
-    const std::string scheduleId = std::to_string(scheduleId_);
-
     return 
-    {//   ColNam        Label         Var           Length  InputType                      DataType                  Setter                                     onEdit
-        { "name",       "Name    : ", name_,        40,     Field::InputType::Mandatory,   Field::DataType::Text,    [this](std::string v){setName(v);},        [this](){updateRecord();} },
-        { "scheduleId", "Schedule: ", scheduleId,   9,      Field::InputType::List,        Field::DataType::Schedule,[this](std::string v){setScheduleId(v);},  [this](){updateRecord(); scheduleChanged();} },
-        { "orderNum",   "Order   : ", orderNum,     9,      Field::InputType::NoDisplay,   Field::DataType::Number,  [this](std::string v){setOrderNum(v);},    {} }
+    {//   ColNam        Label         Var            Length  InputType                      DataType                  Setter                                     onEdit
+        { "name",       "Name    : ", &name_,        40,     Field::InputType::Mandatory,   Field::DataType::Text,    [this](std::string v){setName(v);},        [this](){updateRecord();} },
+        { "scheduleId", "Schedule: ", &scheduleId_,  9,      Field::InputType::List,        Field::DataType::Schedule,[this](std::string v){setScheduleId(v);},  [this](){updateRecord(); scheduleChanged();} },
+        { "orderNum",   "Order   : ", &orderNum_,    9,      Field::InputType::NoDisplay,   Field::DataType::Number,  [this](std::string v){setOrderNum(v);},    {} }
     };
 }
 

@@ -50,12 +50,12 @@ class Plant : public Record
 
   private:
     //Db Fields
-    int speciesId_ = -1;
-    std::string lastWatered_;
-    int wateringDelay_ = 0;
-    std::string lastFed_;
-    int feedingDelay_ = 0;
-    std::string notes_;
+    DbVar<int> speciesId_{-1};
+    DbVar<std::string> lastWatered_;
+    DbVar<int> wateringDelay_{0};
+    DbVar<std::string> lastFed_;
+    DbVar<int> feedingDelay_{0};
+    DbVar<std::string> notes_;
     
     //Non-Db variables
     bool dormant_;

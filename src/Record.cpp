@@ -7,7 +7,7 @@ std::string Record::toString()
     std::string ret = getTabName() +  " Id: " + std::to_string(id_);
     for(Field& field : getFields())
     {
-        ret += ", " + field.colNam + ": " + (field.value.empty() ? "null" : field.value);;
+        ret += ", " + field.colNam + ": " + (field.var->getString().empty() ? "null" : field.var->getString());;
     }
 
     return ret;
@@ -119,4 +119,15 @@ std::vector<Field> Record::getDisplayableFields()
                 [](const Field& f) {return f.inputType != Field::InputType::NoDisplay;});
 
     return displayableFields;
+}
+
+void Record::clean()
+{
+    for (Field& field : getFields()) 
+    {
+        if(field.var->isDirty())
+        {
+            field.var->clean();
+        }
+    }
 }

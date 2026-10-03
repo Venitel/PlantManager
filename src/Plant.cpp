@@ -24,21 +24,16 @@ std::string Plant::getForeignName(const Field::DataType dataType) const
 
 std::vector<Field> Plant::getFields()
 {
-    const std::string orderNum = std::to_string(orderNum_);
-    const std::string speciesId = std::to_string(speciesId_);
-    const std::string wateringDelay = std::to_string(wateringDelay_);
-    const std::string feedingDelay = std::to_string(feedingDelay_);
-
     return 
-    {//   ColNam            Label         Var             Length  InputType                       DataType                    Setter (DB)                                   onEdit       
-        { "name",           "Name    : ", name_,          40,     Field::InputType::Mandatory,    Field::DataType::Text,      [this](std::string v){setName(v);},           [this](){updateRecord();} },
-        { "speciesId",      "Species : ", speciesId,      9,      Field::InputType::List,         Field::DataType::Species,   [this](std::string v){setSpeciesId(v);},      [this](){scheduleChanged();} },
-        { "lastWatered",    "Watered : ", lastWatered_,   10,     Field::InputType::Optional,     Field::DataType::Date,      [this](std::string v){setLastWatered(v);},    [this](){lastWateredChanged();} },
-        { "wateringDelay",  "W. Delay: ", wateringDelay,  3,      Field::InputType::NoDisplay,    Field::DataType::Number,    [this](std::string v){setWateringDelay(v);},  {} },
-        { "lastFed",        "Fed     : ", lastFed_,       10,     Field::InputType::Optional,     Field::DataType::Date,      [this](std::string v){setLastFed(v);},        [this](){lastFedChanged();} },
-        { "feedingDelay",   "F. Delay: ", feedingDelay,   3,      Field::InputType::NoDisplay,    Field::DataType::Number,    [this](std::string v){setFeedingDelay(v);},   {} },
-        { "notes",          "Notes   : ", notes_,         120,    Field::InputType::Optional,     Field::DataType::Text,      [this](std::string v){setNotes(v);},          [this](){updateRecord();} },
-        { "orderNum",       "Order   : ", orderNum,       9,      Field::InputType::NoDisplay,    Field::DataType::Number,    [this](std::string v){setOrderNum(v);},       {} }
+    {//   ColNam            Label         Var              Length  InputType                       DataType                    Setter (DB)                                   onEdit       
+        { "name",           "Name    : ", &name_,          40,     Field::InputType::Mandatory,    Field::DataType::Text,      [this](std::string v){setName(v);},           [this](){updateRecord();} },
+        { "speciesId",      "Species : ", &speciesId_,     9,      Field::InputType::List,         Field::DataType::Species,   [this](std::string v){setSpeciesId(v);},      [this](){scheduleChanged();} },
+        { "lastWatered",    "Watered : ", &lastWatered_,   10,     Field::InputType::Optional,     Field::DataType::Date,      [this](std::string v){setLastWatered(v);},    [this](){lastWateredChanged();} },
+        { "wateringDelay",  "W. Delay: ", &wateringDelay_, 3,      Field::InputType::NoDisplay,    Field::DataType::Number,    [this](std::string v){setWateringDelay(v);},  {} },
+        { "lastFed",        "Fed     : ", &lastFed_,       10,     Field::InputType::Optional,     Field::DataType::Date,      [this](std::string v){setLastFed(v);},        [this](){lastFedChanged();} },
+        { "feedingDelay",   "F. Delay: ", &feedingDelay_,  3,      Field::InputType::NoDisplay,    Field::DataType::Number,    [this](std::string v){setFeedingDelay(v);},   {} },
+        { "notes",          "Notes   : ", &notes_,         120,    Field::InputType::Optional,     Field::DataType::Text,      [this](std::string v){setNotes(v);},          [this](){updateRecord();} },
+        { "orderNum",       "Order   : ", &orderNum_,      9,      Field::InputType::NoDisplay,    Field::DataType::Number,    [this](std::string v){setOrderNum(v);},       {} }
     };
 }
 

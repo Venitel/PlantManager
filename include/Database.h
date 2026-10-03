@@ -5,7 +5,7 @@
 #include <vector>
 #include <string>
 #include "sqlite3.h"
- 
+
 class Database
 {
   public:
@@ -19,7 +19,7 @@ class Database
     void updateDb(Record* record);
     void deleteDb(Record* record);
 
-    void bindFieldsToStmt(sqlite3_stmt* stmt, std::vector<Field>& fields); 
+    void bindFieldsToStmt(sqlite3_stmt* stmt, std::vector<Field>& fields, bool checkDirty); 
 
     static std::string sqlString(const std::string& text);
     std::string getResult(const std::string& sql) const;
